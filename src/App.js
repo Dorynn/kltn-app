@@ -1,25 +1,41 @@
-import logo from './logo.svg';
 import './App.css';
+import Sidebar from './components/common/Sidebar';
+import Header from './components/common/Header';
+import Department from './components/pages/Department/Department';
+import Major from './components/pages/Major/Major';
+import {
+  BrowserRouter,
+  Switch,
+  Route,
+  Routes,
+  Link,
+  useRouteMatch,
+  Outlet
+} from "react-router-dom";
 
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Header title="Title" />
+      <Sidebar>
+        
+      </Sidebar>
+    
+
+    
+      <div id='main-content'>
+      <Routes>
+
+          <Route path='/department' element={<Department></Department>} />
+          <Route path="/major" element={<Major></Major>} />
+
+      </Routes>
+
+      
+      </div>
     </div>
   );
 }
 
 export default App;
+
