@@ -17,21 +17,20 @@ function App() {
   return (
     <div className="App">
       <Header title="Title" />
-      <Sidebar>
-        
-      </Sidebar>
-    
 
-    
+
+
       <div id='main-content'>
-      <Routes>
+        <Sidebar />
+        <div className='content'>
+          <div className="router-wrapper mt-4">
+          <Routes >
+            <Route path='/department' element={<Department></Department>} />
+            <Route path="/major" element={<Major></Major>} />
+          </Routes>
 
-          <Route path='/department' element={<Department></Department>} />
-          <Route path="/major" element={<Major></Major>} />
-
-      </Routes>
-
-      
+          </div>
+        </div>
       </div>
     </div>
   );
