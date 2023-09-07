@@ -3,14 +3,12 @@ import Sidebar from './components/common/Sidebar';
 import Header from './components/common/Header';
 import Department from './components/pages/Department/Department';
 import Major from './components/pages/Major/Major';
+import Lecturer from './components/pages/Lecturer/Lecturer';
+import Subject from "./components/pages/Subject/Subject";
+
 import {
-  BrowserRouter,
-  Switch,
   Route,
   Routes,
-  Link,
-  useRouteMatch,
-  Outlet
 } from "react-router-dom";
 
 function App() {
@@ -25,8 +23,10 @@ function App() {
         <div className='content'>
           <div className="router-wrapper mt-4">
           <Routes >
-            <Route path='/department' element={<Department></Department>} />
-            <Route path="/major" element={<Major></Major>} />
+            <Route path='/department' element={<Department/>} />
+            <Route path="/major" element={<Major/>} />
+            <Route path="/lecturer" element={<Lecturer/>} />
+            <Route path="/subject" element={<Subject/>} />
           </Routes>
 
           </div>

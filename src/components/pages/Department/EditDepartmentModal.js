@@ -33,7 +33,7 @@ const EditDepartmentModal = (props) => {
             console.log(error)
         }
         finally{
-            window.$('#editDepartment').modal('hide')
+            // window.$('#editDepartment').modal('hide')
             setDeanID('');
             setDeanName('');
             setDepID('');
@@ -80,7 +80,7 @@ const EditDepartmentModal = (props) => {
                     </div>
                     <div className="modal-footer">
                         <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                        <button type="button" className="btn bg-main" onClick={handleEdit} >Sửa</button>
+                        <button type="button" className="btn bg-main" data-bs-dismiss="modal" onClick={handleEdit} >Sửa</button>
                     </div>
                 </div>
             </div>

@@ -26,7 +26,6 @@ const AddDepartmentModal = (props) => {
             deanName: deanName,
             active: true
         });
-        window.$('#addDepartment').modal('hide')
         setDeanID('');
         setDeanName('');
         setDepID('');
@@ -34,7 +33,7 @@ const AddDepartmentModal = (props) => {
     }
 
     return (
-        <div className="modal fade" id="addDepartment" tabIndex="-1" aria-labelledby="departmentModalLabel" aria-hidden="true">
+        <div className="modal fade" id="addDepartment" tabIndex={-2} aria-labelledby="departmentModalLabel" aria-hidden="true">
             <div className="modal-dialog modal-dialog-centered modal-lg">
                 <div className="modal-content">
                     <div className="modal-header bg-main">
@@ -71,7 +70,7 @@ const AddDepartmentModal = (props) => {
                     </div>
                     <div className="modal-footer">
                         <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                        <button type="button" onClick={handleSubmit} className="btn bg-main">Tạo</button>
+                        <button type="button" data-bs-dismiss="modal" onClick={handleSubmit} className="btn bg-main">Tạo</button>
                     </div>
                 </div>
             </div>

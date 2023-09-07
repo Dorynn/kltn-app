@@ -19,7 +19,7 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "api": "json-server data/db.json -p 8000 --delay 1500",
+    "api": "json-server data/db.json -p 8000",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",

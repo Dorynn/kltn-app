@@ -3,7 +3,6 @@ import React from 'react';
 const ConfirmModal = (props) => {
     const handleOk = () => {
         props.handleConfirm();
-        window.$('#confirmModal').modal('hide')
     }
     return (
         <div className='modal fade' id="confirmModal" tabIndex={-1} role="dialog" aria-labelledby='cofirmModalLabel' aria-hidden="true">
@@ -20,7 +19,7 @@ const ConfirmModal = (props) => {
                     </div>
                     <div className='modal-footer'>
                         <button type='button' className='btn btn-secondary' data-bs-dismiss="modal">Hủy</button>
-                        <button type="button" className='btn btn-danger' onClick={handleOk}>Đồng ý</button>
+                        <button type="button" className='btn btn-danger' data-bs-dismiss="modal" onClick={handleOk}>Đồng ý</button>
                     </div>
                 </div>
             </div>

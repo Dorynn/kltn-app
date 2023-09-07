@@ -1,8 +1,13 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Outlet, Link } from "react-router-dom";
-
+import $ from "jquery";
 const Sidebar = () => {
-    
+    useEffect(() => {
+        window.$('.list-group-item').click(function(){
+            $('.list-group-item').removeClass('active');
+            $(this).addClass('active');
+        })
+    })
 
     return (
         <>
@@ -19,10 +24,10 @@ const Sidebar = () => {
                         <Link to="/major" className="list-group-item list-group-item-action mb-2 py-2 ripple text-start">
                             <span>Quản lý ngành</span>
                         </Link>
-                        <Link to="/major" className="list-group-item list-group-item-action mb-2 py-2 ripple text-start">
+                        <Link to="/lecturer" className="list-group-item list-group-item-action mb-2 py-2 ripple text-start">
                             <span>Quản lý giáo viên</span>
                         </Link>
-                        <Link to="/major" className="list-group-item list-group-item-action mb-2 py-2 ripple text-start">
+                        <Link to="/subject" className="list-group-item list-group-item-action mb-2 py-2 ripple text-start">
                             <span>Quản lý học phần</span>
                         </Link>
                     </div>

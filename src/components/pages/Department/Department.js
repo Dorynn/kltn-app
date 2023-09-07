@@ -3,25 +3,62 @@ import AddDepartmentModal from './AddDepartmentModal';
 import EditDepartmentModal from './EditDepartmentModal';
 import ConfirmModal from '../../common/modal/ConfirmModal';
 import { useState, useEffect } from 'react';
+import $ from "jquery";
 import axios from 'axios';
 
 const Department = () => {
     const [departments, setDepartment] = useState([]);
     const [curEdit, setCurEdit] = useState({})
-    const [loading, setLoading] = useState(true)
+    const [loading, setLoading] = useState(true);
+    const [isOpenModal, setOpenModal] = useState(false);
 
-    useEffect(() => {
-        setLoading(true);
+    useEffect(()=>{
+        window.$('#addDepartment').bind('hide.bs.modal', event => {
+            getData();
+        })
+        window.$('#editDepartment').bind('hide.bs.modal', event =>{
+            getData();
+
+        })
+        window.$('#confirmModal').bind('hide.bs.modal', ()=>{
+            getData();
+        })
+        window.$('.modal').bind('show.bs.modal', event => {
+            $(".modal-backdrop").remove();
+            console.log("hihihi")
+        })
+        // window.$('#editDepartment').bind('show.bs.modal', event =>{
+        //     $(".modal-backdrop").remove();
+        //     console.log("hahah")
+        // })
+        // window.$('#confirmModal').bind('show.bs.modal', ()=>{
+        //     $(".modal-backdrop").remove();
+        // })
+
+    },[]);
+
+     const getData = async () => {
         try {
-            axios.get('http://localhost:8000/departments?active=true')
-                .then(res => setDepartment(res.data))
+            setLoading(true)
+            console.log(loading, '2222222222')
+            await axios.get('http://localhost:8000/departments?active=true')
+                .then(res =>{ 
+                    setDepartment(res.data)
+                })
         } catch (error) {
             console.log(error)
         }
         finally {
-            setLoading(false);
         }
-    }, [departments])
+        setLoading(false);
+    }
+
+    useEffect(() => {
+        console.log(departments)
+        console.log(loading)
+        getData();
+    }, [])
+
 
     const addNewDepartment = (newDep) => {
         try {
@@ -78,9 +115,9 @@ const Department = () => {
                                     <tr key={item.id}>
                                         <th scrope="row">{index + 1}</th>
                                         <td>{item.depID}</td>
-                                        <td className='text-start'>{item.depName}</td>
+                                        <td className='text-start ps-3'>{item.depName}</td>
                                         <td>{item.deanID}</td>
-                                        <td className='text-start'>{item.deanName}</td>
+                                        <td className='text-start ps-3'>{item.deanName}</td>
                                         <td>
                                             <span data-toggle="tooltip" data-placement="top" title="Tooltip on top">
                                                 <i role="button" data-bs-toggle="modal" data-bs-target="#editDepartment" className="fa-solid fa-pen-to-square mx-2"  onClick={() => setCurEdit(item)} ></i>
