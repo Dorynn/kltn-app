@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import '../../styles/Header.scss';
 import logo from "../../assets/images/logo.svg";
 import avatar from "../../assets/images/avt2.jpg";
+import AuthContext from '../../context/authContext';
 
-const Header = ({title}) => {
+const Header = ({ title }) => {
+    const { user, logout } = useContext(AuthContext);
     return (
         <div id="header" className="d-flex align-items-center justify-content-between py-1 fixed-top">
             <div className='d-flex align-items-center'>
@@ -12,10 +14,10 @@ const Header = ({title}) => {
             </div>
             <div className='d-flex me-5 align-items-center'>
                 <div className='d-flex me-4'>
-                    <img className='avatar me-2 mt-2' width={33} height={33} src={avatar}/>
-                    <div className='d-flex flex-column ms-1 text-start'><span>Xin chào, </span><span>Amin</span></div>
+                    <img className='avatar me-2 mt-2' width={33} height={33} src={avatar} />
+                    <div className='d-flex flex-column ms-1 text-start'><span>Xin chào, </span><span>{user?.name || 'guest'}</span></div>
                 </div>
-                <div className='d-flex flex-column ms-4 logout' role="button">
+                <div className='d-flex flex-column ms-4 logout' role="button" onClick={logout}>
                     <i className="fa-solid fa-right-from-bracket"></i>
                     <span>Log out</span>
                 </div>

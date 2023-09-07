@@ -1,12 +1,46 @@
-import React from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import AddDepartmentModal from './AddDepartmentModal';
 import EditDepartmentModal from './EditDepartmentModal';
+import useSupbaseAction from '../../../hooks/useSupabase/useSupabaseAction';
+import supabase from '../../../supabaseClient';
+import AuthContext from '../../../context/authContext';
+import NotificationContext from '../../../context/notificationContext';
 
 const Department = () => {
+    const { isAdmin } = useContext(AuthContext);
+    const [updateDepartment, setUpdateDepartment] = useState({});
+    const { openNotification } = useContext(NotificationContext);
+    const { data: departments, requestAction: refetchData } = useSupbaseAction({
+        initialData: [],
+        firstLoad: true, defaultAction: async () => supabase
+            .from('departments')
+            .select(`
+                *,
+                profiles(name)
+            `)
+    })
+
+    const handleDeleteDepartment = async ({ id }) => {
+        const { error } = await supabase
+            .from('departments')
+            .delete()
+            .eq('id', id)
+        if (!error) {
+            await refetchData({})
+            return openNotification({
+                message: 'Delete department successfully'
+            })
+        }
+        return openNotification({
+            type: 'error',
+            message: 'Delete department failed',
+            description: error.message
+        })
+    }
     return (
         <>
             <h4 className='title'>Quản lý khoa</h4>
-            <div className='d-flex justify-content-end me-4'>
+            {isAdmin && <div className='d-flex justify-content-end me-4'>
                 <div className='me-3' role="button" data-bs-toggle="modal" data-bs-target="#addDepartment">
                     <i className="fa-solid fa-circle-plus"></i>
                     <span className='ms-2'>Thêm mới</span>
@@ -17,7 +51,7 @@ const Department = () => {
                     </svg>
                     <span className='ms-2'>Import file</span>
                 </div>
-            </div>
+            </div>}
             <table className="table table-bordered table-sm table-responsive table-striped table-hover">
                 <thead className='table-head'>
                     <tr>
@@ -30,43 +64,30 @@ const Department = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <th scrope="row">1</th>
-                        <td>A1235</td>
-                        <td>Công nghệ thông tin</td>
-                        <td>PI1234</td>
-                        <td>Nguyễn Đình Hóa</td>
-                        <td>
-                            <i role="button" data-bs-toggle="modal" data-bs-target="#editDepartment" className="fa-solid fa-pen-to-square mx-2"></i>
-                            <i role="button" className="fa-solid fa-trash mx-2"></i>
-                        </td>
-                    </tr>
-                    <tr>
-                        <th scrope="row">2</th>
-                        <td>A1235</td>
-                        <td>Công nghệ thông tin</td>
-                        <td>PI1234</td>
-                        <td>Nguyễn Đình Hóa</td>
-                        <td>
-                            <i role="button" data-bs-toggle="modal" data-bs-target="#editDepartment" className="fa-solid fa-pen-to-square mx-2"></i>
-                            <i role="button" className="fa-solid fa-trash mx-2"></i>
-                        </td>
-                    </tr>
-                    <tr>
-                        <th scrope="row">3</th>
-                        <td>A1235</td>
-                        <td>Công nghệ thông tin</td>
-                        <td>PI1234</td>
-                        <td>Nguyễn Đình Hóa</td>
-                        <td>
-                            <i role="button" data-bs-toggle="modal" data-bs-target="#editDepartment" className="fa-solid fa-pen-to-square mx-2"></i>
-                            <i role="button" className="fa-solid fa-trash mx-2"></i>
-                        </td>
-                    </tr>
+                    {
+                        departments?.map(({ department_code, department_name, dean_code, profiles, id }, index) => <tr key={department_code}>
+                            <th scrope="row">{index}</th>
+                            <td>{department_code}</td>
+                            <td>{department_name}</td>
+                            <td>{dean_code}</td>
+                            <td>{profiles?.name}</td>
+                            {isAdmin &&
+                                <td>
+                                    <i role="button" data-bs-toggle="modal" data-bs-target="#editDepartment" className="fa-solid fa-pen-to-square mx-2" onClick={() => {
+                                        setUpdateDepartment({
+                                            id,
+                                            department_code, department_name, dean_code
+                                        })
+                                    }}></i>
+                                    <i role="button" className="fa-solid fa-trash mx-2" onClick={() => handleDeleteDepartment({ id })}></i>
+                                </td>
+                            }
+                        </tr>)
+                    }
                 </tbody>
             </table>
-            <AddDepartmentModal />
-            <EditDepartmentModal/>
+            <AddDepartmentModal refetchData={refetchData} />
+            <EditDepartmentModal updateDepartment={updateDepartment} setUpdateDepartment={setUpdateDepartment} refetchData={refetchData} />
         </>
     );
 };
