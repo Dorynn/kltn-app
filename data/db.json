@@ -1,0 +1,92 @@
+{
+  "departments": [
+    {
+      "id": "b98d2ae9-6003-403f-b9f5-5a7f0809991b",
+      "depID": "TT983",
+      "depName": "Khoa Toán - Tin học",
+      "deanID": "PI916",
+      "deanName": "Nguyễn Đình Hóa",
+      "active": true
+    },
+    {
+      "id": "2ec3d821-b943-42d3-8ac5-98b10d57135e",
+      "depID": "KT413",
+      "depName": "Khoa Kinh tế - Quản lý",
+      "deanID": "PI834",
+      "deanName": "Nguyễn Thị Hoa",
+      "active": true
+    },
+    {
+      "id": "cf8f6092-6801-471f-84ba-ea2a18580398",
+      "depID": "SK342",
+      "depName": "Khoa Khoa học sức khỏe",
+      "deanID": "PI326",
+      "deanName": "Bùi Văn Khoa",
+      "active": true
+    },
+    {
+      "id": "5921a69d-dcce-4194-80ea-7b100e65bdd9",
+      "depID": "NN623",
+      "depName": "Khoa Ngoại ngữ",
+      "deanID": "PI825",
+      "deanName": "Bùi Văn Thành",
+      "active": true
+    },
+    {
+      "id": "b7a9aeb0-e704-4263-853b-1632a79a4520",
+      "depID": "XH123",
+      "depName": "Khoa Khoa học Xã hội và nhân văn",
+      "deanID": "PI362",
+      "deanName": "Nguyễn Việt Duy",
+      "active": true
+    },
+    {
+      "id": "2c108767-f16b-4c72-894d-1acf3af87146",
+      "depID": "DL241",
+      "depName": "Khoa Du lịch",
+      "deanID": "PI162",
+      "deanName": "Phạm Văn Bách",
+      "active": true
+    },
+    {
+      "id": "cd834bdc-b182-45b1-8a77-e09672c1af4d",
+      "depID": "TD712",
+      "depName": "Khoa Truyền thông đa phương tiện",
+      "deanID": "PI726",
+      "deanName": "Nguyễn Thu Hồng",
+      "active": true
+    },
+    {
+      "id": "5f238319-c557-48be-9e42-45461564e075",
+      "depID": "AN625",
+      "depName": "Khoa Âm nhạc ứng dụng",
+      "deanID": "PI390",
+      "deanName": "Trần Trúc Linh",
+      "active": true
+    },
+    {
+      "id": "3d9c3c47-03ec-4111-89f9-63462e9c0976",
+      "depID": "A1235",
+      "depName": "Kinh tế",
+      "deanID": "CI0932",
+      "deanName": "Nguyễn Huyền Châu",
+      "active": true
+    },
+    {
+      "id": "199e94a3-2ddd-43a7-9b87-19ef004b8601",
+      "depID": "A4566",
+      "depName": "Kinh doanh quốc tế",
+      "deanID": "CI0932",
+      "deanName": "Bùi Văn Thành",
+      "active": false
+    },
+    {
+      "id": "6bbebf79-62f9-4830-938b-fe02d888105a",
+      "depID": "A5678",
+      "depName": "Kinh doanh quốc tế",
+      "deanID": "CI0932",
+      "deanName": "Bùi Văn Thành",
+      "active": false
+    }
+  ]
+}

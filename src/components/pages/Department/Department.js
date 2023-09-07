@@ -1,11 +1,51 @@
 import React from 'react';
 import AddDepartmentModal from './AddDepartmentModal';
 import EditDepartmentModal from './EditDepartmentModal';
+import ConfirmModal from '../../common/modal/ConfirmModal';
+import { useState, useEffect } from 'react';
+import axios from 'axios';
 
 const Department = () => {
+    const [departments, setDepartment] = useState([]);
+    const [curEdit, setCurEdit] = useState({})
+    const [loading, setLoading] = useState(true)
+
+    useEffect(() => {
+        setLoading(true);
+        try {
+            axios.get('http://localhost:8000/departments?active=true')
+                .then(res => setDepartment(res.data))
+        } catch (error) {
+            console.log(error)
+        }
+        finally {
+            setLoading(false);
+        }
+    }, [departments])
+
+    const addNewDepartment = (newDep) => {
+        try {
+            axios.post('http://localhost:8000/departments', newDep)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    const handleEditDepartment = (dep) => {
+        setCurEdit(dep)
+    }
+
+    const handleDeleteDepartment = () => {
+        try {
+            axios.put(`http://localhost:8000/departments/${curEdit.id}`, { ...curEdit, active: false })
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
     return (
         <>
-            <h4 className='title'>Quản lý khoa</h4>
+            <h4 className='title' data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="top">Quản lý khoa</h4>
             <div className='d-flex justify-content-end me-4'>
                 <div className='me-3' role="button" data-bs-toggle="modal" data-bs-target="#addDepartment">
                     <i className="fa-solid fa-circle-plus"></i>
@@ -29,44 +69,49 @@ const Department = () => {
                         <th scrope="col">Thao tác</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr>
-                        <th scrope="row">1</th>
-                        <td>A1235</td>
-                        <td>Công nghệ thông tin</td>
-                        <td>PI1234</td>
-                        <td>Nguyễn Đình Hóa</td>
-                        <td>
-                            <i role="button" data-bs-toggle="modal" data-bs-target="#editDepartment" className="fa-solid fa-pen-to-square mx-2"></i>
-                            <i role="button" className="fa-solid fa-trash mx-2"></i>
-                        </td>
-                    </tr>
-                    <tr>
-                        <th scrope="row">2</th>
-                        <td>A1235</td>
-                        <td>Công nghệ thông tin</td>
-                        <td>PI1234</td>
-                        <td>Nguyễn Đình Hóa</td>
-                        <td>
-                            <i role="button" data-bs-toggle="modal" data-bs-target="#editDepartment" className="fa-solid fa-pen-to-square mx-2"></i>
-                            <i role="button" className="fa-solid fa-trash mx-2"></i>
-                        </td>
-                    </tr>
-                    <tr>
-                        <th scrope="row">3</th>
-                        <td>A1235</td>
-                        <td>Công nghệ thông tin</td>
-                        <td>PI1234</td>
-                        <td>Nguyễn Đình Hóa</td>
-                        <td>
-                            <i role="button" data-bs-toggle="modal" data-bs-target="#editDepartment" className="fa-solid fa-pen-to-square mx-2"></i>
-                            <i role="button" className="fa-solid fa-trash mx-2"></i>
-                        </td>
-                    </tr>
+                <tbody className='position-relative'>
+                    {
+                        departments.length ?
+                            departments.map((item, index) => {
+                                return (
+
+                                    <tr key={item.id}>
+                                        <th scrope="row">{index + 1}</th>
+                                        <td>{item.depID}</td>
+                                        <td className='text-start'>{item.depName}</td>
+                                        <td>{item.deanID}</td>
+                                        <td className='text-start'>{item.deanName}</td>
+                                        <td>
+                                            <span data-toggle="tooltip" data-placement="top" title="Tooltip on top">
+                                                <i role="button" data-bs-toggle="modal" data-bs-target="#editDepartment" className="fa-solid fa-pen-to-square mx-2"  onClick={() => setCurEdit(item)} ></i>
+                                            </span>
+                                            <span data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Tooltip">
+                                                <i role="button" data-bs-toggle="modal" data-bs-target="#confirmModal" className="fa-solid fa-trash mx-2" onClick={() => handleEditDepartment(item)}></i>
+                                            </span>
+                                        </td>
+                                    </tr>
+
+                                )
+                            })
+                            :
+                            <tr>
+                                <td colSpan={6} className="py-3"><i className="fa-solid fa-box-archive me-4 fa-xl"></i>No data</td>
+                            </tr>
+
+
+                    }
+                    {
+                        loading &&
+                        <div class="text-center position-absolute top-50 start-50 translate-middle">
+                            <div class="spinner-border" role="status"></div>
+                        </div>
+                    }
+
                 </tbody>
             </table>
-            <AddDepartmentModal />
-            <EditDepartmentModal/>
+            <AddDepartmentModal addNewDepartment={addNewDepartment} />
+            <EditDepartmentModal curEdit={curEdit} />
+            <ConfirmModal handleConfirm={handleDeleteDepartment} />
         </>
     );
 };
