@@ -19,8 +19,8 @@ export default function Login() {
     })
 
     const createUserModalContent = (<Form
-        labelCol={{ span: 4 }}
-        wrapperCol={{ span: 14 }}
+        labelCol={{ span: 5 }}
+        wrapperCol={{ span: 19 }}
         layout="horizontal"
     >
         <Form.Item label="Name">

@@ -1,80 +1,21 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import AddDepartmentModal from './AddDepartmentModal';
 import EditDepartmentModal from './EditDepartmentModal';
 import useSupbaseAction from '../../../hooks/useSupabase/useSupabaseAction';
 import supabase from '../../../supabaseClient';
 import AuthContext from '../../../context/authContext';
 import NotificationContext from '../../../context/notificationContext';
-import ConfirmModal from '../../common/modal/ConfirmModal';
-import $ from "jquery";
-import axios from 'axios';
+import { ExclamationCircleFilled } from '@ant-design/icons';
+import { Modal } from 'antd';
+const { confirm } = Modal;
+
 const Department = () => {
-    // const [departments, setDepartment] = useState([]);
-    const [curEdit, setCurEdit] = useState({})
-    const [loading, setLoading] = useState(true);
+    const [openEditModal, setOpenEditModal] = useState();
+    const [openAddModal, setOpenAddModal] = useState();
     const { isAdmin } = useContext(AuthContext);
     const [updateDepartment, setUpdateDepartment] = useState({});
     const { openNotification } = useContext(NotificationContext);
-    // useEffect(() => {
-    //     window.$('#addDepartment').bind('hide.bs.modal', event => {
-    //         getData();
-    //     })
-    //     window.$('#editDepartment').bind('hide.bs.modal', event => {
-    //         getData();
-
-    //     })
-    //     window.$('#confirmModal').bind('hide.bs.modal', () => {
-    //         getData();
-    //     })
-    //     window.$('.modal').bind('show.bs.modal', event => {
-    //         $(".modal-backdrop").remove();
-    //         console.log("hihihi")
-    //     })
-    //     // window.$('#editDepartment').bind('show.bs.modal', event =>{
-    //     //     $(".modal-backdrop").remove();
-    //     //     console.log("hahah")
-    //     // })
-    //     // window.$('#confirmModal').bind('show.bs.modal', ()=>{
-    //     //     $(".modal-backdrop").remove();
-    //     // })
-
-    // }, []);
-
-    // const getData = async () => {
-    //     try {
-    //         setLoading(true)
-    //         console.log(loading, '2222222222')
-    //         await axios.get('http://localhost:8000/departments?active=true')
-    //             .then(res => {
-    //                 setDepartment(res.data)
-    //             })
-    //     } catch (error) {
-    //         console.log(error)
-    //     }
-    //     finally {
-    //     }
-    //     setLoading(false);
-    // }
-
-    // useEffect(() => {
-    //     console.log(departments)
-    //     console.log(loading)
-    //     getData();
-    // }, [])
-
-
-    const addNewDepartment = (newDep) => {
-        try {
-            axios.post('http://localhost:8000/departments', newDep)
-        } catch (error) {
-            console.log(error)
-        }
-    }
-
-    const handleEditDepartment = (dep) => {
-        setCurEdit(dep)
-    }
-
+    const [confirmLoading, setConfirmLoading] = useState(false);
 
 
     const { data: departments, requestAction: refetchData } = useSupbaseAction({
@@ -88,10 +29,12 @@ const Department = () => {
     })
 
     const handleDeleteDepartment = async ({ id }) => {
+        setConfirmLoading(true);
         const { error } = await supabase
             .from('departments')
             .delete()
             .eq('id', id)
+        setConfirmLoading(false);
         if (!error) {
             await refetchData({})
             return openNotification({
@@ -103,12 +46,31 @@ const Department = () => {
             message: 'Delete department failed',
             description: error.message
         })
+
     }
+
+    const ConfirmModal = ({ id }) => {
+        confirm({
+            title: 'Bạn có thực sự muốn xóa?',
+            icon: <ExclamationCircleFilled />,
+            content: 'Dữ liệu sẽ không thể khôi phục sau khi bạn nhấn đồng ý!',
+            okText: 'Đồng ý',
+            cancelText: 'Hủy',
+            centered: true,
+            confirmLoading: confirmLoading,
+            onOk() {
+                handleDeleteDepartment({ id })
+            },
+            onCancel() { },
+        });
+
+    };
+
     return (
         <>
             <h4 className='title'>Quản lý khoa</h4>
             {isAdmin && <div className='d-flex justify-content-end me-4'>
-                <div className='me-3' role="button" data-bs-toggle="modal" data-bs-target="#addDepartment">
+                <div className='me-3' role="button" onClick={() => setOpenAddModal(!openAddModal)}>
                     <i className="fa-solid fa-circle-plus"></i>
                     <span className='ms-2'>Thêm mới</span>
                 </div>
@@ -134,20 +96,21 @@ const Department = () => {
                     {
                         departments.length ?
                             departments?.map(({ department_code, department_name, dean_code, profiles, id }, index) => <tr key={department_code}>
-                                <th scrope="row">{index}</th>
+                                <th scrope="row">{index + 1}</th>
                                 <td>{department_code}</td>
                                 <td>{department_name}</td>
                                 <td>{dean_code}</td>
                                 <td>{profiles?.name}</td>
                                 {isAdmin &&
                                     <td>
-                                        <i role="button" data-bs-toggle="modal" data-bs-target="#editDepartment" className="fa-solid fa-pen-to-square mx-2" onClick={() => {
+                                        <i role="button" className="fa-solid fa-pen-to-square mx-2" onClick={() => {
                                             setUpdateDepartment({
                                                 id,
                                                 department_code, department_name, dean_code
                                             })
+                                            setOpenEditModal(!openEditModal)
                                         }}></i>
-                                        <i role="button" className="fa-solid fa-trash mx-2" onClick={() => handleDeleteDepartment({ id })}></i>
+                                        <i role="button" className="fa-solid fa-trash mx-2" onClick={() => ConfirmModal({ id })}></i>
                                     </td>
                                 }
                             </tr>)
@@ -158,18 +121,11 @@ const Department = () => {
 
 
                     }
-                    {
-                        loading &&
-                        <div class="text-center position-absolute top-50 start-50 translate-middle">
-                            <div class="spinner-border" role="status"></div>
-                        </div>
-                    }
 
                 </tbody>
             </table>
-            <AddDepartmentModal addNewDepartment={addNewDepartment} />
-            <EditDepartmentModal curEdit={curEdit} />
-            <ConfirmModal handleConfirm={handleDeleteDepartment} />
+            <AddDepartmentModal isOpen={openAddModal} refetchData={refetchData} />
+            <EditDepartmentModal isOpen={openEditModal} setUpdateDepartment={setUpdateDepartment} updateDepartment={updateDepartment} refetchData={refetchData} />
         </>
     );
 };
