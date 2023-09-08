@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import supabase from '../../../supabaseClient';
 import NotificationContext from '../../../context/notificationContext';
 import useModal from '../../../hooks/modal/useModal';

@@ -1,7 +1,7 @@
 import React from 'react';
 import AddMajorModal from './AddMajorModal';
 import EditMajorModal from './EditMajorModal';
-import ConfirmModal from '../../common/modal/ConfirmModal';
+// import ConfirmModal from '../../common/modal/ConfirmModal';
 import { useState, useEffect } from 'react';
 import $ from "jquery";
 import axios from 'axios';
@@ -148,7 +148,7 @@ const Major = () => {
             </table>
             <AddMajorModal addMajorModal={addNewMajor}/>
             <EditMajorModal curEdit={curEdit}/>
-            <ConfirmModal handleConfirm={handleDeleteMajor}/>
+            {/* <ConfirmModal handleConfirm={handleDeleteMajor}/> */}
         </>
     );
 };
