@@ -1,15 +1,23 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import AddDepartmentModal from './AddDepartmentModal';
 import EditDepartmentModal from './EditDepartmentModal';
 import useSupbaseAction from '../../../hooks/useSupabase/useSupabaseAction';
 import supabase from '../../../supabaseClient';
 import AuthContext from '../../../context/authContext';
 import NotificationContext from '../../../context/notificationContext';
+import { ExclamationCircleFilled } from '@ant-design/icons';
+import { Modal } from 'antd';
+const { confirm } = Modal;
 
 const Department = () => {
+    const [openEditModal, setOpenEditModal] = useState();
+    const [openAddModal, setOpenAddModal] = useState();
     const { isAdmin } = useContext(AuthContext);
     const [updateDepartment, setUpdateDepartment] = useState({});
     const { openNotification } = useContext(NotificationContext);
+    const [confirmLoading, setConfirmLoading] = useState(false);
+
+
     const { data: departments, requestAction: refetchData } = useSupbaseAction({
         initialData: [],
         firstLoad: true, defaultAction: async () => supabase
@@ -21,10 +29,12 @@ const Department = () => {
     })
 
     const handleDeleteDepartment = async ({ id }) => {
+        setConfirmLoading(true);
         const { error } = await supabase
             .from('departments')
             .delete()
             .eq('id', id)
+        setConfirmLoading(false);
         if (!error) {
             await refetchData({})
             return openNotification({
@@ -36,12 +46,31 @@ const Department = () => {
             message: 'Delete department failed',
             description: error.message
         })
+
     }
+
+    const ConfirmModal = ({ id }) => {
+        confirm({
+            title: 'Bạn có thực sự muốn xóa?',
+            icon: <ExclamationCircleFilled />,
+            content: 'Dữ liệu sẽ không thể khôi phục sau khi bạn nhấn đồng ý!',
+            okText: 'Đồng ý',
+            cancelText: 'Hủy',
+            centered: true,
+            confirmLoading: confirmLoading,
+            onOk() {
+                handleDeleteDepartment({ id })
+            },
+            onCancel() { },
+        });
+
+    };
+
     return (
         <>
             <h4 className='title' data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="top">Quản lý khoa</h4>
             {isAdmin && <div className='d-flex justify-content-end me-4'>
-                <div className='me-3' role="button" data-bs-toggle="modal" data-bs-target="#addDepartment">
+                <div className='me-3' role="button" onClick={() => setOpenAddModal(!openAddModal)}>
                     <i className="fa-solid fa-circle-plus"></i>
                     <span className='ms-2'>Thêm mới</span>
                 </div>
@@ -63,31 +92,40 @@ const Department = () => {
                         <th scrope="col">Thao tác</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody className='position-relative'>
                     {
-                        departments?.map(({ department_code, department_name, dean_code, profiles, id }, index) => <tr key={department_code}>
-                            <th scrope="row">{index}</th>
-                            <td>{department_code}</td>
-                            <td>{department_name}</td>
-                            <td>{dean_code}</td>
-                            <td>{profiles?.name}</td>
-                            {isAdmin &&
-                                <td>
-                                    <i role="button" data-bs-toggle="modal" data-bs-target="#editDepartment" className="fa-solid fa-pen-to-square mx-2" onClick={() => {
-                                        setUpdateDepartment({
-                                            id,
-                                            department_code, department_name, dean_code
-                                        })
-                                    }}></i>
-                                    <i role="button" className="fa-solid fa-trash mx-2" onClick={() => handleDeleteDepartment({ id })}></i>
-                                </td>
-                            }
-                        </tr>)
+                        departments.length ?
+                            departments?.map(({ department_code, department_name, dean_code, profiles, id }, index) => <tr key={department_code}>
+                                <th scrope="row">{index + 1}</th>
+                                <td>{department_code}</td>
+                                <td>{department_name}</td>
+                                <td>{dean_code}</td>
+                                <td>{profiles?.name}</td>
+                                {isAdmin &&
+                                    <td>
+                                        <i role="button" className="fa-solid fa-pen-to-square mx-2" onClick={() => {
+                                            setUpdateDepartment({
+                                                id,
+                                                department_code, department_name, dean_code
+                                            })
+                                            setOpenEditModal(!openEditModal)
+                                        }}></i>
+                                        <i role="button" className="fa-solid fa-trash mx-2" onClick={() => ConfirmModal({ id })}></i>
+                                    </td>
+                                }
+                            </tr>)
+                            :
+                            <tr>
+                                <td colSpan={6} className="py-3"><i className="fa-solid fa-box-archive me-4 fa-xl"></i>No data</td>
+                            </tr>
+
+
                     }
+
                 </tbody>
             </table>
-            <AddDepartmentModal refetchData={refetchData} />
-            <EditDepartmentModal updateDepartment={updateDepartment} setUpdateDepartment={setUpdateDepartment} refetchData={refetchData} />
+            <AddDepartmentModal isOpen={openAddModal} refetchData={refetchData} />
+            <EditDepartmentModal isOpen={openEditModal} setUpdateDepartment={setUpdateDepartment} updateDepartment={updateDepartment} refetchData={refetchData} />
         </>
     );
 };

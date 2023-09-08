@@ -4,7 +4,7 @@ import logo from "../../assets/images/logo.svg";
 import avatar from "../../assets/images/avt2.jpg";
 import AuthContext from '../../context/authContext';
 
-const Header = ({ title }) => {
+const Header = () => {
     const { user, logout } = useContext(AuthContext);
     return (
         <div id="header" className="d-flex align-items-center justify-content-between py-1 fixed-top">

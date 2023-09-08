@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, Modal } from 'antd';
+import { ConfigProvider, Modal } from 'antd';
 
 export default function useModal({ content, title = 'Modal', handleConfirm = () => { } }) {
     const [open, setOpen] = useState(false);
@@ -26,17 +26,34 @@ export default function useModal({ content, title = 'Modal', handleConfirm = () 
     };
 
     const modal = (
-        <>
+        <ConfigProvider
+            theme={{
+                components: {
+                    Modal: {
+                        /* here is your component tokens */
+                        headerBg: "#000A3D",
+                        titleColor: "#fff",
+                        colorIcon: "#fff",
+                        titleFontSize: 22
+                    },
+                },
+            }}
+        >
             <Modal
                 title={title}
                 open={open}
                 onOk={handleOk}
                 confirmLoading={confirmLoading}
                 onCancel={handleCancel}
+                centered
+                style={{ color: 'red' }}
+                okText='Đồng ý'
+                cancelText='Hủy'
             >
                 {content}
             </Modal>
-        </>
+        </ConfigProvider>
+
     );
     return { modal, toggleModal }
 };
