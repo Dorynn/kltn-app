@@ -2,6 +2,7 @@ import axios from 'axios';
 import React, { useContext, useState } from 'react';
 import supabase from '../../../supabaseClient';
 import NotificationContext from '../../../context/notificationContext';
+import { useEffect } from 'react';
 
 const EditDepartmentModal = (props) => {
     const [depID, setDepID] = useState("");

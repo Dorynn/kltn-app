@@ -9,55 +9,58 @@ import ConfirmModal from '../../common/modal/ConfirmModal';
 import $ from "jquery";
 import axios from 'axios';
 const Department = () => {
-    const [departments, setDepartment] = useState([]);
+    // const [departments, setDepartment] = useState([]);
     const [curEdit, setCurEdit] = useState({})
     const [loading, setLoading] = useState(true);
-    useEffect(() => {
-        window.$('#addDepartment').bind('hide.bs.modal', event => {
-            getData();
-        })
-        window.$('#editDepartment').bind('hide.bs.modal', event => {
-            getData();
+    const { isAdmin } = useContext(AuthContext);
+    const [updateDepartment, setUpdateDepartment] = useState({});
+    const { openNotification } = useContext(NotificationContext);
+    // useEffect(() => {
+    //     window.$('#addDepartment').bind('hide.bs.modal', event => {
+    //         getData();
+    //     })
+    //     window.$('#editDepartment').bind('hide.bs.modal', event => {
+    //         getData();
 
-        })
-        window.$('#confirmModal').bind('hide.bs.modal', () => {
-            getData();
-        })
-        window.$('.modal').bind('show.bs.modal', event => {
-            $(".modal-backdrop").remove();
-            console.log("hihihi")
-        })
-        // window.$('#editDepartment').bind('show.bs.modal', event =>{
-        //     $(".modal-backdrop").remove();
-        //     console.log("hahah")
-        // })
-        // window.$('#confirmModal').bind('show.bs.modal', ()=>{
-        //     $(".modal-backdrop").remove();
-        // })
+    //     })
+    //     window.$('#confirmModal').bind('hide.bs.modal', () => {
+    //         getData();
+    //     })
+    //     window.$('.modal').bind('show.bs.modal', event => {
+    //         $(".modal-backdrop").remove();
+    //         console.log("hihihi")
+    //     })
+    //     // window.$('#editDepartment').bind('show.bs.modal', event =>{
+    //     //     $(".modal-backdrop").remove();
+    //     //     console.log("hahah")
+    //     // })
+    //     // window.$('#confirmModal').bind('show.bs.modal', ()=>{
+    //     //     $(".modal-backdrop").remove();
+    //     // })
 
-    }, []);
+    // }, []);
 
-    const getData = async () => {
-        try {
-            setLoading(true)
-            console.log(loading, '2222222222')
-            await axios.get('http://localhost:8000/departments?active=true')
-                .then(res => {
-                    setDepartment(res.data)
-                })
-        } catch (error) {
-            console.log(error)
-        }
-        finally {
-        }
-        setLoading(false);
-    }
+    // const getData = async () => {
+    //     try {
+    //         setLoading(true)
+    //         console.log(loading, '2222222222')
+    //         await axios.get('http://localhost:8000/departments?active=true')
+    //             .then(res => {
+    //                 setDepartment(res.data)
+    //             })
+    //     } catch (error) {
+    //         console.log(error)
+    //     }
+    //     finally {
+    //     }
+    //     setLoading(false);
+    // }
 
-    useEffect(() => {
-        console.log(departments)
-        console.log(loading)
-        getData();
-    }, [])
+    // useEffect(() => {
+    //     console.log(departments)
+    //     console.log(loading)
+    //     getData();
+    // }, [])
 
 
     const addNewDepartment = (newDep) => {
@@ -73,9 +76,7 @@ const Department = () => {
     }
 
 
-    const { isAdmin } = useContext(AuthContext);
-    const [updateDepartment, setUpdateDepartment] = useState({});
-    const { openNotification } = useContext(NotificationContext);
+
     const { data: departments, requestAction: refetchData } = useSupbaseAction({
         initialData: [],
         firstLoad: true, defaultAction: async () => supabase
