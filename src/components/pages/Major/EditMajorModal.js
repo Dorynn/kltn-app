@@ -19,6 +19,9 @@ const EditMajorModal = ({ updateMajor, setUpdateMajor, refetchData, isOpen }) =>
         <Form.Item label="Tên ngành">
             <Input value={updateMajor.major_name} onChange={(e) => setUpdateMajor(prev => ({ ...prev, major_name: e.target.value }))} />
         </Form.Item>
+        <Form.Item label="Mã khoa">
+            <Input value={newMajor.department_code} onChange={(e) => setNewMajor(prev => ({ ...prev, department_code: e.target.value }))} />
+        </Form.Item>
         <Form.Item label="Mã trưởng ngành">
             <Input value={updateMajor.leader_code} onChange={(e) => setUpdateMajor(prev => ({ ...prev, leader_code: e.target.value }))} />
         </Form.Item>

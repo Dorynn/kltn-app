@@ -87,6 +87,7 @@ const Major = () => {
                         <th scrope="col">STT</th>
                         <th scrope="col">Mã ngành</th>
                         <th scrope="col">Tên ngành</th>
+                        <th scrope="col">Tên khoa</th>
                         <th scrope="col">Mã trưởng ngành</th>
                         <th scrope="col">Tên trưởng ngành</th>
                         <th scrope="col">Thao tác</th>
@@ -95,7 +96,7 @@ const Major = () => {
                 <tbody className='position-relative'>
                     {
                         majors.length ?
-                            Majors?.map(({ major_code, major_name, leader_code, profiles, id }, index) => <tr key={major_code}>
+                            majors?.map(({ major_code, major_name, leader_code, profiles, id }, index) => <tr key={major_code}>
                                 <th scrope="row">{index + 1}</th>
                                 <td>{major_code}</td>
                                 <td>{major_name}</td>

@@ -8,6 +8,7 @@ const AddMajorModal = ({ refetchData, isOpen }) => {
     const [newMajor, setNewMajor] = useState({
         major_code: '',
         major_name: '',
+        department_code: '',
         leader_code: ''
     });
     const { openNotification } = useContext(NotificationContext);
@@ -17,13 +18,16 @@ const AddMajorModal = ({ refetchData, isOpen }) => {
         wrapperCol={{ span: 18 }}
         layout="horizontal"
     >
-        <Form.Item label="Mã khoa">
+        <Form.Item label="Mã ngành">
             <Input value={newMajor.major_code} onChange={(e) => setNewMajor(prev => ({ ...prev, major_code: e.target.value }))} />
         </Form.Item>
-        <Form.Item label="Tên Khoa">
+        <Form.Item label="Tên ngành">
             <Input value={newMajor.major_name} onChange={(e) => setNewMajor(prev => ({ ...prev, major_name: e.target.value }))} />
         </Form.Item>
-        <Form.Item label="Mã trưởng khoa">
+        <Form.Item label="Mã khoa">
+            <Input value={newMajor.department_code} onChange={(e) => setNewMajor(prev => ({ ...prev, department_code: e.target.value }))} />
+        </Form.Item>
+        <Form.Item label="Mã trưởng ngành">
             <Input value={newMajor.leader_code} onChange={(e) => setNewMajor(prev => ({ ...prev, leader_code: e.target.value }))} />
         </Form.Item>
     </Form>)
@@ -59,6 +63,7 @@ const AddMajorModal = ({ refetchData, isOpen }) => {
         setNewMajor({
             major_code: '',
             major_name: '',
+            department_code: '',
             leader_code: ''
         })
     }, [isOpen])
