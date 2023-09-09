@@ -64,7 +64,7 @@ export default function Login() {
             const { error } = await login({
                 email,
                 options: {
-                    redirect: 'http://localhost:5173'
+                    redirect: process.env.REACT_APP_HOST
                 }
             })
             if (!error) {
