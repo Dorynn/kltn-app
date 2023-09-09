@@ -26,6 +26,7 @@ function App() {
   }) => {
     notificationApi[type]({ message, description, duration });
   };
+  console.log('fetchedAuth', fetchedAuth)
   if (!fetchedAuth.fetched) {
     return <>Loading</>
   }

@@ -7,7 +7,10 @@ import AuthContext from '../../../context/authContext';
 import NotificationContext from '../../../context/notificationContext';
 import { ExclamationCircleFilled } from '@ant-design/icons';
 import { Modal } from 'antd';
+import UploadFile from '../../UploadFile/UploadFile.jsx';
+
 const { confirm } = Modal;
+
 
 const Major = () => {
     const [openEditModal, setOpenEditModal] = useState();
@@ -16,6 +19,7 @@ const Major = () => {
     const [updateMajor, setUpdateMajor] = useState({});
     const { openNotification } = useContext(NotificationContext);
     const [confirmLoading, setConfirmLoading] = useState(false);
+    const [fileList, setFileList] = useState([])
 
 
     const { data: majors, requestAction: refetchData } = useSupbaseAction({
@@ -24,9 +28,40 @@ const Major = () => {
             .from('majors')
             .select(`
                 *,
-                profiles(name)
+                profiles(name),
+                departments(department_name, department_code)
             `)
     })
+
+    function getDataFromFile(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+
+            reader.addEventListener("load", () => resolve(reader.result));
+            reader.addEventListener("error", err => reject(err));
+
+            reader.readAsText(file);
+        });
+    }
+    const uploadFile = async file => {
+        const data = await getDataFromFile(file);
+        const { error } = await supabase.functions.invoke('import-data-from-csv?table=majors', {
+            method: 'POST',
+            headers: { "content-type": "application/json" },
+            body: {
+                data
+            }
+        })
+        if (!error) {
+            openNotification({ message: 'Imported successfully' })
+            await refetchData({});
+            return;
+        }
+        openNotification({ type: 'error', message: 'Import failed', description: error.message })
+    }
+    const handleOnChangeImportFile = async (info) => {
+        setFileList([...info.fileList]);
+    }
 
     const handleDeleteMajor = async ({ id }) => {
         setConfirmLoading(true);
@@ -74,12 +109,13 @@ const Major = () => {
                     <i className="fa-solid fa-circle-plus"></i>
                     <span className='ms-2'>Thêm mới</span>
                 </div>
-                <div role="button">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-file-earmark-arrow-up-fill" viewBox="0 0 16 16">
-                        <path d="M9.293 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.707A1 1 0 0 0 13.707 4L10 .293A1 1 0 0 0 9.293 0zM9.5 3.5v-2l3 3h-2a1 1 0 0 1-1-1zM6.354 9.854a.5.5 0 0 1-.708-.708l2-2a.5.5 0 0 1 .708 0l2 2a.5.5 0 0 1-.708.708L8.5 8.707V12.5a.5.5 0 0 1-1 0V8.707L6.354 9.854z" />
-                    </svg>
-                    <span className='ms-2'>Import file</span>
-                </div>
+                <UploadFile validTypes={['text/csv']} fileList={fileList} setFileList={setFileList} title="Import from csv" onChange={handleOnChangeImportFile}
+                    customRequest={async ({ file, onSuccess }) => {
+                        await uploadFile(file)
+                        onSuccess("ok")
+                    }}
+                    maxCount={1}
+                />
             </div>}
             <table className="table table-bordered table-sm table-responsive table-striped table-hover">
                 <thead className='table-head'>
@@ -96,18 +132,20 @@ const Major = () => {
                 <tbody className='position-relative'>
                     {
                         majors.length ?
-                            majors?.map(({ major_code, major_name, leader_code, profiles, id }, index) => <tr key={major_code}>
+                            majors?.map(({ major_code, major_name, major_chair_code, profiles, departments, id }, index) => <tr key={major_code}>
                                 <th scrope="row">{index + 1}</th>
                                 <td>{major_code}</td>
                                 <td>{major_name}</td>
-                                <td>{leader_code}</td>
-                                <td>{profiles?.name}</td>
+                                <td>{departments.department_name}</td>
+                                <td>{major_chair_code}</td>
+                                <td>{profiles.name}</td>
                                 {isAdmin &&
                                     <td>
                                         <i role="button" className="fa-solid fa-pen-to-square mx-2" onClick={() => {
                                             setUpdateMajor({
                                                 id,
-                                                major_code, major_name, leader_code
+                                                department_code: departments.department_code,
+                                                major_code, major_name, major_chair_code
                                             })
                                             setOpenEditModal(!openEditModal)
                                         }}></i>

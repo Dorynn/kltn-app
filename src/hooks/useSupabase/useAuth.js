@@ -10,7 +10,13 @@ export default function useAuth() {
         hasSession: false
     });
     const login = (input) => supabase.auth.signInWithOtp(input);
-    const logout = () => supabase.auth.signOut()
+    const logout = () => {
+        setFetched({
+            fetched: true,
+            hasSession: false
+        })
+        return supabase.auth.signOut()
+    }
     const isAdmin = user && user.university_role === 'admin'
 
     const getUserProfile = async () => {
@@ -54,10 +60,5 @@ export default function useAuth() {
             setUser(null)
         }
     }, [session])
-    console.log('*** auth ***', {
-        user,
-        isAdmin,
-        fetched
-    })
     return { user, login, logout, isAdmin, fetched, session }
 }

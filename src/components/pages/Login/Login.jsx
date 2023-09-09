@@ -108,13 +108,10 @@ export default function Login() {
                     <Input size='large' style={{ width: '350px' }} prefix={<UserOutlined className="site-form-item-icon" />} placeholder="Email" onChange={(e) => setEmail(e.target.value)} />
                 </Form.Item>
                 <Form.Item>
-                    <Space direction='horizontal' size='large'>
+                    <Space direction='horizontal' size='large' style={{ justifyContent: 'flex-end', width: '100%' }}>
                         <Button type="primary" htmlType="submit" className="login-form-button" loading={loading} onClick={() => handleLogin()}>
                             Log in
                         </Button>
-                        {user && <Button type="primary" htmlType="submit" className="login-form-button" loading={loading} onClick={() => handleLogout()}>
-                            Log out
-                        </Button>}
                         {user?.university_role === 'admin' &&
                             <Button type="primary" htmlType="submit" className="login-form-button" loading={loading} onClick={() => {
                                 toggleModal(true)
@@ -125,7 +122,7 @@ export default function Login() {
                     </Space>
                 </Form.Item>
             </Form>
-            {user && <Card title="User info" style={{ width: 400 }}>
+            {/* {user && <Card title="User info" style={{ width: 400 }}>
                 <p><b>User Code:</b> {user.user_code}</p>
                 <p><b>Email:</b> {user.email}</p>
                 <p><b>Phone:</b> {user.phone || 'empty'}</p>
@@ -133,7 +130,7 @@ export default function Login() {
                 <p><b>Role in University:</b> {user.university_role || 'empty'}</p>
                 <p><b>Last Signin at:</b> {new Date(user.last_sign_in_at).toString()}</p>
                 <p><b>Created at:</b> {new Date(user.created_at).toString()}</p>
-            </Card>}
+            </Card>} */}
             {createUserModal}
         </Space>
     )
