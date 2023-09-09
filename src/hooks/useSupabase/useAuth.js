@@ -54,10 +54,5 @@ export default function useAuth() {
             setUser(null)
         }
     }, [session])
-    console.log('*** auth ***', {
-        user,
-        isAdmin,
-        fetched
-    })
     return { user, login, logout, isAdmin, fetched, session }
 }

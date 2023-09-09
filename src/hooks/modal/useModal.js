@@ -15,7 +15,7 @@ export default function useModal({ content, title = 'Modal', handleConfirm = () 
             await handleConfirm().then()
             handleCancel();
         } catch (err) {
-            console.error('*** 2 ***', err);
+            console.error(err);
         } finally {
             setConfirmLoading(false)
         }
