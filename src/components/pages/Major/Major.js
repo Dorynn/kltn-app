@@ -1,90 +1,76 @@
-import React from 'react';
+import React, { useContext, useState } from 'react';
 import AddMajorModal from './AddMajorModal';
 import EditMajorModal from './EditMajorModal';
-// import ConfirmModal from '../../common/modal/ConfirmModal';
-import { useState, useEffect } from 'react';
-import $ from "jquery";
-import axios from 'axios';
+import useSupbaseAction from '../../../hooks/useSupabase/useSupabaseAction';
+import supabase from '../../../supabaseClient';
+import AuthContext from '../../../context/authContext';
+import NotificationContext from '../../../context/notificationContext';
+import { ExclamationCircleFilled } from '@ant-design/icons';
+import { Modal } from 'antd';
+const { confirm } = Modal;
 
 const Major = () => {
-    const [majors, setMajor] = useState([]);
-    const [curEdit, setCurEdit] = useState({})
-    const [loading, setLoading] = useState(true);
-    const [isOpenModal, setOpenModal] = useState(false);
+    const [openEditModal, setOpenEditModal] = useState();
+    const [openAddModal, setOpenAddModal] = useState();
+    const { isAdmin } = useContext(AuthContext);
+    const [updateMajor, setUpdateMajor] = useState({});
+    const { openNotification } = useContext(NotificationContext);
+    const [confirmLoading, setConfirmLoading] = useState(false);
 
-    useEffect(()=>{
-        window.$('#addMajor').bind('hide.bs.modal', event => {
-            getData();
-        })
-        window.$('#editMajor').bind('hide.bs.modal', event =>{
-            getData();
 
-        })
-        window.$('#confirmModal').bind('hide.bs.modal', ()=>{
-            getData();
-        })
-        window.$('.modal').bind('show.bs.modal', event => {
-            $(".modal-backdrop").remove();
-            console.log("hihihi")
-        })
-        // window.$('#editMajor').bind('show.bs.modal', event =>{
-        //     $(".modal-backdrop").remove();
-        //     console.log("hahah")
-        // })
-        // window.$('#confirmModal').bind('show.bs.modal', ()=>{
-        //     $(".modal-backdrop").remove();
-        // })
+    const { data: majors, requestAction: refetchData } = useSupbaseAction({
+        initialData: [],
+        firstLoad: true, defaultAction: async () => supabase
+            .from('majors')
+            .select(`
+                *,
+                profiles(name)
+            `)
+    })
 
-    },[]);
-
-     const getData = async () => {
-        try {
-            setLoading(true)
-            console.log(loading, '2222222222')
-            await axios.get('http://localhost:8000/majors?active=true')
-                .then(res =>{ 
-                    setMajor(res.data)
-                })
-        } catch (error) {
-            console.log(error)
+    const handleDeleteMajor = async ({ id }) => {
+        setConfirmLoading(true);
+        const { error } = await supabase
+            .from('majors')
+            .delete()
+            .eq('id', id)
+        setConfirmLoading(false);
+        if (!error) {
+            await refetchData({})
+            return openNotification({
+                message: 'Delete major successfully'
+            })
         }
-        finally {
-        }
-        setLoading(false);
+        return openNotification({
+            type: 'error',
+            message: 'Delete major failed',
+            description: error.message
+        })
+
     }
 
-    useEffect(() => {
-        console.log(majors)
-        console.log(loading)
-        getData();
-    }, [])
+    const ConfirmModal = ({ id }) => {
+        confirm({
+            title: 'Bạn có thực sự muốn xóa?',
+            icon: <ExclamationCircleFilled />,
+            content: 'Dữ liệu sẽ không thể khôi phục sau khi bạn nhấn đồng ý!',
+            okText: 'Đồng ý',
+            cancelText: 'Hủy',
+            centered: true,
+            confirmLoading: confirmLoading,
+            onOk() {
+                handleDeleteMajor({ id })
+            },
+            onCancel() { },
+        });
 
-
-    const addNewMajor = (newMa) => {
-        try {
-            axios.post('http://localhost:8000/majors', newMa)
-        } catch (error) {
-            console.log(error)
-        }
-    }
-
-    const handleEditMajor = (ma) => {
-        setCurEdit(ma)
-    }
-
-    const handleDeleteMajor = () => {
-        try {
-            axios.put(`http://localhost:8000/majors/${curEdit.id}`, { ...curEdit, active: false })
-        } catch (error) {
-            console.log(error)
-        }
-    }
+    };
 
     return (
         <>
-            <h4 className='title'>Quản lý ngành</h4>
-            <div className='d-flex justify-content-end me-4'>
-                <div className='me-3' role="button" data-bs-toggle="modal" data-bs-target="#addMajor">
+            <h4 className='title' data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="top">Quản lý ngành</h4>
+            {isAdmin && <div className='d-flex justify-content-end me-4'>
+                <div className='me-3' role="button" onClick={() => setOpenAddModal(!openAddModal)}>
                     <i className="fa-solid fa-circle-plus"></i>
                     <span className='ms-2'>Thêm mới</span>
                 </div>
@@ -94,7 +80,7 @@ const Major = () => {
                     </svg>
                     <span className='ms-2'>Import file</span>
                 </div>
-            </div>
+            </div>}
             <table className="table table-bordered table-sm table-responsive table-striped table-hover">
                 <thead className='table-head'>
                     <tr>
@@ -103,52 +89,41 @@ const Major = () => {
                         <th scrope="col">Tên ngành</th>
                         <th scrope="col">Mã trưởng ngành</th>
                         <th scrope="col">Tên trưởng ngành</th>
-                        <th scrope="col">Tên khoa</th>
                         <th scrope="col">Thao tác</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr>
-                        <th scrope="row">1</th>
-                        <td>A1235</td>
-                        <td>Công nghệ thông tin</td>
-                        <td>TI1234</td>
-                        <td>Nguyễn Đình Khôi</td>
-                        <td>Công nghệ thông tin</td>
-                        <td>
-                            <i role="button" data-bs-toggle="modal" data-bs-target="#editDepartment" className="fa-solid fa-pen-to-square mx-2"></i>
-                            <i role="button" className="fa-solid fa-trash mx-2"></i>
-                        </td>
-                    </tr>
-                    <tr>
-                        <th scrope="row">2</th>
-                        <td>A1235</td>
-                        <td>Công nghệ thông tin</td>
-                        <td>TI1234</td>
-                        <td>Nguyễn Đình Khôi</td>
-                        <td>Công nghệ thông tin</td>
-                        <td>
-                            <i role="button" data-bs-toggle="modal" data-bs-target="#editDepartment" className="fa-solid fa-pen-to-square mx-2"></i>
-                            <i role="button" className="fa-solid fa-trash mx-2"></i>
-                        </td>
-                    </tr>
-                    <tr>
-                        <th scrope="row">3</th>
-                        <td>A1235</td>
-                        <td>Công nghệ thông tin</td>
-                        <td>TI1234</td>
-                        <td>Nguyễn Đình Khôi</td>
-                        <td>Công nghệ thông tin</td>
-                        <td>
-                            <i role="button" data-bs-toggle="modal" data-bs-target="#editDepartment" className="fa-solid fa-pen-to-square mx-2"></i>
-                            <i role="button" className="fa-solid fa-trash mx-2"></i>
-                        </td>
-                    </tr>
+                <tbody className='position-relative'>
+                    {
+                        majors.length ?
+                            Majors?.map(({ major_code, major_name, leader_code, profiles, id }, index) => <tr key={major_code}>
+                                <th scrope="row">{index + 1}</th>
+                                <td>{major_code}</td>
+                                <td>{major_name}</td>
+                                <td>{leader_code}</td>
+                                <td>{profiles?.name}</td>
+                                {isAdmin &&
+                                    <td>
+                                        <i role="button" className="fa-solid fa-pen-to-square mx-2" onClick={() => {
+                                            setUpdateMajor({
+                                                id,
+                                                major_code, major_name, leader_code
+                                            })
+                                            setOpenEditModal(!openEditModal)
+                                        }}></i>
+                                        <i role="button" className="fa-solid fa-trash mx-2" onClick={() => ConfirmModal({ id })}></i>
+                                    </td>
+                                }
+                            </tr>)
+                            :
+                            <tr>
+                                <td colSpan={6} className="py-3"><i className="fa-solid fa-box-archive me-4 fa-xl"></i>No data</td>
+                            </tr>
+                    }
+
                 </tbody>
             </table>
-            <AddMajorModal addMajorModal={addNewMajor}/>
-            <EditMajorModal curEdit={curEdit}/>
-            {/* <ConfirmModal handleConfirm={handleDeleteMajor}/> */}
+            <AddMajorModal isOpen={openAddModal} refetchData={refetchData} />
+            <EditMajorModal isOpen={openEditModal} setUpdateMajor={setUpdateMajor} updateMajor={updateMajor} refetchData={refetchData} />
         </>
     );
 };
