@@ -19,7 +19,7 @@ const Header = () => {
                 </div>
                 <div className='d-flex flex-column ms-4 logout' role="button" onClick={logout}>
                     <i className="fa-solid fa-right-from-bracket"></i>
-                    <span>Log out</span>
+                    <span>Đăng xuất</span>
                 </div>
             </div>
         </div>

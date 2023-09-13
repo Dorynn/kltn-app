@@ -99,7 +99,7 @@ const Department = () => {
 
     return (
         <>
-            <h4 className='title' data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="top">Quản lý khoa</h4>
+            <h4 className='title' onClick={()=> console.log(departments)}>Quản lý khoa</h4>
             {isAdmin && <div className='d-flex justify-content-end me-4'>
                 <div className='me-3' role="button" onClick={() => setOpenAddModal(!openAddModal)}>
                     <i className="fa-solid fa-circle-plus"></i>

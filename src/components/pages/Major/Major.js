@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import AddMajorModal from './AddMajorModal';
 import EditMajorModal from './EditMajorModal';
 import useSupbaseAction from '../../../hooks/useSupabase/useSupabaseAction';
@@ -8,6 +8,7 @@ import NotificationContext from '../../../context/notificationContext';
 import { ExclamationCircleFilled } from '@ant-design/icons';
 import { Modal } from 'antd';
 import UploadFile from '../../UploadFile/UploadFile.jsx';
+
 
 const { confirm } = Modal;
 
@@ -19,7 +20,7 @@ const Major = () => {
     const [updateMajor, setUpdateMajor] = useState({});
     const { openNotification } = useContext(NotificationContext);
     const [confirmLoading, setConfirmLoading] = useState(false);
-    const [fileList, setFileList] = useState([])
+    const [fileList, setFileList] = useState([]);
 
 
     const { data: majors, requestAction: refetchData } = useSupbaseAction({
@@ -32,6 +33,8 @@ const Major = () => {
                 departments(department_name, department_code)
             `)
     })
+
+
 
     function getDataFromFile(file) {
         return new Promise((resolve, reject) => {
@@ -101,9 +104,22 @@ const Major = () => {
 
     };
 
+    const getData = async () => {
+        console.log('calll')
+        // try {          
+        //         const { dataList, error } = await supabase
+        //         .from('majors')
+        //         .select("*")
+        //         console.log(dataList)
+        // }catch(error){
+        //     console.log(error)
+        // }
+        console.log(majors.map(item => ({ department_name: item.departments.department_name })))
+    }
+
     return (
         <>
-            <h4 className='title' data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="top">Quản lý ngành</h4>
+            <h4 className='title' onClick={getData}>Quản lý ngành</h4>
             {isAdmin && <div className='d-flex justify-content-end me-4'>
                 <div className='me-3' role="button" onClick={() => setOpenAddModal(!openAddModal)}>
                     <i className="fa-solid fa-circle-plus"></i>
@@ -144,7 +160,7 @@ const Major = () => {
                                         <i role="button" className="fa-solid fa-pen-to-square mx-2" onClick={() => {
                                             setUpdateMajor({
                                                 id,
-                                                department_code: departments.department_code,
+                                                department_name: departments.department_name,
                                                 major_code, major_name, major_chair_code
                                             })
                                             setOpenEditModal(!openEditModal)
@@ -161,7 +177,11 @@ const Major = () => {
 
                 </tbody>
             </table>
-            <AddMajorModal isOpen={openAddModal} refetchData={refetchData} />
+            <AddMajorModal
+                isOpen={openAddModal}
+                refetchData={refetchData}
+                
+            />
             <EditMajorModal isOpen={openEditModal} setUpdateMajor={setUpdateMajor} updateMajor={updateMajor} refetchData={refetchData} />
         </>
     );

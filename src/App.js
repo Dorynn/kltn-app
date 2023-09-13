@@ -4,8 +4,11 @@ import Header from './components/common/Header';
 import Department from './components/pages/Department/Department';
 import Major from './components/pages/Major/Major';
 import Login from './components/pages/Login/Login';
-import Lecturer from './components/pages/Lecturer/Lecturer';
+// import Lecturer from './components/pages/Lecturer/Lecturer';
 import Subject from "./components/pages/Subject/Subject";
+import ChargePerson from './components/pages/User/ChargePerson/ChargePerson';
+import Lecturer from './components/pages/User/Lecturer/Lecturer';
+import Student from './components/pages/User/Student/Student';
 import {
   Route,
   Routes,
@@ -52,11 +55,11 @@ function App() {
                 <Routes >
                   <Route path='/department' element={<Department />} />
                   <Route path="/major" element={<Major />} />
-                  <Route path="/lecturer" element={<Lecturer />} />
+                  <Route path="/graduate-charge-person" element={<ChargePerson />} />
                   <Route path="/subject" element={<Subject />} />
                   <Route path="/login" element={<Login />} />
                   <Route path="/lecturer" element={<Lecturer />} />
-                  <Route path="/subject" element={<Subject />} />
+                  <Route path="/subject" element={<Student />} />
                 </Routes>
               </div>
             </div>

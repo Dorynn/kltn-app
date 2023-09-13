@@ -175,3 +175,17 @@ body {
 .ant-modal-confirm .ant-modal-body {
   padding: 16px;
 }
+
+/* import file */
+.ant-upload .ant-btn-default {
+  background-color: transparent!important;
+  border: none!important;
+  box-shadow: none!important;
+}
+.ant-upload .ant-btn {
+  top: -5px;
+}
+
+.ant-upload .ant-btn-default:not(:disabled):not(.ant-btn-disabled):hover {
+  color: #000!important;
+}
