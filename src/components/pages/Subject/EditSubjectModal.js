@@ -9,40 +9,42 @@ import useSupbaseAction from '../../../hooks/useSupabase/useSupabaseAction';
 
 const EditSubjectModal = ({ updateSubject, setUpdateSubject, refetchData, isOpen }) => {
     const { openNotification } = useContext(NotificationContext);
-    const { data: majors} = useSupbaseAction({
+    const { data: majors } = useSupbaseAction({
         initialData: [],
         firstLoad: true, defaultAction: async () => supabase
             .from('majors')
-            .select(`*`)
+            .select(`major_name, major_code`)
     })
+
     const editSubjectModalContent = (<Form
         labelCol={{ span: 6 }}
         wrapperCol={{ span: 18 }}
         layout="horizontal"
     >
         <Form.Item label="Mã học phần">
-            <Input value={updateSubject.subject_code} onChange={(e) => setUpdateSubject(prev => ({ ...prev, subject_code: e.target.value }))} />
+            <Input value={updateSubject.course_code} onChange={(e) => setUpdateSubject(prev => ({ ...prev, course_code: e.target.value }))} />
         </Form.Item>
         <Form.Item label="Tên học phần">
-            <Input value={updateSubject.subject_name} onChange={(e) => setUpdateSubject(prev => ({ ...prev, subject_name: e.target.value }))} />
+            <Input value={updateSubject.course_name} onChange={(e) => setUpdateSubject(prev => ({ ...prev, course_name: e.target.value }))} />
         </Form.Item>
         <Form.Item label="Ngành">
             <Select
-                onChange={(value)=>setUpdateSubject(prev => ({...prev, major_name: value}))}
-                options={majors.map(item=>({value: item.major_name, label: item.major_name}))}
+                onChange={(value) => setUpdateSubject(prev => ({ ...prev, major_code: value }))}
+                options={majors.map(item => ({ label: item.major_name, value: item.major_code }))}
+                value={updateSubject.major_code}
             />
         </Form.Item>
         <Form.Item label="Số tín chỉ">
-            <Input value={updateSubject.dean_code} onChange={(e) => setUpdateSubject(prev => ({ ...prev, dean_code: e.target.value }))} />
+            <Input value={updateSubject.course_credits} onChange={(e) => setUpdateSubject(prev => ({ ...prev, course_credits: e.target.value }))} />
         </Form.Item>
         <Form.Item label="Hệ số">
-            <Input value={updateSubject.dean_code} onChange={(e) => setUpdateSubject(prev => ({ ...prev, dean_code: e.target.value }))} />
+            <Input value={updateSubject.credit_coefficient} onChange={(e) => setUpdateSubject(prev => ({ ...prev, credit_coefficient: e.target.value }))} />
         </Form.Item>
     </Form>)
 
     const handleUpdateSubject = async () => {
         const { error } = await supabase
-            .from('subjects')
+            .from('graduation_thesis_course')
             .update(updateSubject)
             .eq('id', updateSubject.id)
             .select()

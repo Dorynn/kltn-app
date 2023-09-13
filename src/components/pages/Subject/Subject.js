@@ -23,17 +23,17 @@ const Subject = () => {
     const { data: subjects, requestAction: refetchData } = useSupbaseAction({
         initialData: [],
         firstLoad: true, defaultAction: async () => supabase
-            .from('subjects')
+            .from('graduation_thesis_course')
             .select(`
                 *,
-                majors(major_name)
+                majors(major_name, major_code)
             `)
     })
 
     const handleDeleteSubject = async ({ id }) => {
         setConfirmLoading(true);
         const { error } = await supabase
-            .from('subjects')
+            .from('graduation_thesis_course')
             .delete()
             .eq('id', id)
         setConfirmLoading(false);
@@ -62,7 +62,7 @@ const Subject = () => {
     }
     const uploadFile = async file => {
         const data = await getDataFromFile(file);
-        const { error } = await supabase.functions.invoke('import-data-from-csv?table=subjects', {
+        const { error } = await supabase.functions.invoke('import-data-from-csv?table=graduation_thesis_course', {
             method: 'POST',
             headers: { "content-type": "application/json" },
             body: {
@@ -101,7 +101,7 @@ const Subject = () => {
         <>
             <h4 className='title'>Quản lý học phần</h4>
             {isAdmin && <div className='d-flex justify-content-end me-4'>
-                <div className='me-3' role="button" onClick={() => setOpenEditModal(!openEditModal)}>
+                <div className='me-3' role="button" onClick={() => setOpenAddModal(!openAddModal)}>
                     <i className="fa-solid fa-circle-plus"></i>
                     <span className='ms-2'>Thêm mới</span>
                 </div>
@@ -131,19 +131,20 @@ const Subject = () => {
                 <tbody className='position-relative'>
                     {
                         subjects.length ?
-                            subjects?.map(({ subject_code, subject_name, major_name, subject_credit, subject_coefficient, id }, index) => <tr key={subject_code}>
+                            subjects?.map(({ course_code, course_name, course_credits, credit_coefficient, id, majors }, index) => <tr key={course_code}>
                                 <th scrope="row">{index + 1}</th>
-                                <td>{subject_code}</td>
-                                <td>{subject_name}</td>
-                                <td>{major_name}</td>
-                                <td>{subject_credit}</td>
-                                <td>{subject_coefficient}</td>
+                                <td>{course_code}</td>
+                                <td>{course_name}</td>
+                                <td>{majors.major_name}</td>
+                                <td>{course_credits}</td>
+                                <td>{credit_coefficient}</td>
                                 {isAdmin &&
                                     <td>
                                         <i role="button" className="fa-solid fa-pen-to-square mx-2" onClick={() => {
                                             setUpdateSubject({
                                                 id,
-                                                subject_code, subject_name, major_name, subject_credit, subject_coefficient
+                                                course_code, course_name, course_credits, credit_coefficient,
+                                                major_code: majors.major_code,
                                             })
                                             setOpenEditModal(!openEditModal)
                                         }}></i>
