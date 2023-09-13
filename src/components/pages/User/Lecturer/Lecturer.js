@@ -153,7 +153,7 @@ const Lecturer = () => {
                                 </tr>)
                         :
                         <tr>
-                            <td colSpan={6} className="py-3"><i className="fa-solid fa-box-archive me-4 fa-xl"></i>No data</td>
+                            <td colSpan={12} className="py-3"><i className="fa-solid fa-box-archive me-4 fa-xl"></i>No data</td>
                         </tr>
                     }
                 </tbody>
