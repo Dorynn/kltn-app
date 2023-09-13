@@ -160,7 +160,6 @@ const Major = () => {
                                         <i role="button" className="fa-solid fa-pen-to-square mx-2" onClick={() => {
                                             setUpdateMajor({
                                                 id,
-                                                department_name: departments.department_name,
                                                 major_code, major_name, major_chair_code
                                             })
                                             setOpenEditModal(!openEditModal)
@@ -180,7 +179,7 @@ const Major = () => {
             <AddMajorModal
                 isOpen={openAddModal}
                 refetchData={refetchData}
-                
+
             />
             <EditMajorModal isOpen={openEditModal} setUpdateMajor={setUpdateMajor} updateMajor={updateMajor} refetchData={refetchData} />
         </>

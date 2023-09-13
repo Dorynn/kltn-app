@@ -74,14 +74,14 @@ const AddSubjectModal = ({ refetchData, isOpen }) => {
     useEffect(() => {
         if (isOpen !== undefined) {
             toggleModal(true)
-            setNewSubject({
-                course_code: '',
-                course_name: '',
-                major_code: '',
-                course_credits: '',
-                credit_coefficient: ''
-            })
         }
+        setNewSubject({
+            course_code: '',
+            course_name: '',
+            major_code: '',
+            course_credits: '',
+            credit_coefficient: ''
+        })
     }, [isOpen])
 
     return (

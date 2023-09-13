@@ -5,82 +5,15 @@ import useModal from '../../../hooks/modal/useModal';
 import { Form, Input, Select } from "antd";
 import useSupbaseAction from '../../../hooks/useSupabase/useSupabaseAction';
 
-
-const codeList = [
-    {
-        value: '1',
-        label: "01",
-    },
-    {
-        value: '2',
-        label: "02",
-    },
-    {
-        value: '3',
-        label: "03",
-    },
-    {
-        value: '4',
-        label: "04",
-    },
-    {
-        value: '5',
-        label: "05",
-    },
-    {
-        value: '6',
-        label: "06",
-    },
-    {
-        value: '7',
-        label: "07",
-    },
-    {
-        value: '8',
-        label: "08",
-    },
-    {
-        value: '9',
-        label: "09",
-    },
-    {
-        value: '10',
-        label: "10",
-    },
-    {
-        value: '11',
-        label: "11",
-    },
-    {
-        value: '12',
-        label: "12",
-    },
-    {
-        value: '13',
-        label: "13",
-    },
-    {
-        value: '14',
-        label: "14",
-    },
-    {
-        value: '15',
-        label: "15",
-    },
-    
-    
-]
-
-
 const AddMajorModal = ({ refetchData, isOpen }) => {
     const [newMajor, setNewMajor] = useState({
         major_code: '',
-        major_ministry_code: '',
-        department_name: '',
+        ministry_major_code: '',
         major_chair_code: ''
     });
+    const [ministryMajorData, setMinistryMajorData] = useState([]);
     const { openNotification } = useContext(NotificationContext);
-    const { data: departments} = useSupbaseAction({
+    const { data: departments } = useSupbaseAction({
         initialData: [],
         firstLoad: true, defaultAction: async () => supabase
             .from('departments')
@@ -90,6 +23,16 @@ const AddMajorModal = ({ refetchData, isOpen }) => {
             `)
     })
 
+    useEffect(() => {
+        (async function () {
+            const { data } = await supabase.functions.invoke('get-ministry-department-info', {
+                method: 'GET',
+                headers: { "content-type": "application/json" },
+            })
+            setMinistryMajorData(data.data)
+        })()
+    }, [])
+    console.log('*** new major ***', newMajor);
     const createMajorModalContent = (<Form
         labelCol={{ span: 6 }}
         wrapperCol={{ span: 18 }}
@@ -102,15 +45,15 @@ const AddMajorModal = ({ refetchData, isOpen }) => {
             <Select
                 showSearch
                 optionFilterProp='children'
-                filterOption={(input, option) => (option?.label??"").includes(input)}
-                options={codeList}
-                onChange={(value)=>setNewMajor(prev=>({...prev, ministry_major_code:value}))}
+                filterOption={(input, option) => (option?.label ?? "").includes(input)}
+                options={ministryMajorData.map(({ code, name }) => ({ label: name, value: code }))}
+                onChange={(value) => setNewMajor(prev => ({ ...prev, ministry_major_code: value, major_name: ministryMajorData.find(item => item.code === value).name }))}
             />
         </Form.Item>
         <Form.Item label="Tên khoa">
             <Select
-                onChange={(value)=>setNewMajor(prev => ({...prev, department_name: value}))}
-                options={departments.map(item=>({value: item.department_name, label: item.department_name}))}
+                onChange={(value) => setNewMajor(prev => ({ ...prev, department_code: value }))}
+                options={departments.map(item => ({ value: item.department_code, label: item.department_name }))}
             />
         </Form.Item>
         <Form.Item label="Mã trưởng ngành">
@@ -144,14 +87,14 @@ const AddMajorModal = ({ refetchData, isOpen }) => {
         handleConfirm: handleCreateMajor
     })
     useEffect(() => {
-        if (isOpen !== undefined)
+        if (isOpen !== undefined) {
             toggleModal(true)
-            console.log(departments)
+        }
         setNewMajor({
             major_code: '',
-            major_ministry_code: '',
-            department_name: '',
-            major_chair_code: ''
+            ministry_major_code: '',
+            major_chair_code: '',
+            department_code: '',
         })
     }, [isOpen])
 
