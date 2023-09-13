@@ -59,7 +59,7 @@ function App() {
                   <Route path="/subject" element={<Subject />} />
                   <Route path="/login" element={<Login />} />
                   <Route path="/lecturer" element={<Lecturer />} />
-                  <Route path="/subject" element={<Student />} />
+                  <Route path="/student" element={<Student />} />
                 </Routes>
               </div>
             </div>
