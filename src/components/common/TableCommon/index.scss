@@ -1,0 +1,57 @@
+.root{
+    width: 100%;
+    font-family: 'SVN-Gilroy' !important;
+}
+.table-common-head-title{
+    font-family: 'SVN-Gilroy' !important
+}
+.row-selected{
+    background-color: #b3d9ef !important;
+}
+.label-table-common{
+    margin-bottom: unset;
+}
+.tt-content{
+    word-break: unset;
+}
+.paging-tb-common{
+    margin-top: 20px;
+}
+.ant-table-thead {
+    tr {
+        .ant-table-cell {
+            background-color: #000a3c !important;
+            color: #fff !important;
+            text-align: center !important;
+        }
+    }
+}
+@media all and (max-width: 767.98px) {
+    .custom-table-footer{
+        display: flex !important;
+        flex-direction: column-reverse;
+    }
+    .box-total-amount-custom-table{
+        flex-direction: row !important;
+    }
+    .title-total-amount{
+        display: none;
+    }
+    .tt-content{
+        word-break: break-word;
+    }
+    .checkbox-all-mb{
+        .tt-label{
+            font-size: 14px;
+        }
+    }
+}
+
+@media all and (min-width: 768px) {
+    .checkbox-all-mb{
+        display: none !important;
+        .tt-label{
+            font-size: 14px;
+        }
+    }
+}

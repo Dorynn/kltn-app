@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { ConfigProvider, Modal } from 'antd';
 
-export default function useModal({ content, title = 'Modal', handleConfirm = () => { } }) {
+export default function useModal({ content, title = 'Modal', handleConfirm = () => { }, setIsOpen = () => { } }) {
     const [open, setOpen] = useState(false);
     const [confirmLoading, setConfirmLoading] = useState(false);
 
@@ -22,6 +22,7 @@ export default function useModal({ content, title = 'Modal', handleConfirm = () 
     };
 
     const handleCancel = () => {
+        setIsOpen(false);
         setOpen(false);
     };
 
