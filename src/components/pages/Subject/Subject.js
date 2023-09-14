@@ -7,7 +7,7 @@ import AuthContext from '../../../context/authContext';
 import NotificationContext from '../../../context/notificationContext';
 import UploadFile from '../../UploadFile/UploadFile.jsx'
 import { ExclamationCircleFilled } from '@ant-design/icons';
-import { Modal } from 'antd';
+import { Modal, Table } from 'antd';
 const { confirm } = Modal;
 
 const Subject = () => {
@@ -29,7 +29,7 @@ const Subject = () => {
                 majors(major_name, major_code)
             `)
     })
-
+    console.log(subjects)
     const handleDeleteSubject = async ({ id }) => {
         setConfirmLoading(true);
         const { error } = await supabase
@@ -97,6 +97,74 @@ const Subject = () => {
 
     };
 
+    const columns = [
+        {
+            title: 'STT',
+            dataIndex: 'no',
+            width: '5%'
+        },
+        {
+            title: 'Mã học phần',
+            dataIndex: 'course_code'
+        },
+        {
+            title: 'Tên học phần',
+            dataIndex: 'course_name'
+        },
+        {
+            title: 'Tên ngành',
+            dataIndex: 'major_name'
+        },
+        {
+            title: 'Số tín chỉ',
+            dataIndex: 'course_credits'
+        },
+        {
+            title: 'Hệ số',
+            dataIndex: 'credit_coefficient'
+        },
+        {
+            title: 'Thao tác',
+            dataIndex: 'action',
+            width: '10%',
+            render: (_, record) => (
+                <>
+
+                    {isAdmin &&
+                        <>
+                            <i role="button" className="fa-solid fa-pen-to-square ms-2 me-3" onClick={() => {
+                                setUpdateSubject({
+                                    id: record.key,
+                                    course_code: record.course_code, 
+                                    course_name: record.course_name, 
+                                    course_credits: record.course_credits, 
+                                    credit_coefficient: record.credit_coefficient,
+                                    major_code: record.major_code,
+                                })
+                                setOpenEditModal(!openEditModal)
+                            }}></i>
+                            <i role="button" className="fa-solid fa-trash" onClick={() => ConfirmModal({ id: record.key })}></i>
+                        </>
+                    }
+                </>
+            )
+        }
+    ]
+    const dataSource = [];
+    subjects.forEach((item, index) => {
+        dataSource.push({
+            key: item.id,
+            no: index+1,
+            course_code: item.course_code,
+            course_name: item.course_name,
+            course_credits: item.course_credits,
+            credit_coefficient: item.credit_coefficient,
+            major_code: item.major_code,
+            major_name: item.majors.major_name
+        })
+
+    })
+
     return (
         <>
             <h4 className='title'>Quản lý học phần</h4>
@@ -113,55 +181,14 @@ const Subject = () => {
                     maxCount={1}
                 />
             </div>}
-            <table className="table table-bordered table-sm table-responsive table-striped table-hover">
-                <thead className='table-head'>
-                    <tr>
-                        <th scrope="col">STT</th>
-                        <th scrope="col">Mã học phần</th>
-                        <th scrope="col">Tên học phần</th>
-                        <th scrope="col">Tên ngành</th>
-                        <th scrope="col">Số tín chỉ</th>
-                        <th scrope="col">Hệ số</th>
-                        {
-                            isAdmin && <th scrope="col">Thao tác</th>
-                        }
+            <Table
+                columns={columns}
+                dataSource={dataSource}
+                bordered
+                pagination={false}
+                rowClassName={(_, index) => (index % 2 === 0 ? 'even-row' : 'odd-row')}
 
-                    </tr>
-                </thead>
-                <tbody className='position-relative'>
-                    {
-                        subjects.length ?
-                            subjects?.map(({ course_code, course_name, course_credits, credit_coefficient, id, majors }, index) => <tr key={course_code}>
-                                <th scrope="row">{index + 1}</th>
-                                <td>{course_code}</td>
-                                <td>{course_name}</td>
-                                <td>{majors.major_name}</td>
-                                <td>{course_credits}</td>
-                                <td>{credit_coefficient}</td>
-                                {isAdmin &&
-                                    <td>
-                                        <i role="button" className="fa-solid fa-pen-to-square mx-2" onClick={() => {
-                                            setUpdateSubject({
-                                                id,
-                                                course_code, course_name, course_credits, credit_coefficient,
-                                                major_code: majors.major_code,
-                                            })
-                                            setOpenEditModal(!openEditModal)
-                                        }}></i>
-                                        <i role="button" className="fa-solid fa-trash mx-2" onClick={() => ConfirmModal({ id })}></i>
-                                    </td>
-                                }
-                            </tr>)
-                            :
-                            <tr>
-                                <td colSpan={7} className="py-3"><i className="fa-solid fa-box-archive me-4 fa-xl"></i>No data</td>
-                            </tr>
-
-
-                    }
-
-                </tbody>
-            </table>
+            />
             <AddSubjectModal isOpen={openAddModal} refetchData={refetchData} />
             <EditSubjectModal isOpen={openEditModal} setUpdateSubject={setUpdateSubject} updateSubject={updateSubject} refetchData={refetchData} />
 

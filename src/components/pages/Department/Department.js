@@ -7,8 +7,10 @@ import AuthContext from '../../../context/authContext';
 import NotificationContext from '../../../context/notificationContext';
 import UploadFile from '../../UploadFile/UploadFile.jsx'
 import { ExclamationCircleFilled } from '@ant-design/icons';
-import { Modal } from 'antd';
+import { Modal, Table } from 'antd';
 const { confirm } = Modal;
+
+
 
 const Department = () => {
     const [openEditModal, setOpenEditModal] = useState();
@@ -29,6 +31,7 @@ const Department = () => {
                 profiles(name)
             `)
     })
+
 
     const handleDeleteDepartment = async ({ id }) => {
         setConfirmLoading(true);
@@ -96,10 +99,70 @@ const Department = () => {
         });
 
     };
+    const dataSource = [];
+    departments.map((item, index) => {
+        dataSource.push({
+            key: item.id,
+            no: index + 1,
+            department_code: item.department_code,
+            department_name: item.department_name,
+            dean_code: item.dean_code,
+            dean_name: item.profiles.name
+        })
+    })
+    const columns = [
+        {
+            title: "STT",
+            dataIndex: 'no',
+            width: '5%'
+        },
+        {
+            title: 'Mã khoa',
+            dataIndex: 'department_code',
+            width: '10%'
+
+        },
+        {
+            title: "Tên khoa",
+            dataIndex: 'department_name'
+        },
+        {
+            title: "Mã trưởng khoa",
+            dataIndex: 'dean_code',
+        },
+        {
+            title: "Tên trưởng khoa",
+            dataIndex: "dean_name"
+        },
+        {
+            title: "Thao tác",
+            dataIndex: 'action',
+            width: '10%',
+            render: (_, record) => (
+                <>
+
+                    {isAdmin &&
+                        <>
+                            <i role="button" className="fa-solid fa-pen-to-square ms-2 me-3" onClick={() => {
+                                setUpdateDepartment({
+                                    id: record.key,
+                                    department_code: record.department_code, 
+                                    department_name: record.department_name, 
+                                    dean_code: record.dean_code
+                                })
+                                setOpenEditModal(!openEditModal)
+                            }}></i>
+                            <i role="button" className="fa-solid fa-trash" onClick={() => ConfirmModal({ id: record.key })}></i>
+                        </>
+                    }
+                </>
+            )
+        }
+    ]
 
     return (
         <>
-            <h4 className='title' onClick={()=> console.log(departments)}>Quản lý khoa</h4>
+            <h4 className='title' onClick={() => console.log(departments)}>Quản lý khoa</h4>
             {isAdmin && <div className='d-flex justify-content-end me-4'>
                 <div className='me-3' role="button" onClick={() => setOpenAddModal(!openAddModal)}>
                     <i className="fa-solid fa-circle-plus"></i>
@@ -113,49 +176,14 @@ const Department = () => {
                     maxCount={1}
                 />
             </div>}
-            <table className="table table-bordered table-sm table-responsive table-striped table-hover">
-                <thead className='table-head'>
-                    <tr>
-                        <th scrope="col">STT</th>
-                        <th scrope="col">Mã khoa</th>
-                        <th scrope="col">Tên khoa</th>
-                        <th scrope="col">Mã trưởng khoa</th>
-                        <th scrope="col">Tên trưởng khoa</th>
-                        <th scrope="col">Thao tác</th>
-                    </tr>
-                </thead>
-                <tbody className='position-relative'>
-                    {
-                        departments.length ?
-                            departments?.map(({ department_code, department_name, dean_code, profiles, id }, index) => <tr key={department_code}>
-                                <th scrope="row">{index + 1}</th>
-                                <td>{department_code}</td>
-                                <td>{department_name}</td>
-                                <td>{dean_code}</td>
-                                <td>{profiles?.name}</td>
-                                {isAdmin &&
-                                    <td>
-                                        <i role="button" className="fa-solid fa-pen-to-square mx-2" onClick={() => {
-                                            setUpdateDepartment({
-                                                id,
-                                                department_code, department_name, dean_code
-                                            })
-                                            setOpenEditModal(!openEditModal)
-                                        }}></i>
-                                        <i role="button" className="fa-solid fa-trash mx-2" onClick={() => ConfirmModal({ id })}></i>
-                                    </td>
-                                }
-                            </tr>)
-                            :
-                            <tr>
-                                <td colSpan={6} className="py-3"><i className="fa-solid fa-box-archive me-4 fa-xl"></i>No data</td>
-                            </tr>
 
-
-                    }
-
-                </tbody>
-            </table>
+            <Table
+                columns={columns}
+                dataSource={dataSource}
+                rowClassName={(_, index) => (index % 2 === 0 ? 'even-row' : 'odd-row')}
+                bordered
+                pagination={false}
+            />
             <AddDepartmentModal isOpen={openAddModal} refetchData={refetchData} />
             <EditDepartmentModal isOpen={openEditModal} setUpdateDepartment={setUpdateDepartment} updateDepartment={updateDepartment} refetchData={refetchData} />
         </>

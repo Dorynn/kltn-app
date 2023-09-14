@@ -189,3 +189,33 @@ body {
 .ant-upload .ant-btn-default:not(:disabled):not(.ant-btn-disabled):hover {
   color: #000!important;
 }
+
+/* Table */
+.ant-table-wrapper {
+  width: 80%;
+  margin: auto;
+}
+.even-row {
+  background-color: #e9e9eb;
+}
+.odd-row {
+  background-color: #fff;
+}
+
+.ant-table-thead > tr > th {
+  background-color: #000a3d!important;
+  color: #fff!important;
+  text-align: center!important;
+}
+
+.ant-table-tbody .ant-table-cell {
+  padding-left: 20px!important;
+}
+
+.ant-table-container table>thead>tr:first-child >*:first-child {
+  border-start-start-radius: 0!important;
+}
+
+.ant-table-wrapper .ant-table-container table>thead>tr:first-child >*:last-child {
+  border-start-end-radius: 0!important;
+}

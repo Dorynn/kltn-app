@@ -2,7 +2,8 @@ import React, { useContext, useState, useEffect } from 'react';
 import supabase from '../../../supabaseClient';
 import NotificationContext from '../../../context/notificationContext';
 import useModal from '../../../hooks/modal/useModal';
-import { Form, Input } from "antd";
+import { Form, Input, Select } from "antd";
+import useSupbaseAction from '../../../hooks/useSupabase/useSupabaseAction';
 
 const AddDepartmentModal = ({ refetchData, isOpen }) => {
     const [newDepartment, setNewDepartment] = useState({
@@ -11,7 +12,12 @@ const AddDepartmentModal = ({ refetchData, isOpen }) => {
         dean_code: ''
     });
     const { openNotification } = useContext(NotificationContext);
-
+    const { data: profiles } = useSupbaseAction({
+        initialData: [],
+        firstLoad: true, defaultAction: async () => supabase
+            .from('profiles')
+            .select(`*`)
+    })
     const createDepartmentModalContent = (<Form
         labelCol={{ span: 6 }}
         wrapperCol={{ span: 18 }}
@@ -24,7 +30,14 @@ const AddDepartmentModal = ({ refetchData, isOpen }) => {
             <Input value={newDepartment.department_name} onChange={(e) => setNewDepartment(prev => ({ ...prev, department_name: e.target.value }))} />
         </Form.Item>
         <Form.Item label="Mã trưởng khoa">
-            <Input value={newDepartment.dean_code} onChange={(e) => setNewDepartment(prev => ({ ...prev, dean_code: e.target.value }))} />
+            <Select
+                showSearch
+                optionFilterProp='children'
+                filterOption={(input, option) => (option?.label ?? "").includes(input)}
+                options={profiles.map(({ user_code, name}) => ({ label: `${user_code} - ${name}`, value: user_code }))}
+                onChange={(value) => setNewDepartment(prev => ({ ...prev, dean_code: value }))}
+                value={newDepartment.dean_code}
+            />
         </Form.Item>
     </Form>)
     const handleCreateDepartment = async () => {

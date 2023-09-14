@@ -21,7 +21,7 @@ const AddSubjectModal = ({ refetchData, isOpen }) => {
             .select(`major_name, major_code`)
     })
 
-    const createDepartmentModalContent = (<Form
+    const createSubjectModalContent = (<Form
         labelCol={{ span: 6 }}
         wrapperCol={{ span: 18 }}
         layout="horizontal"
@@ -34,8 +34,11 @@ const AddSubjectModal = ({ refetchData, isOpen }) => {
         </Form.Item>
         <Form.Item label="Tên ngành">
             <Select
+                showSearch
+                optionFilterProp='children'
+                filterOption={(input, option) => (option?.label ?? "").includes(input)}
                 onChange={(value) => setNewSubject(prev => ({ ...prev, major_code: value }))}
-                options={majors.map(item => ({ label: item.major_name, value: item.major_code }))}
+                options={majors.map(item => ({ label: `${item.major_code} - ${item.major_name}`, value: item.major_code }))}
                 value={newSubject.major_code}
             />
         </Form.Item>
@@ -46,7 +49,7 @@ const AddSubjectModal = ({ refetchData, isOpen }) => {
             <Input value={newSubject.credit_coefficient} onChange={(e) => setNewSubject(prev => ({ ...prev, credit_coefficient: e.target.value }))} />
         </Form.Item>
     </Form>)
-    const handleCreateDepartment = async () => {
+    const handleCreateSubject = async () => {
         const { error } = await supabase
             .from('graduation_thesis_course')
             .insert([
@@ -66,10 +69,10 @@ const AddSubjectModal = ({ refetchData, isOpen }) => {
         })
     }
 
-    const { modal: createNewDepartment, toggleModal } = useModal({
-        content: createDepartmentModalContent,
+    const { modal: createNewSubject, toggleModal } = useModal({
+        content: createSubjectModalContent,
         title: 'Thêm mới học phần',
-        handleConfirm: handleCreateDepartment
+        handleConfirm: handleCreateSubject
     })
     useEffect(() => {
         if (isOpen !== undefined) {
@@ -86,7 +89,7 @@ const AddSubjectModal = ({ refetchData, isOpen }) => {
 
     return (
         <>
-            {createNewDepartment}
+            {createNewSubject}
         </>
     );
 };
