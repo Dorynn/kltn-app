@@ -2,30 +2,27 @@ import React, { useContext, useState, useEffect } from 'react';
 import NotificationContext from '../../../../context/notificationContext';
 import supabase from '../../../../supabaseClient';
 import useModal from '../../../../hooks/modal/useModal';
-import { Form, Input } from "antd";
-import { fieldAddLecturer } from './Lecturerconstants';
+import { Form, Input, Select } from "antd";
+import { fieldAddLecturer, options } from './Lecturerconstants';
 
 function AddLecturerModal(props) {
-    const { refetchData, isOpen } = props;
-    const [newLecturer, setNewLecturer] = useState({
+
+    const baseData = {
         lecturer_code: '',
         lecturer_name: '',
         major_code: '',
         phoneNumber: '',
         email: '',
-    });
+    };
+
+    const { refetchData, isOpen, setIsOpen } = props;
+    const [newLecturer, setNewLecturer] = useState(baseData);
     const { openNotification } = useContext(NotificationContext);
 
     useEffect(() => {
-        if (isOpen !== undefined)
-            toggleModal(true)
-        setNewLecturer({
-            lecturer_code: '',
-            lecturer_name: '',
-            major_code: '',
-            phoneNumber: '',
-            email: '',
-        })
+        if (isOpen) {
+            toggleModal(true);
+        }
     }, [isOpen])
 
 
@@ -49,6 +46,51 @@ function AddLecturerModal(props) {
         })
     };
 
+    const handleUpdateDataLecturer = (event, item) => {
+        // event: giá trị , item: item config
+        if (item.type === 'INPUT') {
+            const newDataRequest = {
+                ...newLecturer,
+                [item.field]: event ? event.target.value : '',
+            };
+            return setNewLecturer(newDataRequest);
+        }
+        const newDataRequest = {
+            ...newLecturer,
+            [item.field]: event ? event : '',
+        };
+        return setNewLecturer(newDataRequest);
+    };
+
+    // get data cho các select options
+    const handleGetOptions = field => {
+        if (field === 'department_code') {
+            return options || [];
+        }
+        return [];
+    };
+
+    // tùy loại input để render
+    const renderInput = (item) => {
+        if (item.type === 'INPUT') {
+            return (
+                <Input
+                    value={newLecturer[item.field]}
+                    onChange={e => handleUpdateDataLecturer(e, item)}
+                />
+            );
+        }
+        if (item.type === 'SELECT') {
+            return (
+                <Select
+                    options={handleGetOptions(item.field) || []}
+                    onChange={e => handleUpdateDataLecturer(e, item)}
+                ></Select>
+            );
+        }
+        return <></>;
+    };
+
     const createLecturerModalContent = (
         <Form
             labelCol={{ span: 6 }}
@@ -57,11 +99,7 @@ function AddLecturerModal(props) {
         >
             {fieldAddLecturer.map(item => (
                 <Form.Item label={item.label} key={item.field}>
-                    <Input
-                        value={newLecturer[item.field]}
-                        onChange={(e) => setNewLecturer(prev => (
-                            { ...prev, [item.field]: e.target.value }
-                        ))} />
+                    {renderInput(item)}
                 </Form.Item>
             ))}
         </Form>
@@ -70,7 +108,8 @@ function AddLecturerModal(props) {
     const { modal: createNewLecturer, toggleModal } = useModal({
         content: createLecturerModalContent,
         title: 'Thêm mới giáo viên',
-        handleConfirm: handleCreateLecturer
+        handleConfirm: handleCreateLecturer,
+        setIsOpen: setIsOpen
     });
 
     return (

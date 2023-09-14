@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useCallback, useContext, useState } from 'react';
 import { ExclamationCircleFilled } from '@ant-design/icons';
 import { Modal } from 'antd';
 import AddChargePersonModal from './AddChargePersonModal';
@@ -7,22 +7,37 @@ import AuthContext from '../../../../context/authContext';
 import NotificationContext from '../../../../context/notificationContext';
 import useSupbaseAction from '../../../../hooks/useSupabase/useSupabaseAction';
 import supabase from '../../../../supabaseClient';
-import { tableTitle } from './ChargePersonconstants';
+import { columnConfig, data } from './ChargePersonconstants';
+import TableCommon from '../../../common/TableCommon/TableCommon';
+import Loading from '../../../common/Loading/Loading';
 const { confirm } = Modal;
 
 const ChargePerson = () => {
-    const [openEditModal, setOpenEditModal] = useState();
-    const [openAddModal, setOpenAddModal] = useState();
+
+    const baseRequest = {
+        name: '',
+        age: 0,
+        address: '',
+        description: '',
+        page: 0,
+        size: 10
+    };
+
     const { isAdmin } = useContext(AuthContext);
-    const [updateChargePerson, setUpdateChargePerson] = useState({});
     const { openNotification } = useContext(NotificationContext);
-    const [fileList, setFileList] = useState([])
+    const [openEditModal, setOpenEditModal] = useState(false);
+    const [openAddModal, setOpenAddModal] = useState(false);
+    const [updateChargePerson, setUpdateChargePerson] = useState({});
+    const [fileList, setFileList] = useState([]);
     const [confirmLoading, setConfirmLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
+    const [dataRequest, setDataRequest] = useState(baseRequest);
 
 
     const { data: chargePerson, requestAction: refetchData } = useSupbaseAction({
         initialData: [],
-        firstLoad: true, defaultAction: async () => supabase
+        firstLoad: true, 
+        defaultAction: async () => supabase
             .from('chargePerson')
             .select(`
                 *,
@@ -30,7 +45,44 @@ const ChargePerson = () => {
             `)
     });
 
-    const handleDeleteChargePerson = async ({ id }) => {
+    // tùy chọn hiển thị data
+    const parseData = useCallback((item, field, index) => {
+        if (field === 'index') {
+            return index + 1;
+        }
+        if (field === 'action') {
+            return (<>
+                    <i
+                        role="button"
+                        className="fa-solid fa-pen-to-square mx-2"
+                        onClick={() => {
+                            setOpenEditModal(true);
+                            setUpdateChargePerson(item);
+                        }}
+                    ></i>
+                    <i
+                        role="button"
+                        className="fa-solid fa-trash mx-2"
+                        onClick={() => ConfirmModal(item.id)}
+                    ></i>
+                </>);
+        }
+        return item[field];
+    }, []);
+
+    // gọi lại api khi change page
+    const onChangePage = useCallback(
+        page => {
+            const newDataRequest = {
+                ...dataRequest,
+                page,
+            };
+            setDataRequest(newDataRequest);
+        },
+        [dataRequest, setDataRequest],
+    );
+
+    const handleDeleteChargePerson = async (id) => {
         setConfirmLoading(true);
         const { error } = await supabase
             .from('chargePerson')
@@ -55,7 +107,6 @@ const ChargePerson = () => {
             const reader = new FileReader();
             reader.addEventListener("load", () => resolve(reader.result));
             reader.addEventListener("error", err => reject(err));
-
             reader.readAsText(file);
         });
     };
@@ -81,7 +132,7 @@ const ChargePerson = () => {
         setFileList([...info.fileList]);
     };
 
-    const ConfirmModal = ({ id }) => {
+    const ConfirmModal = (id) => {
         confirm({
             title: 'Bạn có thực sự muốn xóa?',
             icon: <ExclamationCircleFilled />,
@@ -101,10 +152,14 @@ const ChargePerson = () => {
         <>
             <h4 className='title'>Quản lý người phụ trách khóa luận tốt nghiệp</h4>
             {isAdmin && <div className='d-flex justify-content-end me-4'>
-                <div className='me-3' role="button" onClick={() => setOpenAddModal(!openAddModal)}>
+                <button
+                    type="button"
+                    className='border border-secondary rounded me-3 p-2'
+                    onClick={() => setOpenAddModal(true)}
+                >
                     <i className="fa-solid fa-circle-plus"></i>
                     <span className='ms-2'>Thêm mới</span>
-                </div>
+                </button>
                 <uploadFile
                     validTypes={['text/csv']}
                     fileList={fileList}
@@ -118,59 +173,34 @@ const ChargePerson = () => {
                     maxCount={1}
                 />
             </div>}
-            <table className="table table-bordered table-sm table-responsive table-striped table-hover">
-                <thead className='table-head'>
-                    <tr>
-                        {tableTitle.map(title => (<th scrope="col">{title}</th>))}
-                    </tr>
-                </thead>
-                <tbody className='position-relative'>
-                    {chargePerson.length ?
-                        chargePerson?.map(
-                            ({ chargePerson_code, chargePerson_name, department_code, phoneNumber, email, address, id }, index) =>
-                                <tr key={chargePerson_code}>
-                                    <th scrope="row">{index + 1}</th>
-                                    <td>{chargePerson_code}</td>
-                                    <td>{chargePerson_name}</td>
-                                    <td>{department_code}</td>
-                                    <td>{phoneNumber}</td>
-                                    <td>{email}</td>
-                                    <td>{address}</td>
-                                    {isAdmin &&
-                                        <td>
-                                            <i role="button" className="fa-solid fa-pen-to-square mx-2" onClick={() => {
-                                                setUpdateChargePerson({
-                                                    id,
-                                                    chargePerson_code,
-                                                    chargePerson_name,
-                                                    department_code,
-                                                    phoneNumber,
-                                                    email,
-                                                    address,
-                                                })
-                                                setOpenEditModal(!openEditModal)
-                                            }}></i>
-                                            <i role="button" className="fa-solid fa-trash mx-2" onClick={() => ConfirmModal({ id })}></i>
-                                        </td>
-                                    }
-                                </tr>)
-                        :
-                        <tr>
-                            <td colSpan={12} className="py-3"><i className="fa-solid fa-box-archive me-4 fa-xl"></i>No data</td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-            <AddChargePersonModal
+            <div className='p-5'>
+                <TableCommon
+                    columns={columnConfig}
+                    data={data || []}
+                    primaryKey='key'
+                    parseFunction={parseData}
+                    isShowPaging
+                    onChangePage={page => onChangePage(page - 1)}
+                    totalCountData={data.length || 0}
+                    defaultPage={(dataRequest.page + 1) || 1}
+                    currentPage={dataRequest.page + 1}
+                    totalDisplay={dataRequest.size || 10}
+                    bordered
+                />
+            </div>
+            <Loading isLoading={isLoading} />
+            {openAddModal && <AddChargePersonModal
                 isOpen={openAddModal}
+                setIsOpen={setOpenAddModal}
                 refetchData={refetchData}
-            />
-            <EditChargePersonModal
+            />}
+            {openEditModal && <EditChargePersonModal
                 isOpen={openEditModal}
-                setUpdateChargePerson={setUpdateChargePerson}
+                setIsOpen={setOpenEditModal}
                 updateChargePerson={updateChargePerson}
+                setUpdateChargePerson={setUpdateChargePerson}
                 refetchData={refetchData}
-            />
+            />}
         </>
     );
 };
