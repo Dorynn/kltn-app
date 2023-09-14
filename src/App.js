@@ -1,10 +1,9 @@
 import './App.css';
 import Sidebar from './components/common/Sidebar';
-import Header from './components/common/Header';
+import HeaderDefault from './components/common/HeaderDefault';
 import Department from './components/pages/Department/Department';
 import Major from './components/pages/Major/Major';
 import Login from './components/pages/Login/Login';
-// import Lecturer from './components/pages/Lecturer/Lecturer';
 import Subject from "./components/pages/Subject/Subject";
 import ChargePerson from './components/pages/User/ChargePerson/ChargePerson';
 import Lecturer from './components/pages/User/Lecturer/Lecturer';
@@ -16,8 +15,8 @@ import {
 import AuthContext from './context/authContext';
 import NotificationContext from './context/notificationContext';
 import useAuth from './hooks/useSupabase/useAuth'
-import { notification } from 'antd';
-
+import { notification, Layout} from 'antd';
+const {Content} = Layout;
 function App() {
   const { user, login, logout, isAdmin, fetched: fetchedAuth } = useAuth();
   const [notificationApi, notificationHolder] = notification.useNotification();
@@ -46,25 +45,27 @@ function App() {
   return (
     <NotificationContext.Provider value={{ openNotification }}>
       <AuthContext.Provider value={{ user, login, logout, isAdmin }}>
-        <div className="App">
-          <Header title="Title" />
-          <div id='main-content'>
-            <Sidebar />
-            <div className='content'>
-              <div className="router-wrapper mt-4">
-                <Routes >
-                  <Route path='/department' element={<Department />} />
-                  <Route path="/major" element={<Major />} />
-                  <Route path="/graduate-charge-person" element={<ChargePerson />} />
-                  <Route path="/subject" element={<Subject />} />
-                  <Route path="/login" element={<Login />} />
-                  <Route path="/lecturer" element={<Lecturer />} />
-                  <Route path="/student" element={<Student />} />
-                </Routes>
-              </div>
-            </div>
-          </div>
-        </div>
+        <Layout>
+            <HeaderDefault title="Title" />
+            <Layout id='main-content'>
+              <Sidebar />
+              <Layout>
+                <Content className='content'>
+                  <div className="router-wrapper mt-4 mx-3 text-center">
+                    <Routes >
+                      <Route path='/department' element={<Department />} />
+                      <Route path="/major" element={<Major />} />
+                      <Route path="/graduate-charge-person" element={<ChargePerson />} />
+                      <Route path="/subject" element={<Subject />} />
+                      <Route path="/login" element={<Login />} />
+                      <Route path="/lecturer" element={<Lecturer />} />
+                      <Route path="/student" element={<Student />} />
+                    </Routes>
+                  </div>
+                </Content>
+              </Layout>
+            </Layout>
+        </Layout>
         {notificationHolder}
       </AuthContext.Provider>
     </NotificationContext.Provider>

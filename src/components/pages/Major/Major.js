@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import AddMajorModal from './AddMajorModal';
 import EditMajorModal from './EditMajorModal';
 import useSupbaseAction from '../../../hooks/useSupabase/useSupabaseAction';
@@ -104,19 +104,6 @@ const Major = () => {
         });
 
     };
-
-    const getData = async () => {
-        console.log('calll')
-        // try {          
-        //         const { dataList, error } = await supabase
-        //         .from('majors')
-        //         .select("*")
-        //         console.log(dataList)
-        // }catch(error){
-        //     console.log(error)
-        // }
-        console.log(majors.map(item => ({ department_name: item.departments.department_name })))
-    }
 
     const columns=[
         {
