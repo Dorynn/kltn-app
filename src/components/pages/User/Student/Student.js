@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useCallback, useContext, useState } from 'react';
 import { ExclamationCircleFilled } from '@ant-design/icons';
 import { Modal } from 'antd';
 import AddStudentModal from './AddStudentModal';
@@ -7,17 +7,25 @@ import AuthContext from '../../../../context/authContext';
 import NotificationContext from '../../../../context/notificationContext';
 import useSupbaseAction from '../../../../hooks/useSupabase/useSupabaseAction';
 import supabase from '../../../../supabaseClient';
-import { tableTitle } from './Studentconstants';
+import { columnConfig, data, expandConfig } from './Studentconstants';
+import TableCommon from '../../../common/TableCommon/TableCommon';
 const { confirm } = Modal;
 
 const Student = () => {
+
+    const baseRequest = {
+        page: 0,
+        size: 10
+    };
+
+    const { isAdmin } = useContext(AuthContext);
+    const { openNotification } = useContext(NotificationContext);
     const [openEditModal, setOpenEditModal] = useState();
     const [openAddModal, setOpenAddModal] = useState();
-    const { isAdmin } = useContext(AuthContext);
     const [updateStudent, setUpdateStudent] = useState({});
-    const { openNotification } = useContext(NotificationContext);
     const [fileList, setFileList] = useState([])
     const [confirmLoading, setConfirmLoading] = useState(false);
+    const [dataRequest, setDataRequest] = useState(baseRequest);
 
 
     const { data: student, requestAction: refetchData } = useSupbaseAction({
@@ -30,7 +38,44 @@ const Student = () => {
             `)
     });
 
-    const handleDeleteStudent = async ({ id }) => {
+    // tùy chọn hiển thị data
+    const parseData = useCallback((item, field, index) => {
+        if (field === 'index') {
+            return index + 1;
+        }
+        if (field === 'action') {
+            return (<>
+                <i
+                    role="button"
+                    className="fa-solid fa-pen-to-square mx-2"
+                    onClick={() => {
+                        setOpenEditModal(true);
+                        setUpdateStudent(item);
+                    }}
+                ></i>
+                <i
+                    role="button"
+                    className="fa-solid fa-trash mx-2"
+                    onClick={() => ConfirmModal(item.id)}
+                ></i>
+            </>);
+        }
+        return item[field];
+    }, []);
+
+    // gọi lại api khi change page
+    const onChangePage = useCallback(
+        page => {
+            const newDataRequest = {
+                ...dataRequest,
+                page,
+            };
+            setDataRequest(newDataRequest);
+        },
+        [dataRequest, setDataRequest],
+    );
+
+    const handleDeleteStudent = async (id) => {
         setConfirmLoading(true);
         const { error } = await supabase
             .from('student')
@@ -55,7 +100,6 @@ const Student = () => {
             const reader = new FileReader();
             reader.addEventListener("load", () => resolve(reader.result));
             reader.addEventListener("error", err => reject(err));
-
             reader.readAsText(file);
         });
     };
@@ -96,15 +140,36 @@ const Student = () => {
             onCancel() { },
         });
     };
-    console.log(1);
+
+    const renderExpandContent = (record) => (
+        <div className='row mx-5'>
+            {expandConfig.map(item => (
+                <div className='d-flex col-6'>
+                    <div className='col-4'>
+                        <label>{item.label} :</label>
+                    </div>
+                    <div className='col-8'>
+                        <span>{record[item.field]}</span>
+                    </div>
+                </div>
+            ))}
+        </div>
+    );
+
+    const expandCondition = (record) => (data.length > 0);
+
     return (
         <>
             <h4 className='title'>Quản lý sinh viên</h4>
             {isAdmin && <div className='d-flex justify-content-end me-4'>
-                <div className='me-3' role="button" onClick={() => setOpenAddModal(!openAddModal)}>
+                <button
+                    type="button"
+                    className='border border-secondary rounded me-3 p-2'
+                    onClick={() => setOpenAddModal(!openAddModal)}
+                >
                     <i className="fa-solid fa-circle-plus"></i>
                     <span className='ms-2'>Thêm mới</span>
-                </div>
+                </button>
                 <uploadFile
                     validTypes={['text/csv']}
                     fileList={fileList}
@@ -117,65 +182,36 @@ const Student = () => {
                     maxCount={1}
                 />
             </div>}
-            <table className="table table-bordered table-sm table-responsive table-striped table-hover">
-                <thead className='table-head'>
-                    <tr>
-                        {tableTitle.map(title => (<th scrope="col">{title}</th>))}
-                    </tr>
-                </thead>
-                <tbody className='position-relative'>
-                    {student.length ?
-                        student?.map(
-                            ({ student_code, student_name, department_code, course, classroom, phoneNumber, email, id }, index) =>
-                                <tr key={student_code}>
-                                    <th scrope="row">{index + 1}</th>
-                                    <td>{student_code}</td>
-                                    <td>{student_name}</td>
-                                    <td>{department_code}</td>
-                                    <td>{course}</td>
-                                    <td>{classroom}</td>
-                                    <td>{phoneNumber}</td>
-                                    <td>{email}</td>
-                                    {isAdmin &&
-                                        <td>
-                                            <i role="button" className="fa-solid fa-pen-to-square mx-2" onClick={() => {
-                                                setUpdateStudent({
-                                                    id,
-                                                    student_code,
-                                                    student_name,
-                                                    department_code,
-                                                    course: '',
-                                                    classroom: '',
-                                                    phoneNumber,
-                                                    email,
-                                                })
-                                                setOpenEditModal(!openEditModal)
-                                            }}></i>
-                                            <i
-                                                role="button"
-                                                className="fa-solid fa-trash mx-2"
-                                                onClick={() => ConfirmModal({ id })}
-                                            ></i>
-                                        </td>
-                                    }
-                                </tr>)
-                        :
-                        <tr>
-                            <td colSpan={12} className="py-3"><i className="fa-solid fa-box-archive me-4 fa-xl"></i>No data</td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-            <AddStudentModal
+            <div className='p-5'>
+                <TableCommon
+                    columns={columnConfig}
+                    data={data || []}
+                    primaryKey='key'
+                    parseFunction={parseData}
+                    isShowPaging
+                    onChangePage={page => onChangePage(page - 1)}
+                    totalCountData={data.length || 0}
+                    defaultPage={(dataRequest.page + 1) || 1}
+                    currentPage={dataRequest.page + 1}
+                    totalDisplay={dataRequest.size || 10}
+                    expandCondition={(record) => expandCondition(record)}
+                    renderExpandContent={data.length > 0 ?
+                        (record) => renderExpandContent(record) : null}
+                    bordered
+                />
+            </div>
+            {openAddModal && <AddStudentModal
                 isOpen={openAddModal}
+                setIsOpen={setOpenAddModal}
                 refetchData={refetchData}
-            />
-            <EditStudentModal
+            />}
+            {openEditModal && <EditStudentModal
                 isOpen={openEditModal}
-                setUpdateStudent={setUpdateStudent}
+                setIsOpen={setOpenEditModal}
                 updateStudent={updateStudent}
+                setUpdateStudent={setUpdateStudent}
                 refetchData={refetchData}
-            />
+            />}
         </>
     );
 };

@@ -2,12 +2,11 @@ import React, { useContext, useState, useEffect } from 'react';
 import NotificationContext from '../../../../context/notificationContext';
 import supabase from '../../../../supabaseClient';
 import useModal from '../../../../hooks/modal/useModal';
-import { Form, Input } from "antd";
-import { fieldAddStudent } from './Studentconstants';
+import { Form, Input, Select } from "antd";
+import { fieldAddStudent, options } from './Studentconstants';
 
 function AddStudentModal(props) {
-    const { refetchData, isOpen } = props;
-    const [newStudent, setNewStudent] = useState({
+    const baseData = {
         student_code: '',
         student_name: '',
         department_code: '',
@@ -16,22 +15,15 @@ function AddStudentModal(props) {
         phoneNumber: '',
         email: '',
         address: ''
-    });
+    };
+    const { refetchData, isOpen, setIsOpen } = props;
+    const [newStudent, setNewStudent] = useState(baseData);
     const { openNotification } = useContext(NotificationContext);
 
     useEffect(() => {
-        if (isOpen !== undefined)
-            toggleModal(true)
-        setNewStudent({
-            student_code: '',
-            student_name: '',
-            department_code: '',
-            course: '',
-            classroom: '',
-            phoneNumber: '',
-            email: '',
-            address: ''
-        })
+        if (isOpen) {
+            toggleModal(true);
+        }
     }, [isOpen])
 
 
@@ -44,6 +36,7 @@ function AddStudentModal(props) {
             .select()
         if (!error) {
             await refetchData({})
+            setIsOpen(false);
             return openNotification({
                 message: 'Create student successfully'
             })
@@ -55,6 +48,51 @@ function AddStudentModal(props) {
         })
     };
 
+    const handleUpdateDataStudent = (event, item) => {
+        // event: giá trị , item: item config
+        if (item.type === 'INPUT') {
+            const newDataRequest = {
+                ...newStudent,
+                [item.field]: event ? event.target.value : '',
+            };
+            return setNewStudent(newDataRequest);
+        }
+        const newDataRequest = {
+            ...newStudent,
+            [item.field]: event ? event : '',
+        };
+        return setNewStudent(newDataRequest);
+    };
+
+    // get data cho các select options
+    const handleGetOptions = field => {
+        if (field === 'department_code') {
+            return options || [];
+        }
+        return [];
+    };
+
+    // tùy loại input để render
+    const renderInput = (item) => {
+        if (item.type === 'INPUT') {
+            return (
+                <Input
+                    value={newStudent[item.field]}
+                    onChange={e => handleUpdateDataStudent(e, item)}
+                />
+            );
+        }
+        if (item.type === 'SELECT') {
+            return (
+                <Select
+                    options={handleGetOptions(item.field) || []}
+                    onChange={e => handleUpdateDataStudent(e, item)}
+                ></Select>
+            );
+        }
+        return <></>;
+    };
+
     const createStudentModalContent = (
         <Form
             labelCol={{ span: 6 }}
@@ -62,12 +100,8 @@ function AddStudentModal(props) {
             layout="horizontal"
         >
             {fieldAddStudent.map(item => (
-                <Form.Item label={item.label}>
-                    <Input
-                        value={newStudent[item.field]}
-                        onChange={(e) => setNewStudent(prev => (
-                            { ...prev, [item.field]: e.target.value }
-                        ))} />
+                <Form.Item label={item.label} key={item.field}>
+                    {renderInput(item)}
                 </Form.Item>
             ))}
         </Form>
@@ -76,7 +110,8 @@ function AddStudentModal(props) {
     const { modal: createNewStudent, toggleModal } = useModal({
         content: createStudentModalContent,
         title: 'Thêm mới sinh viên',
-        handleConfirm: handleCreateStudent
+        handleConfirm: handleCreateStudent,
+        setIsOpen: setIsOpen
     });
 
     return (
