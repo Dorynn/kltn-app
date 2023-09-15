@@ -93,6 +93,7 @@ function TableCommon(props) {
                 pagination={getPaginationConfig()}
                 expandable={getExpandableConfig()}
                 className={classNameTable}
+                rowClassName={(_, index) => (index % 2 === 0 ? 'even-row' : 'odd-row')}
                 {...iterableProps}
             />
         </div>
