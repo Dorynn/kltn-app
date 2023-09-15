@@ -17,6 +17,7 @@ import AuthContext from './context/authContext';
 import NotificationContext from './context/notificationContext';
 import useAuth from './hooks/useSupabase/useAuth'
 import { notification } from 'antd';
+import './styles/app.scss';
 
 function App() {
   const { user, login, logout, isAdmin, fetched: fetchedAuth } = useAuth();
