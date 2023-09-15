@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useCallback, useContext, useState } from 'react';
 import { ExclamationCircleFilled } from '@ant-design/icons';
 import { Modal } from 'antd';
@@ -7,7 +8,8 @@ import AuthContext from '../../../../context/authContext';
 import NotificationContext from '../../../../context/notificationContext';
 import useSupbaseAction from '../../../../hooks/useSupabase/useSupabaseAction';
 import supabase from '../../../../supabaseClient';
-import { columnConfig, data, expandConfig, tableTitle } from './Lecturerconstants';
+import UploadFile from '../../../UploadFile/UploadFile';
+import { columnConfig, data, expandConfig } from './Lecturerconstants';
 import TableCommon from '../../../common/TableCommon/TableCommon';
 const { confirm } = Modal;
 
@@ -125,7 +127,7 @@ const Lecturer = () => {
         setFileList([...info.fileList]);
     };
 
-    const ConfirmModal = ({ id }) => {
+    const ConfirmModal = (id) => {
         confirm({
             title: 'Bạn có thực sự muốn xóa?',
             icon: <ExclamationCircleFilled />,
@@ -164,13 +166,13 @@ const Lecturer = () => {
             {isAdmin && <div className='d-flex justify-content-end me-4'>
                 <button
                     type="button"
-                    className='border border-secondary rounded me-3 p-2'
+                    className='btn-none text-btn-top me-3'
                     onClick={() => setOpenAddModal(!openAddModal)}
                 >
                     <i className="fa-solid fa-circle-plus"></i>
                     <span className='ms-2'>Thêm mới</span>
                 </button>
-                <uploadFile
+                <UploadFile
                     validTypes={['text/csv']}
                     fileList={fileList}
                     setFileList={setFileList} title="Import from csv"

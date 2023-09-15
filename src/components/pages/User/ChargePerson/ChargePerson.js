@@ -10,6 +10,7 @@ import supabase from '../../../../supabaseClient';
 import { columnConfig, data } from './ChargePersonconstants';
 import TableCommon from '../../../common/TableCommon/TableCommon';
 import Loading from '../../../common/Loading/Loading';
+import UploadFile from '../../../UploadFile/UploadFile';
 const { confirm } = Modal;
 
 const ChargePerson = () => {
@@ -154,13 +155,13 @@ const ChargePerson = () => {
             {isAdmin && <div className='d-flex justify-content-end me-4'>
                 <button
                     type="button"
-                    className='border border-secondary rounded me-3 p-2'
+                    className='btn-none text-btn-top me-3'
                     onClick={() => setOpenAddModal(true)}
                 >
                     <i className="fa-solid fa-circle-plus"></i>
                     <span className='ms-2'>Thêm mới</span>
                 </button>
-                <uploadFile
+                <UploadFile
                     validTypes={['text/csv']}
                     fileList={fileList}
                     setFileList={setFileList}
