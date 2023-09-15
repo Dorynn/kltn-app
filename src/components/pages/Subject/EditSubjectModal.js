@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext } from 'react';
 import { useEffect } from 'react';
 import supabase from '../../../supabaseClient';
 import NotificationContext from '../../../context/notificationContext';
@@ -29,8 +29,11 @@ const EditSubjectModal = ({ updateSubject, setUpdateSubject, refetchData, isOpen
         </Form.Item>
         <Form.Item label="Ngành">
             <Select
+                showSearch
+                optionFilterProp='children'
+                filterOption={(input, option) => (option?.label ?? "").includes(input)}
                 onChange={(value) => setUpdateSubject(prev => ({ ...prev, major_code: value }))}
-                options={majors.map(item => ({ label: item.major_name, value: item.major_code }))}
+                options={majors.map(item => ({ label: `${item.major_code} - ${item.major_name}`, value: item.major_code }))}
                 value={updateSubject.major_code}
             />
         </Form.Item>

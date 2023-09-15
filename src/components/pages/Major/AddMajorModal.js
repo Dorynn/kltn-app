@@ -23,6 +23,13 @@ const AddMajorModal = ({ refetchData, isOpen }) => {
             `)
     })
 
+    const { data: profiles } = useSupbaseAction({
+        initialData: [],
+        firstLoad: true, defaultAction: async () => supabase
+            .from('profiles')
+            .select(`*`)
+    })
+
     useEffect(() => {
         (async function () {
             const { data } = await supabase.functions.invoke('get-ministry-department-info', {
@@ -46,18 +53,30 @@ const AddMajorModal = ({ refetchData, isOpen }) => {
                 showSearch
                 optionFilterProp='children'
                 filterOption={(input, option) => (option?.label ?? "").includes(input)}
-                options={ministryMajorData.map(({ code, name }) => ({ label: name, value: code }))}
+                options={ministryMajorData.map(({ code, name }) => ({ label: `${code} - ${name}`, value: code }))}
+                value={newMajor.ministry_major_code}
                 onChange={(value) => setNewMajor(prev => ({ ...prev, ministry_major_code: value, major_name: ministryMajorData.find(item => item.code === value).name }))}
             />
         </Form.Item>
         <Form.Item label="Tên khoa">
             <Select
+                showSearch
+                optionFilterProp='children'
+                filterOption={(input, option) => (option?.label ?? "").includes(input)}
                 onChange={(value) => setNewMajor(prev => ({ ...prev, department_code: value }))}
-                options={departments.map(item => ({ value: item.department_code, label: item.department_name }))}
+                options={departments.map(item => ({ value: item.department_code, label: `${item.department_code} - ${item.department_name}` }))}
+                value={newMajor.department_code}
             />
         </Form.Item>
         <Form.Item label="Mã trưởng ngành">
-            <Input value={newMajor.major_chair_code} onChange={(e) => setNewMajor(prev => ({ ...prev, major_chair_code: e.target.value }))} />
+            <Select
+                showSearch
+                optionFilterProp='children'
+                filterOption={(input, option) => (option?.label ?? "").includes(input)}
+                options={profiles.map(({ user_code, name }) => ({ label: `${user_code}-${name}`, value: user_code }))}
+                onChange={(value) => setNewMajor(prev => ({ ...prev, major_chair_code: value }))}
+                value={newMajor.major_chair_code}
+            />
         </Form.Item>
     </Form>)
 

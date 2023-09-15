@@ -7,11 +7,28 @@ import { Form, Input, Select } from "antd";
 import useSupbaseAction from '../../../hooks/useSupabase/useSupabaseAction';
 
 const EditMajorModal = ({ updateMajor, setUpdateMajor, refetchData, isOpen }) => {
+    const [ministryMajorData, setMinistryMajorData] = useState([]);
     const { openNotification } = useContext(NotificationContext);
+    useEffect(() => {
+        (async function () {
+            const { data } = await supabase.functions.invoke('get-ministry-department-info', {
+                method: 'GET',
+                headers: { "content-type": "application/json" },
+            })
+            setMinistryMajorData(data.data)
+        })()
+    }, [])
     const { data: departments } = useSupbaseAction({
         initialData: [],
         firstLoad: true, defaultAction: async () => supabase
             .from('departments')
+            .select(`*`)
+    })
+
+    const { data: profiles } = useSupbaseAction({
+        initialData: [],
+        firstLoad: true, defaultAction: async () => supabase
+            .from('profiles')
             .select(`*`)
     })
 
@@ -23,14 +40,35 @@ const EditMajorModal = ({ updateMajor, setUpdateMajor, refetchData, isOpen }) =>
         <Form.Item label="Mã ngành (trường)">
             <Input value={updateMajor.major_code} onChange={(e) => setUpdateMajor(prev => ({ ...prev, major_code: e.target.value }))} />
         </Form.Item>
+        <Form.Item label="Mã ngành (bộ)">
+            <Select
+                showSearch
+                optionFilterProp='children'
+                filterOption={(input, option) => (option?.label ?? "").includes(input)}
+                options={ministryMajorData.map(({ code, name }) => ({ label: `${code} - ${name}`, value: code }))}
+                value={updateMajor.ministry_major_code}
+                onChange={(value) => setUpdateMajor(prev => ({ ...prev, ministry_major_code: value, major_name: ministryMajorData.find(item => item.code === value).name }))}
+            />
+        </Form.Item>
         <Form.Item label="Tên khoa">
             <Select
+                showSearch
+                optionFilterProp='children'
+                filterOption={(input, option) => (option?.label ?? "").includes(input)}
                 onChange={(value) => setUpdateMajor(prev => ({ ...prev, department_code: value }))}
-                options={departments.map(item => ({ value: item.department_code, label: item.department_name }))}
+                options={departments.map(item => ({ value: item.department_code, label: `${item.department_code} - ${item.department_name}` }))}
+                value={updateMajor.department_code}
             />
         </Form.Item>
         <Form.Item label="Mã trưởng ngành">
-            <Input value={updateMajor.major_chair_code} onChange={(e) => setUpdateMajor(prev => ({ ...prev, major_chair_code: e.target.value }))} />
+            <Select
+                showSearch
+                optionFilterProp='children'
+                filterOption={(input, option) => (option?.label ?? "").includes(input)}
+                options={profiles.map(({ user_code, name }) => ({ label: `${user_code}-${name}`, value: user_code }))}
+                onChange={(value) => setUpdateMajor(prev => ({ ...prev, major_chair_code: value }))}
+                value={updateMajor.major_chair_code}
+            />
         </Form.Item>
     </Form>)
 

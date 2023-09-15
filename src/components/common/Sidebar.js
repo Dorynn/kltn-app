@@ -1,6 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from "react-router-dom";
+import { Layout, Menu } from 'antd';
+import {
+    AppstoreOutlined,
+    ContainerOutlined,
+    DesktopOutlined,
+    MailOutlined,
+    MenuFoldOutlined,
+    MenuUnfoldOutlined,
+    PieChartOutlined,
+} from '@ant-design/icons';
 import $ from "jquery";
+const { Sider } = Layout;
+const {SubMenu} = Menu;
 const Sidebar = () => {
     useEffect(() => {
         window.$('.list-group-item').click(function () {
@@ -9,65 +21,71 @@ const Sidebar = () => {
         })
     })
     const [toggle, setToggle] = useState()
-
+    function getItem(label, key, children, type) {
+        return {
+            key,
+            children,
+            label,
+            type,
+        };
+    }
+    const items = [
+        getItem('Quản lý khoa', '1'),
+        getItem('Quản lý ngành', '2'),
+        getItem('Quản lý học phần', '3'),
+        getItem('Quản lý người dùng', 'sub1',  [
+            getItem('Quản lý người phụ trách', '5'),
+            getItem('Quản lý giáo viên', '6'),
+            getItem('Quản lý sinh viên', '7'),
+        ]),
+    ];
     return (
         <>
-            <nav id="sidebarMenu" className="collapse d-lg-block sidebar collapse bg-white">
-                <div className="position-sticky">
-                    <div className="list-group list-group-flush mt-4 text-start" role='button'>
-                        <Link
-                            to="/department"
-                            className="list-group-item list-group-item-action py-2 ripple mb-2 text-start active"
-                            aria-current="true"
-                        >
+            <Sider
+                style={{
+                    background: '#fff',
+                    borderColor: '#000'
+                }}
+            >
+                <Menu mode='inline'>
+                    <Menu.Item key="1">
+                        <Link to="/department">
                             <span>Quản lý khoa</span>
                         </Link>
-                        <Link to="/major" className="list-group-item list-group-item-action mb-2 py-2 ripple text-start">
+                    </Menu.Item>
+                    <Menu.Item key="2">
+                        <Link to="/major">
                             <span>Quản lý ngành</span>
                         </Link>
-                        <Link to="/subject" className="list-group-item list-group-item-action mb-2 py-2 ripple text-start">
+                    </Menu.Item>
+                    <Menu.Item key="3">
+                        <Link to="/subject">
                             <span>Quản lý học phần</span>
                         </Link>
-                        <div
-                            className='list-group-item list-group-item-action ripple d-flex justify-content-between'
-                            onClick={() => setToggle(!toggle)}
-                        >
-                            <span>Quản lý người dùng</span>
-                            {
-                                toggle ?
-                                    <i className="fa-solid fa-caret-up text--white mt-1"></i>
-                                :   <i className="fa-solid fa-caret-down text--white mt-1"></i>
+                    </Menu.Item>
+                    <SubMenu
+                        key="sub1"
+                        title={<span>Quản lý người dùng</span>}
+                    >
+                        <Menu.Item key="4">
+                            <Link to="/graduate-charge-person">
+                                <span>Quản lý người phụ trách</span>
+                            </Link>
+                        </Menu.Item>
+                        <Menu.Item key="5">
+                            <Link to="/lecturer">
+                                <span>Quản lý giáo viên</span>
+                            </Link>
+                        </Menu.Item>
+                        <Menu.Item key="6">
+                            <Link to="/student">
+                                <span>Quản lý sinh viên</span>
+                            </Link>
+                        </Menu.Item>
 
-                            }
-                        </div>
-                        {toggle &&
-                            <div id='user-management-collapse' className='collapse show list-group list-group-flush'>
-                                <Link
-                                    to="/graduate-charge-person"
-                                    className="list-group-item py-2 mb-2 text-start"
-
-                                >
-                                    <span className='ms-3'>Quản lý phụ trách KLTN</span>
-                                </Link>
-                                <Link
-                                    to="/lecturer"
-                                    className="list-group-item py-2 mb-2 text-start"
-
-                                >
-                                    <span className='ms-3'>Quản lý giáo viên</span>
-                                </Link>
-                                <Link
-                                    to="/student"
-                                    className="list-group-item list-group-item-action py-2 ripple mb-2 text-start"
-
-                                >
-                                    <span className='ms-3'>Quản lý sinh viên</span>
-                                </Link>
-                            </div>
-                        }
-                    </div>
-                </div>
-            </nav>
+                    </SubMenu>
+                </Menu>
+            </Sider>
 
         </>
     );
