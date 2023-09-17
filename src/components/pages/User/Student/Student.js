@@ -10,15 +10,11 @@ import supabase from '../../../../supabaseClient';
 import { columnConfig, data, expandConfig } from './Studentconstants';
 import TableCommon from '../../../common/TableCommon/TableCommon';
 import UploadFile from '../../../UploadFile/UploadFile';
+import flattenObj from '../../../../helpers/flattenObj'
+import { NUMBER_ITEM_PER_PAGE, DEFAULT_CURRENT_PAGE } from '../../../../const/table';
 const { confirm } = Modal;
 
 const Student = () => {
-
-    const baseRequest = {
-        page: 0,
-        size: 10
-    };
-
     const { isAdmin } = useContext(AuthContext);
     const { openNotification } = useContext(NotificationContext);
     const [openEditModal, setOpenEditModal] = useState();
@@ -26,17 +22,19 @@ const Student = () => {
     const [updateStudent, setUpdateStudent] = useState({});
     const [fileList, setFileList] = useState([])
     const [confirmLoading, setConfirmLoading] = useState(false);
-    const [dataRequest, setDataRequest] = useState(baseRequest);
+    const [currentPage, setCurrentPage] = useState(DEFAULT_CURRENT_PAGE)
 
 
-    const { data: student, requestAction: refetchData } = useSupbaseAction({
+    const { data: students, requestAction: refetchData, count: totalCountData } = useSupbaseAction({
         initialData: [],
-        firstLoad: true, defaultAction: async () => supabase
-            .from('student')
+        firstLoad: true, defaultAction: async ({ page = 1 }) => supabase
+            .from('students')
             .select(`
                 *,
-                profiles(name)
+                profiles(name, user_code, phone, address, email, auth_id),
+                majors(major_code, major_name, departments(department_name))
             `)
+            .range((page - 1) * NUMBER_ITEM_PER_PAGE, NUMBER_ITEM_PER_PAGE * page - 1)
     });
 
     // tùy chọn hiển thị data
@@ -57,7 +55,7 @@ const Student = () => {
                 <i
                     role="button"
                     className="fa-solid fa-trash mx-2"
-                    onClick={() => ConfirmModal(item.id)}
+                    onClick={() => { console.log('item', item); ConfirmModal(item.id) }}
                 ></i>
             </>);
         }
@@ -66,20 +64,21 @@ const Student = () => {
 
     // gọi lại api khi change page
     const onChangePage = useCallback(
-        page => {
-            const newDataRequest = {
-                ...dataRequest,
-                page,
-            };
-            setDataRequest(newDataRequest);
+        async page => {
+            setCurrentPage(page)
+            await refetchData({
+                params: {
+                    page
+                }
+            })
         },
-        [dataRequest, setDataRequest],
+        [refetchData],
     );
 
-    const handleDeleteStudent = async (id) => {
+    const handleDeleteStudent = async ({ id }) => {
         setConfirmLoading(true);
         const { error } = await supabase
-            .from('student')
+            .from('students')
             .delete()
             .eq('id', id)
         setConfirmLoading(false);
@@ -136,6 +135,7 @@ const Student = () => {
             centered: true,
             confirmLoading: confirmLoading,
             onOk() {
+                console.log('delete id', id)
                 handleDeleteStudent({ id })
             },
             onCancel() { },
@@ -158,7 +158,7 @@ const Student = () => {
     );
 
     const expandCondition = (record) => (data.length > 0);
-
+    console.log('students', students?.map(item => flattenObj({ obj: item })))
     return (
         <>
             <h4 className='title'>Quản lý sinh viên</h4>
@@ -186,17 +186,17 @@ const Student = () => {
             <div className='p-5'>
                 <TableCommon
                     columns={columnConfig}
-                    data={data || []}
                     primaryKey='key'
+                    data={students?.map(item => flattenObj({ obj: item }))}
                     parseFunction={parseData}
                     isShowPaging
                     onChangePage={page => onChangePage(page - 1)}
-                    totalCountData={data.length || 0}
-                    defaultPage={(dataRequest.page + 1) || 1}
-                    currentPage={dataRequest.page + 1}
-                    totalDisplay={dataRequest.size || 10}
+                    totalCountData={totalCountData}
+                    defaultPage={DEFAULT_CURRENT_PAGE}
+                    currentPage={currentPage}
+                    totalDisplay={NUMBER_ITEM_PER_PAGE}
                     expandCondition={(record) => expandCondition(record)}
-                    renderExpandContent={data.length > 0 ?
+                    renderExpandContent={students?.map(item => flattenObj({ obj: item })).length > 0 ?
                         (record) => renderExpandContent(record) : null}
                     bordered
                 />

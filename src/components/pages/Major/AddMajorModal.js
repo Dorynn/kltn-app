@@ -9,7 +9,7 @@ const AddMajorModal = ({ refetchData, isOpen }) => {
     const [newMajor, setNewMajor] = useState({
         major_code: '',
         ministry_major_code: '',
-        major_chair_code: ''
+        major_chair_id: ''
     });
     const [ministryMajorData, setMinistryMajorData] = useState([]);
     const { openNotification } = useContext(NotificationContext);
@@ -63,9 +63,9 @@ const AddMajorModal = ({ refetchData, isOpen }) => {
                 showSearch
                 optionFilterProp='children'
                 filterOption={(input, option) => (option?.label ?? "").includes(input)}
-                onChange={(value) => setNewMajor(prev => ({ ...prev, department_code: value }))}
-                options={departments.map(item => ({ value: item.department_code, label: `${item.department_code} - ${item.department_name}` }))}
-                value={newMajor.department_code}
+                onChange={(value) => setNewMajor(prev => ({ ...prev, department_id: value }))}
+                options={departments.map(item => ({ value: item.id, label: `${item.department_code} - ${item.department_name}` }))}
+                value={newMajor.department_id}
             />
         </Form.Item>
         <Form.Item label="Mã trưởng ngành">
@@ -73,9 +73,9 @@ const AddMajorModal = ({ refetchData, isOpen }) => {
                 showSearch
                 optionFilterProp='children'
                 filterOption={(input, option) => (option?.label ?? "").includes(input)}
-                options={profiles.map(({ user_code, name }) => ({ label: `${user_code}-${name}`, value: user_code }))}
-                onChange={(value) => setNewMajor(prev => ({ ...prev, major_chair_code: value }))}
-                value={newMajor.major_chair_code}
+                options={profiles.map(({ user_code, name, id }) => ({ label: `${user_code}-${name}`, value: id }))}
+                onChange={(value) => setNewMajor(prev => ({ ...prev, major_chair_id: value }))}
+                value={newMajor.major_chair_id}
             />
         </Form.Item>
     </Form>)
@@ -112,8 +112,8 @@ const AddMajorModal = ({ refetchData, isOpen }) => {
         setNewMajor({
             major_code: '',
             ministry_major_code: '',
-            major_chair_code: '',
-            department_code: '',
+            major_chair_id: '',
+            department_id: '',
         })
     }, [isOpen])
 

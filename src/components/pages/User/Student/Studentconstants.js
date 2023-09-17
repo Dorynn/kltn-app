@@ -1,32 +1,32 @@
 export const fieldAddStudent = [
     {
         label: 'Mã sinh viên',
-        field: 'student_code',
+        field: 'user_code',
         type: 'INPUT',
     },
     {
         label: 'Họ và tên',
-        field: 'student_name',
+        field: 'name',
         type: 'INPUT',
     },
     {
         label: 'Mã ngành',
-        field: 'department_code',
+        field: 'major_id',
         type: 'SELECT',
     },
     {
         label: 'Khóa',
-        field: 'course',
+        field: 'school_year',
         type: 'INPUT',
     },
     {
         label: 'Lớp',
-        field: 'classroom',
+        field: 'student_class',
         type: 'INPUT',
     },
     {
         label: 'Số điện thoại',
-        field: 'phoneNumber',
+        field: 'phone',
         type: 'INPUT',
     },
     {
@@ -50,27 +50,27 @@ export const columnConfig = [
     },
     {
         title: 'Mã sinh viên',
-        dataIndex: 'student_code',
-        key: 'student_code',
+        dataIndex: 'user_code',
+        key: 'user_code',
         align: 'center',
         expand: true,
     },
     {
         title: 'Họ và tên',
-        dataIndex: 'student_name',
-        key: 'student_name',
+        dataIndex: 'name',
+        key: 'name',
         align: 'center',
     },
     {
         title: 'Mã ngành',
-        dataIndex: 'department_code',
-        key: 'department_code',
+        dataIndex: 'major_code',
+        key: 'major_code',
         align: 'center',
     },
     {
         title: 'Khóa',
-        dataIndex: 'course',
-        key: 'course',
+        dataIndex: 'school_year',
+        key: 'school_year',
         align: 'center',
     },
     // {
@@ -104,28 +104,28 @@ export const columnConfig = [
 export const expandConfig = [
     {
         label: 'Mã sinh viên',
-        field: 'student_code',
-        key: 'student_code',
+        field: 'user_code',
+        key: 'user_code',
     },
     {
         label: 'Họ và tên',
-        field: 'student_name',
-        key: 'student_name',
+        field: 'name',
+        key: 'user_name',
     },
     {
         label: 'Lớp',
-        field: 'classroom',
-        key: 'classroom',
+        field: 'student_class',
+        key: 'student_class',
     },
     {
         label: 'Số điện thoại',
-        field: 'phoneNumber',
-        key: 'phoneNumber',
+        field: 'phone',
+        key: 'phone',
     },
     {
         label: 'Tên khoa',
-        field: 'course',
-        key: 'course',
+        field: 'major_name',
+        key: 'major_name',
     },
     {
         label: 'Email',
@@ -134,8 +134,8 @@ export const expandConfig = [
     },
     {
         label: 'Tên ngành',
-        field: 'department_code',
-        key: 'department_code',
+        field: 'department_name',
+        key: 'department_name',
     },
     {
         label: 'Địa chỉ',

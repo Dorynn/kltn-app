@@ -13,9 +13,9 @@ const EditSubjectModal = ({ updateSubject, setUpdateSubject, refetchData, isOpen
         initialData: [],
         firstLoad: true, defaultAction: async () => supabase
             .from('majors')
-            .select(`major_name, major_code`)
+            .select(`major_name, major_code, id`)
     })
-
+    console.log('majors', majors)
     const editSubjectModalContent = (<Form
         labelCol={{ span: 6 }}
         wrapperCol={{ span: 18 }}
@@ -32,9 +32,9 @@ const EditSubjectModal = ({ updateSubject, setUpdateSubject, refetchData, isOpen
                 showSearch
                 optionFilterProp='children'
                 filterOption={(input, option) => (option?.label ?? "").includes(input)}
-                onChange={(value) => setUpdateSubject(prev => ({ ...prev, major_code: value }))}
-                options={majors.map(item => ({ label: `${item.major_code} - ${item.major_name}`, value: item.major_code }))}
-                value={updateSubject.major_code}
+                onChange={(value) => setUpdateSubject(prev => ({ ...prev, major_id: value }))}
+                options={majors.map(item => ({ label: `${item.major_code} - ${item.major_name}`, value: item.id }))}
+                value={updateSubject.major_id}
             />
         </Form.Item>
         <Form.Item label="Số tín chỉ">

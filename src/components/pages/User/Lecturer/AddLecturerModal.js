@@ -4,14 +4,16 @@ import supabase from '../../../../supabaseClient';
 import useModal from '../../../../hooks/modal/useModal';
 import { Form, Input, Select } from "antd";
 import { fieldAddLecturer, options } from './Lecturerconstants';
+import useSupbaseAction from '../../../../hooks/useSupabase/useSupabaseAction';
+import prepareOptions from '../../../../helpers/prepareOptions';
 
 function AddLecturerModal(props) {
 
     const baseData = {
-        lecturer_code: '',
-        lecturer_name: '',
-        major_code: '',
-        phoneNumber: '',
+        user_code: '',
+        name: '',
+        major_id: '',
+        phone: '',
         email: '',
     };
 
@@ -25,14 +27,20 @@ function AddLecturerModal(props) {
         }
     }, [isOpen])
 
+    const { data: majors } = useSupbaseAction({
+        initialData: [],
+        firstLoad: true, defaultAction: async () => supabase
+            .from('majors')
+            .select(`major_code, id`)
+    })
+
 
     const handleCreateLecturer = async () => {
-        const { error } = await supabase
-            .from('lecturers')
-            .insert([
-                newLecturer
-            ])
-            .select()
+        console.log('*** lecturer ***', newLecturer)
+        const { error } = await supabase.functions.invoke('users?isCreate=true', {
+            method: 'POST',
+            body: { user: { ...newLecturer, university_role: 'teacher' } }
+        })
         if (!error) {
             await refetchData({})
             return openNotification({
@@ -46,26 +54,15 @@ function AddLecturerModal(props) {
         })
     };
 
-    const handleUpdateDataLecturer = (event, item) => {
+    const handleUpdateDataLecturer = ({ field, value }) => {
         // event: giá trị , item: item config
-        if (item.type === 'INPUT') {
-            const newDataRequest = {
-                ...newLecturer,
-                [item.field]: event ? event.target.value : '',
-            };
-            return setNewLecturer(newDataRequest);
-        }
-        const newDataRequest = {
-            ...newLecturer,
-            [item.field]: event ? event : '',
-        };
-        return setNewLecturer(newDataRequest);
+        return setNewLecturer(prev => ({ ...prev, [field]: value }));
     };
 
     // get data cho các select options
     const handleGetOptions = field => {
-        if (field === 'department_code') {
-            return options || [];
+        if (field === 'major_id') {
+            return prepareOptions({ data: majors, labelField: 'major_code', valueField: 'id' })
         }
         return [];
     };
@@ -76,7 +73,10 @@ function AddLecturerModal(props) {
             return (
                 <Input
                     value={newLecturer[item.field]}
-                    onChange={e => handleUpdateDataLecturer(e, item)}
+                    onChange={e => handleUpdateDataLecturer({
+                        field: item.field,
+                        value: e.target.value
+                    })}
                 />
             );
         }
@@ -84,7 +84,10 @@ function AddLecturerModal(props) {
             return (
                 <Select
                     options={handleGetOptions(item.field) || []}
-                    onChange={e => handleUpdateDataLecturer(e, item)}
+                    onChange={value => handleUpdateDataLecturer({
+                        field: item.field,
+                        value: value
+                    })}
                 ></Select>
             );
         }

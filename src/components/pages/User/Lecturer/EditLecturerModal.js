@@ -4,6 +4,8 @@ import NotificationContext from '../../../../context/notificationContext';
 import supabase from '../../../../supabaseClient';
 import useModal from '../../../../hooks/modal/useModal';
 import { fieldAddLecturer, options } from './Lecturerconstants';
+import useSupbaseAction from '../../../../hooks/useSupabase/useSupabaseAction';
+import prepareOptions from '../../../../helpers/prepareOptions';
 
 function EditLecturerModal(props) {
     const { updateLecturer, setUpdateLecturer, refetchData, isOpen, setIsOpen } = props;
@@ -14,47 +16,60 @@ function EditLecturerModal(props) {
             toggleModal(isOpen);
         }
     }, [isOpen])
+    const getUserEmail = async function () {
+        let { data: email, error } = await supabase
+            .rpc('get_email', {
+                auth_id_param: updateLecturer.auth_id
+            })
+
+        if (error) console.error(error)
+        else setUpdateLecturer(prev => ({ ...prev, email }))
+    }
+    useEffect(() => {
+        getUserEmail()
+    }, [])
+
+    const { data: majors } = useSupbaseAction({
+        initialData: [],
+        firstLoad: true, defaultAction: async () => supabase
+            .from('majors')
+            .select(`major_code, id`)
+    })
+    useEffect(() => {
+        if (isOpen) {
+            toggleModal(isOpen);
+        }
+    }, [isOpen])
 
     const handleUpdateLecturer = async () => {
+        console.log('updateChargePerson', updateLecturer)
         const { error } = await supabase
-            .from('chargePersons')
-            .update(updateLecturer)
-            .eq('id', updateLecturer.id)
-            .select()
+        await supabase.functions.invoke('users?role=teacher&isUpdate=true', {
+            method: 'POST',
+            body: { ...updateLecturer }
+        })
         if (!error) {
-            await refetchData({})
+            await refetchData({});
             setIsOpen(false);
             return openNotification({
-                message: 'Update chargePerson successfully'
-            })
+                message: 'Update teacher successfully'
+            });
         }
         return openNotification({
             type: 'error',
-            message: 'Update chargePerson failed',
+            message: 'Update teacher failed',
             description: error.message
-        })
+        });
     };
 
-    const handleUpdateDataLecturer = (event, item) => {
-        // event: giá trị , item: item config
-        if (item.type === 'INPUT') {
-            const newDataRequest = {
-                ...updateLecturer,
-                [item.field]: event ? event.target.value : '',
-            };
-            return setUpdateLecturer(newDataRequest);
-        }
-        const newDataRequest = {
-            ...updateLecturer,
-            [item.field]: event ? event : '',
-        };
-        return setUpdateLecturer(newDataRequest);
+    const handleUpdateDataLecturer = ({ field, value }) => {
+        return setUpdateLecturer(prev => ({ ...prev, [field]: value }));
     };
 
     // get data cho các select options
     const handleGetOptions = field => {
-        if (field === 'department_code') {
-            return options || [];
+        if (field === 'major_id') {
+            return prepareOptions({ data: majors, labelField: 'major_code', valueField: 'id' })
         }
         return [];
     };
@@ -65,7 +80,10 @@ function EditLecturerModal(props) {
             return (
                 <Input
                     value={updateLecturer[item.field]}
-                    onChange={e => handleUpdateDataLecturer(e, item)}
+                    onChange={e => handleUpdateDataLecturer({
+                        field: item.field,
+                        value: e.target.value
+                    })}
                 />
             );
         }
@@ -75,7 +93,10 @@ function EditLecturerModal(props) {
                 <Select
                     options={handleGetOptions(item.field) || []}
                     value={updateLecturer[item.field]}
-                    onChange={e => handleUpdateDataLecturer(e, item)}
+                    onChange={value => handleUpdateDataLecturer({
+                        field: item.field,
+                        value: value
+                    })}
                 ></Select>
             );
         }

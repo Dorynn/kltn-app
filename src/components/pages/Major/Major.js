@@ -25,10 +25,10 @@ const Major = () => {
     const { data: majors, requestAction: refetchData } = useSupbaseAction({
         initialData: [],
         firstLoad: true, defaultAction: async () => supabase
-        .from('majors')
-        .select(`
+            .from('majors')
+            .select(`
         *,
-        profiles(name),
+        profiles(name, user_code),
         departments(department_name, department_code)
         `)
     })
@@ -105,11 +105,11 @@ const Major = () => {
 
     };
 
-    const columns=[
+    const columns = [
         {
             title: 'STT',
-            dataIndex: 'no',  
-            width: '5%'  
+            dataIndex: 'no',
+            width: '5%'
         },
         {
             title: 'Mã ngành',
@@ -140,16 +140,16 @@ const Major = () => {
                     {isAdmin &&
                         <>
                             <i role="button" className="fa-solid fa-pen-to-square ms-2 me-3" onClick={() => {
-                                            setUpdateMajor({
-                                                id: record.key,
-                                                major_code: record.major_code, 
-                                                major_name: record.major_name, 
-                                                major_chair_code: record.major_chair_code,
-                                                department_code: record.department_code,
-                                                ministry_major_code: record.ministry_major_code
-                                            })
-                                            setOpenEditModal(!openEditModal)
-                                        }}></i>
+                                setUpdateMajor({
+                                    id: record.key,
+                                    major_code: record.major_code,
+                                    major_name: record.major_name,
+                                    major_chair_id: record.major_chair_id,
+                                    department_id: record.department_id,
+                                    ministry_major_code: record.ministry_major_code
+                                })
+                                setOpenEditModal(!openEditModal)
+                            }}></i>
                             <i role="button" className="fa-solid fa-trash" onClick={() => ConfirmModal({ id: record.key })}></i>
                         </>
                     }
@@ -158,18 +158,20 @@ const Major = () => {
         }
     ]
 
-    const dataSource=[];
+    const dataSource = [];
     majors.forEach((item, index) => {
         dataSource.push({
             key: item.id,
-            no: index+1,
-            major_code: item.major_code, 
-            major_name: item.major_name, 
-            major_chair_code: item.major_chair_code, 
-            major_chair_name: item.profiles.name, 
+            no: index + 1,
+            major_code: item.major_code,
+            major_name: item.major_name,
+            major_chair_code: item.profiles.user_code,
+            major_chair_name: item.profiles.name,
             department_name: item.departments.department_name,
-            department_code: item.department_code,
-            ministry_major_code: item.ministry_major_code
+            department_code: item.departments.department_code,
+            ministry_major_code: item.ministry_major_code,
+            major_chair_id: item.major_chair_id,
+            department_id: item.department_id
         })
     })
 

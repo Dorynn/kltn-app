@@ -11,6 +11,9 @@ import supabase from '../../../../supabaseClient';
 import UploadFile from '../../../UploadFile/UploadFile';
 import { columnConfig, data, expandConfig } from './Lecturerconstants';
 import TableCommon from '../../../common/TableCommon/TableCommon';
+import flattenObj from '../../../../helpers/flattenObj'
+import { NUMBER_ITEM_PER_PAGE, DEFAULT_CURRENT_PAGE } from '../../../../const/table';
+
 const { confirm } = Modal;
 
 const Lecturer = () => {
@@ -27,16 +30,21 @@ const Lecturer = () => {
     const [fileList, setFileList] = useState([])
     const [confirmLoading, setConfirmLoading] = useState(false);
     const [dataRequest, setDataRequest] = useState(baseRequest);
+    const [currentPage, setCurrentPage] = useState(DEFAULT_CURRENT_PAGE)
 
 
-    const { data: lecturer, requestAction: refetchData } = useSupbaseAction({
+    const { data: lecturer, requestAction: refetchData, count: totalCountData } = useSupbaseAction({
         initialData: [],
-        firstLoad: true, defaultAction: async () => supabase
-            .from('lecturer')
+        firstLoad: true, defaultAction: async ({ page = 1 }) => supabase
+            .from('teachers')
             .select(`
-                *,
-                profiles(name)
+                id,
+                user_id,
+                major_id,
+                profiles(name, user_code, phone, address, email, auth_id),
+                majors(major_code, departments(department_name))
             `)
+            .range((page - 1) * NUMBER_ITEM_PER_PAGE, NUMBER_ITEM_PER_PAGE * page - 1)
     });
 
     // tùy chọn hiển thị data
@@ -57,7 +65,7 @@ const Lecturer = () => {
                 <i
                     role="button"
                     className="fa-solid fa-trash mx-2"
-                    onClick={() => ConfirmModal(item.id)}
+                    onClick={() => { ConfirmModal(item.id); console.log('delete', item) }}
                 ></i>
             </>);
         }
@@ -66,20 +74,21 @@ const Lecturer = () => {
 
     // gọi lại api khi change page
     const onChangePage = useCallback(
-        page => {
-            const newDataRequest = {
-                ...dataRequest,
-                page,
-            };
-            setDataRequest(newDataRequest);
+        async page => {
+            setCurrentPage(page)
+            await refetchData({
+                params: {
+                    page
+                }
+            })
         },
-        [dataRequest, setDataRequest],
+        [refetchData],
     );
 
     const handleDeleteLecturer = async ({ id }) => {
         setConfirmLoading(true);
         const { error } = await supabase
-            .from('lecturer')
+            .from('teachers')
             .delete()
             .eq('id', id)
         setConfirmLoading(false);
@@ -157,7 +166,7 @@ const Lecturer = () => {
             ))}
         </div>
     );
-
+    console.log('lecturer', lecturer?.map(item => flattenObj({ obj: item })))
     const expandCondition = (record) => (data.length > 0);
 
     return (
@@ -187,17 +196,17 @@ const Lecturer = () => {
             <div className='p-5'>
                 <TableCommon
                     columns={columnConfig}
-                    data={data || []}
+                    data={lecturer?.map(item => flattenObj({ obj: item })) || []}
                     primaryKey='key'
                     parseFunction={parseData}
                     isShowPaging
                     onChangePage={page => onChangePage(page - 1)}
-                    totalCountData={data.length || 0}
-                    defaultPage={(dataRequest.page + 1) || 1}
-                    currentPage={dataRequest.page + 1}
-                    totalDisplay={dataRequest.size || 10}
+                    totalCountData={totalCountData}
+                    defaultPage={DEFAULT_CURRENT_PAGE}
+                    currentPage={currentPage}
+                    totalDisplay={NUMBER_ITEM_PER_PAGE}
                     expandCondition={(record) => expandCondition(record)}
-                    renderExpandContent={data.length > 0 ?
+                    renderExpandContent={lecturer?.map(item => flattenObj({ obj: item })).length > 0 ?
                         (record) => renderExpandContent(record) : null}
                     bordered
                 />

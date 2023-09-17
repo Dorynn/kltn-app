@@ -4,15 +4,17 @@ import supabase from '../../../../supabaseClient';
 import useModal from '../../../../hooks/modal/useModal';
 import { Form, Input, Select } from "antd";
 import { fieldAddStudent, options } from './Studentconstants';
+import useSupbaseAction from '../../../../hooks/useSupabase/useSupabaseAction';
+import prepareOptions from '../../../../helpers/prepareOptions';
 
 function AddStudentModal(props) {
     const baseData = {
-        student_code: '',
-        student_name: '',
-        department_code: '',
-        course: '',
-        classroom: '',
-        phoneNumber: '',
+        user_code: '',
+        name: '',
+        major_id: '',
+        school_year: '',
+        student_class: '',
+        phone: '',
         email: '',
         address: ''
     };
@@ -26,14 +28,19 @@ function AddStudentModal(props) {
         }
     }, [isOpen])
 
+    const { data: majors } = useSupbaseAction({
+        initialData: [],
+        firstLoad: true, defaultAction: async () => supabase
+            .from('majors')
+            .select(`major_code, id`)
+    })
 
     const handleCreateStudent = async () => {
-        const { error } = await supabase
-            .from('students')
-            .insert([
-                newStudent
-            ])
-            .select()
+        console.log('*** data ***', newStudent)
+        const { error } = await supabase.functions.invoke('users', {
+            method: 'POST',
+            body: { user: { ...newStudent, university_role: 'student' } }
+        })
         if (!error) {
             await refetchData({})
             setIsOpen(false);
@@ -48,26 +55,14 @@ function AddStudentModal(props) {
         })
     };
 
-    const handleUpdateDataStudent = (event, item) => {
+    const handleUpdateDataStudent = ({ field, value }) => {
         // event: giá trị , item: item config
-        if (item.type === 'INPUT') {
-            const newDataRequest = {
-                ...newStudent,
-                [item.field]: event ? event.target.value : '',
-            };
-            return setNewStudent(newDataRequest);
-        }
-        const newDataRequest = {
-            ...newStudent,
-            [item.field]: event ? event : '',
-        };
-        return setNewStudent(newDataRequest);
+        return setNewStudent(prev => ({ ...prev, [field]: value }));
     };
-
     // get data cho các select options
     const handleGetOptions = field => {
-        if (field === 'department_code') {
-            return options || [];
+        if (field === 'major_id') {
+            return prepareOptions({ data: majors, labelField: 'major_code', valueField: 'id' })
         }
         return [];
     };
@@ -78,7 +73,10 @@ function AddStudentModal(props) {
             return (
                 <Input
                     value={newStudent[item.field]}
-                    onChange={e => handleUpdateDataStudent(e, item)}
+                    onChange={e => handleUpdateDataStudent({
+                        field: item.field,
+                        value: e.target.value
+                    })}
                 />
             );
         }
@@ -86,7 +84,10 @@ function AddStudentModal(props) {
             return (
                 <Select
                     options={handleGetOptions(item.field) || []}
-                    onChange={e => handleUpdateDataStudent(e, item)}
+                    onChange={value => handleUpdateDataStudent({
+                        field: item.field,
+                        value: value
+                    })}
                 ></Select>
             );
         }

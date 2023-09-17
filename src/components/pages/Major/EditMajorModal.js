@@ -55,9 +55,9 @@ const EditMajorModal = ({ updateMajor, setUpdateMajor, refetchData, isOpen }) =>
                 showSearch
                 optionFilterProp='children'
                 filterOption={(input, option) => (option?.label ?? "").includes(input)}
-                onChange={(value) => setUpdateMajor(prev => ({ ...prev, department_code: value }))}
-                options={departments.map(item => ({ value: item.department_code, label: `${item.department_code} - ${item.department_name}` }))}
-                value={updateMajor.department_code}
+                onChange={(value) => setUpdateMajor(prev => ({ ...prev, department_id: value }))}
+                options={departments.map(item => ({ value: item.id, label: `${item.department_code} - ${item.department_name}` }))}
+                value={updateMajor.department_id}
             />
         </Form.Item>
         <Form.Item label="Mã trưởng ngành">
@@ -65,9 +65,9 @@ const EditMajorModal = ({ updateMajor, setUpdateMajor, refetchData, isOpen }) =>
                 showSearch
                 optionFilterProp='children'
                 filterOption={(input, option) => (option?.label ?? "").includes(input)}
-                options={profiles.map(({ user_code, name }) => ({ label: `${user_code}-${name}`, value: user_code }))}
-                onChange={(value) => setUpdateMajor(prev => ({ ...prev, major_chair_code: value }))}
-                value={updateMajor.major_chair_code}
+                options={profiles.map(({ user_code, name, id }) => ({ label: `${user_code}-${name}`, value: id }))}
+                onChange={(value) => setUpdateMajor(prev => ({ ...prev, major_chair_id: value }))}
+                value={updateMajor.major_chair_id}
             />
         </Form.Item>
     </Form>)

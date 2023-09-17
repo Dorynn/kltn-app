@@ -9,7 +9,7 @@ const AddSubjectModal = ({ refetchData, isOpen }) => {
     const [newSubject, setNewSubject] = useState({
         course_code: '',
         course_name: '',
-        major_code: '',
+        major_id: '',
         course_credits: '',
         credit_coefficient: ''
     });
@@ -18,7 +18,7 @@ const AddSubjectModal = ({ refetchData, isOpen }) => {
         initialData: [],
         firstLoad: true, defaultAction: async () => supabase
             .from('majors')
-            .select(`major_name, major_code`)
+            .select(`major_name, major_code, id`)
     })
 
     const createSubjectModalContent = (<Form
@@ -37,9 +37,9 @@ const AddSubjectModal = ({ refetchData, isOpen }) => {
                 showSearch
                 optionFilterProp='children'
                 filterOption={(input, option) => (option?.label ?? "").includes(input)}
-                onChange={(value) => setNewSubject(prev => ({ ...prev, major_code: value }))}
-                options={majors.map(item => ({ label: `${item.major_code} - ${item.major_name}`, value: item.major_code }))}
-                value={newSubject.major_code}
+                onChange={(value) => setNewSubject(prev => ({ ...prev, major_id: value }))}
+                options={majors.map(item => ({ label: `${item.major_code} - ${item.major_name}`, value: item.id }))}
+                value={newSubject.major_id}
             />
         </Form.Item>
         <Form.Item label="Số tín chỉ">
@@ -81,7 +81,7 @@ const AddSubjectModal = ({ refetchData, isOpen }) => {
         setNewSubject({
             course_code: '',
             course_name: '',
-            major_code: '',
+            major_id: '',
             course_credits: '',
             credit_coefficient: ''
         })

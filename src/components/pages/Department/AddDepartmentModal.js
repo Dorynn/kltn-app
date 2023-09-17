@@ -9,7 +9,7 @@ const AddDepartmentModal = ({ refetchData, isOpen }) => {
     const [newDepartment, setNewDepartment] = useState({
         department_code: '',
         department_name: '',
-        dean_code: ''
+        dean_id: ''
     });
     const { openNotification } = useContext(NotificationContext);
     const { data: profiles } = useSupbaseAction({
@@ -34,9 +34,9 @@ const AddDepartmentModal = ({ refetchData, isOpen }) => {
                 showSearch
                 optionFilterProp='children'
                 filterOption={(input, option) => (option?.label ?? "").includes(input)}
-                options={profiles.map(({ user_code, name}) => ({ label: `${user_code} - ${name}`, value: user_code }))}
-                onChange={(value) => setNewDepartment(prev => ({ ...prev, dean_code: value }))}
-                value={newDepartment.dean_code}
+                options={profiles.map(({ user_code, name, id }) => ({ label: `${user_code} - ${name}`, value: id }))}
+                onChange={(value) => setNewDepartment(prev => ({ ...prev, dean_id: value }))}
+                value={newDepartment.dean_id}
             />
         </Form.Item>
     </Form>)
@@ -71,7 +71,7 @@ const AddDepartmentModal = ({ refetchData, isOpen }) => {
         setNewDepartment({
             department_code: '',
             department_name: '',
-            dean_code: ''
+            dean_id: ''
         })
     }, [isOpen])
 

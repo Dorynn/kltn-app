@@ -4,6 +4,8 @@ import NotificationContext from '../../../../context/notificationContext';
 import supabase from '../../../../supabaseClient';
 import useModal from '../../../../hooks/modal/useModal';
 import { fieldAddStudent, options } from './Studentconstants';
+import useSupbaseAction from '../../../../hooks/useSupabase/useSupabaseAction';
+import prepareOptions from '../../../../helpers/prepareOptions';
 
 function EditStudentModal(props) {
     const { updateStudent, setUpdateStudent, refetchData, isOpen, setIsOpen } = props;
@@ -15,46 +17,55 @@ function EditStudentModal(props) {
         }
     }, [isOpen])
 
+    const getUserEmail = async function () {
+        let { data: email, error } = await supabase
+            .rpc('get_email', {
+                auth_id_param: updateStudent.auth_id
+            })
+
+        if (error) console.error(error)
+        else setUpdateStudent(prev => ({ ...prev, email }))
+    }
+    useEffect(() => {
+        getUserEmail()
+    }, [])
+
+    const { data: majors } = useSupbaseAction({
+        initialData: [],
+        firstLoad: true, defaultAction: async () => supabase
+            .from('majors')
+            .select(`major_code, id`)
+    })
+
     const handleUpdateStudent = async () => {
+        console.log('updateChargePerson', updateStudent)
         const { error } = await supabase
-            .from('students')
-            .update(updateStudent)
-            .eq('id', updateStudent.id)
-            .select()
+        await supabase.functions.invoke('users?role=student&isUpdate=true', {
+            method: 'POST',
+            body: { ...updateStudent }
+        })
         if (!error) {
             await refetchData({});
             setIsOpen(false);
             return openNotification({
-                message: 'Update student successfully'
-            })
+                message: 'Update teacher successfully'
+            });
         }
         return openNotification({
             type: 'error',
-            message: 'Update student failed',
+            message: 'Update teacher failed',
             description: error.message
-        })
+        });
     };
 
-    const handleUpdateDataStudent = (event, item) => {
-        // event: giá trị , item: item config
-        if (item.type === 'INPUT') {
-            const newDataRequest = {
-                ...updateStudent,
-                [item.field]: event ? event.target.value : '',
-            };
-            return setUpdateStudent(newDataRequest);
-        }
-        const newDataRequest = {
-            ...updateStudent,
-            [item.field]: event ? event : '',
-        };
-        return setUpdateStudent(newDataRequest);
+    const handleUpdateDataStudent = ({ field, value }) => {
+        return setUpdateStudent(prev => ({ ...prev, [field]: value }));
     };
 
     // get data cho các select options
     const handleGetOptions = field => {
-        if (field === 'department_code') {
-            return options || [];
+        if (field === 'major_id') {
+            return prepareOptions({ data: majors, labelField: 'major_code', valueField: 'id' })
         }
         return [];
     };
@@ -65,7 +76,10 @@ function EditStudentModal(props) {
             return (
                 <Input
                     value={updateStudent[item.field]}
-                    onChange={e => handleUpdateDataStudent(e, item)}
+                    onChange={e => handleUpdateDataStudent({
+                        field: item.field,
+                        value: e.target.value
+                    })}
                 />
             );
         }
@@ -75,7 +89,10 @@ function EditStudentModal(props) {
                 <Select
                     options={handleGetOptions(item.field) || []}
                     value={updateStudent[item.field]}
-                    onChange={e => handleUpdateDataStudent(e, item)}
+                    onChange={value => handleUpdateDataStudent({
+                        field: item.field,
+                        value: value
+                    })}
                 ></Select>
             );
         }

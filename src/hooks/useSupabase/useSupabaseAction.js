@@ -6,12 +6,13 @@ export default function useSupbaseAction({ defaultAction, firstLoad = true, init
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(null);
     const [data, setData] = useState(initialData);
-    const requestAction = async ({ action = defaultAction, successMessage = '' }) => {
+    const [count, setCount] = useState(0)
+    const requestAction = async ({ action = defaultAction, successMessage = '', params = {} }) => {
         try {
             setSuccess(null);
             setError(null);
             setLoading(true)
-            const { data, error } = await action();
+            const { data, error, count } = await action(params);
             if (!fetched) {
                 setFetched(true)
             }
@@ -24,6 +25,7 @@ export default function useSupbaseAction({ defaultAction, firstLoad = true, init
                     message: successMessage
                 });
                 setData(data);
+                setCount(count)
             }
         } catch (err) {
             setError({
@@ -44,6 +46,7 @@ export default function useSupbaseAction({ defaultAction, firstLoad = true, init
         error,
         data,
         requestAction,
-        success
+        success,
+        count
     }
 }

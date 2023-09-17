@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useState } from 'react';
+import React, { useCallback, useContext, useState, useEffect } from 'react';
 import { ExclamationCircleFilled } from '@ant-design/icons';
 import { Modal } from 'antd';
 import AddChargePersonModal from './AddChargePersonModal';
@@ -7,23 +7,16 @@ import AuthContext from '../../../../context/authContext';
 import NotificationContext from '../../../../context/notificationContext';
 import useSupbaseAction from '../../../../hooks/useSupabase/useSupabaseAction';
 import supabase from '../../../../supabaseClient';
-import { columnConfig, data } from './ChargePersonconstants';
+import { columnConfig } from './ChargePersonconstants';
 import TableCommon from '../../../common/TableCommon/TableCommon';
 import Loading from '../../../common/Loading/Loading';
 import UploadFile from '../../../UploadFile/UploadFile';
+import { NUMBER_ITEM_PER_PAGE, DEFAULT_CURRENT_PAGE } from '../../../../const/table';
+import flattenObj from '../../../../helpers/flattenObj'
+
 const { confirm } = Modal;
 
 const ChargePerson = () => {
-
-    const baseRequest = {
-        name: '',
-        age: 0,
-        address: '',
-        description: '',
-        page: 0,
-        size: 10
-    };
-
     const { isAdmin } = useContext(AuthContext);
     const { openNotification } = useContext(NotificationContext);
     const [openEditModal, setOpenEditModal] = useState(false);
@@ -31,21 +24,23 @@ const ChargePerson = () => {
     const [updateChargePerson, setUpdateChargePerson] = useState({});
     const [fileList, setFileList] = useState([]);
     const [confirmLoading, setConfirmLoading] = useState(false);
-    const [isLoading, setIsLoading] = useState(true);
-    const [dataRequest, setDataRequest] = useState(baseRequest);
+    const [currentPage, setCurrentPage] = useState(DEFAULT_CURRENT_PAGE)
 
 
-    const { data: chargePerson, requestAction: refetchData } = useSupbaseAction({
+    const { data: chargePerson, requestAction: refetchData, loading: tableLoading, count: totalCountData } = useSupbaseAction({
         initialData: [],
-        firstLoad: true, 
-        defaultAction: async () => supabase
+        firstLoad: true,
+        defaultAction: async ({ page = 1 }) => supabase
             .from('chargePerson')
             .select(`
-                *,
-                profiles(name)
-            `)
+                id,
+                user_id,
+                department_id,
+                profiles(name, user_code, phone, address, email, auth_id),
+                departments(department_code)
+            `, { count: 'exact' })
+            .range((page - 1) * NUMBER_ITEM_PER_PAGE, NUMBER_ITEM_PER_PAGE * page - 1)
     });
-
     // tùy chọn hiển thị data
     const parseData = useCallback((item, field, index) => {
         if (field === 'index') {
@@ -53,37 +48,38 @@ const ChargePerson = () => {
         }
         if (field === 'action') {
             return (<>
-                    <i
-                        role="button"
-                        className="fa-solid fa-pen-to-square mx-2"
-                        onClick={() => {
-                            setOpenEditModal(true);
-                            setUpdateChargePerson(item);
-                        }}
-                    ></i>
-                    <i
-                        role="button"
-                        className="fa-solid fa-trash mx-2"
-                        onClick={() => ConfirmModal(item.id)}
-                    ></i>
-                </>);
+                <i
+                    role="button"
+                    className="fa-solid fa-pen-to-square mx-2"
+                    onClick={() => {
+                        setOpenEditModal(true);
+                        setUpdateChargePerson(item);
+                    }}
+                ></i>
+                <i
+                    role="button"
+                    className="fa-solid fa-trash mx-2"
+                    onClick={() => { ConfirmModal(item.id); console.log('delete', item) }}
+                ></i>
+            </>);
         }
         return item[field];
     }, []);
 
     // gọi lại api khi change page
     const onChangePage = useCallback(
-        page => {
-            const newDataRequest = {
-                ...dataRequest,
-                page,
-            };
-            setDataRequest(newDataRequest);
+        async page => {
+            setCurrentPage(page)
+            await refetchData({
+                params: {
+                    page
+                }
+            })
         },
-        [dataRequest, setDataRequest],
+        [refetchData],
     );
 
-    const handleDeleteChargePerson = async (id) => {
+    const handleDeleteChargePerson = async ({ id }) => {
         setConfirmLoading(true);
         const { error } = await supabase
             .from('chargePerson')
@@ -143,12 +139,13 @@ const ChargePerson = () => {
             centered: true,
             confirmLoading: confirmLoading,
             onOk() {
+                console.log('confirm id', id);
                 handleDeleteChargePerson({ id })
             },
             onCancel() { },
         });
     };
-
+    console.log('chargeperson', chargePerson)
     return (
         <>
             <h4 className='title'>Quản lý người phụ trách khóa luận tốt nghiệp</h4>
@@ -176,20 +173,21 @@ const ChargePerson = () => {
             </div>}
             <div className='p-5'>
                 <TableCommon
+                    loading={tableLoading}
                     columns={columnConfig}
-                    data={data || []}
+                    data={chargePerson?.map(item => flattenObj({ obj: item })) || []}
                     primaryKey='key'
                     parseFunction={parseData}
                     isShowPaging
-                    onChangePage={page => onChangePage(page - 1)}
-                    totalCountData={data.length || 0}
-                    defaultPage={(dataRequest.page + 1) || 1}
-                    currentPage={dataRequest.page + 1}
-                    totalDisplay={dataRequest.size || 10}
+                    onChangePage={page => onChangePage(page)}
+                    totalCountData={totalCountData}
+                    defaultPage={DEFAULT_CURRENT_PAGE}
+                    currentPage={currentPage}
+                    totalDisplay={NUMBER_ITEM_PER_PAGE}
                     bordered
                 />
             </div>
-            <Loading isLoading={isLoading} />
+            <Loading isLoading={tableLoading} />
             {openAddModal && <AddChargePersonModal
                 isOpen={openAddModal}
                 setIsOpen={setOpenAddModal}

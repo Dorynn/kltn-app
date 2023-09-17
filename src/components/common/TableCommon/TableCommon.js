@@ -65,7 +65,7 @@ function TableCommon(props) {
     const getPaginationConfig = () => {
         if (isShowPaging) {
             return {
-                ...iterablePaging,
+                // ...iterablePaging,
                 current: currentPage,
                 defaultCurrent: defaultPage,
                 pageSize: totalDisplay,

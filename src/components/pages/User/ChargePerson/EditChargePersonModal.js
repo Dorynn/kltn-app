@@ -3,12 +3,33 @@ import { Form, Input, Select } from "antd";
 import NotificationContext from '../../../../context/notificationContext';
 import supabase from '../../../../supabaseClient';
 import useModal from '../../../../hooks/modal/useModal';
-import { fieldAddChargePerson, options } from './ChargePersonconstants';
+import { fieldAddChargePerson } from './ChargePersonconstants';
+import useSupbaseAction from '../../../../hooks/useSupabase/useSupabaseAction';
+import prepareOptions from '../../../../helpers/prepareOptions';
+
 
 function EditChargePersonModal(props) {
     const { updateChargePerson, setUpdateChargePerson, refetchData, isOpen, setIsOpen } = props;
     const { openNotification } = useContext(NotificationContext);
+    console.log('updateChargePerson', updateChargePerson)
+    const getUserEmail = async function () {
+        let { data: email, error } = await supabase
+            .rpc('get_email', {
+                auth_id_param: updateChargePerson.auth_id
+            })
 
+        if (error) console.error(error)
+        else setUpdateChargePerson(prev => ({ ...prev, email }))
+    }
+    useEffect(() => {
+        getUserEmail()
+    }, [])
+    const { data: departments } = useSupbaseAction({
+        initialData: [],
+        firstLoad: true, defaultAction: async () => supabase
+            .from('departments')
+            .select(`department_code, id`)
+    })
     useEffect(() => {
         if (isOpen) {
             toggleModal(isOpen);
@@ -16,11 +37,12 @@ function EditChargePersonModal(props) {
     }, [isOpen])
 
     const handleUpdateChargePerson = async () => {
+        console.log('updateChargePerson', updateChargePerson)
         const { error } = await supabase
-            .from('chargePersons')
-            .update(updateChargePerson)
-            .eq('id', updateChargePerson.id)
-            .select()
+        await supabase.functions.invoke('users?role=charge_person&isUpdate=true', {
+            method: 'POST',
+            body: { ...updateChargePerson }
+        })
         if (!error) {
             await refetchData({});
             setIsOpen(false);
@@ -34,27 +56,15 @@ function EditChargePersonModal(props) {
             description: error.message
         });
     };
-    
-    const handleUpdateDataChargePerson = (event, item) => {
-        // event: giá trị , item: item config
-        if (item.type === 'INPUT') {
-            const newDataRequest = {
-                ...updateChargePerson,
-                [item.field]: event ? event.target.value : '',
-            };
-            return setUpdateChargePerson(newDataRequest);
-        }
-        const newDataRequest = {
-            ...updateChargePerson,
-            [item.field]: event ? event : '',
-        };
-        return setUpdateChargePerson(newDataRequest);
+
+    const handleUpdateDataChargePerson = ({ field, value }) => {
+        return setUpdateChargePerson(prev => ({ ...prev, [field]: value }));
     };
 
     // get data cho các select options
     const handleGetOptions = field => {
-        if (field === 'department_code') {
-            return options || [];
+        if (field === 'department_id') {
+            return prepareOptions({ data: departments, labelField: 'department_code', valueField: 'id' });
         }
         return [];
     };
@@ -65,7 +75,10 @@ function EditChargePersonModal(props) {
             return (
                 <Input
                     value={updateChargePerson[item.field]}
-                    onChange={e => handleUpdateDataChargePerson(e, item)}
+                    onChange={e => handleUpdateDataChargePerson({
+                        field: item.field,
+                        value: e.target.value
+                    })}
                 />
             );
         }
@@ -74,7 +87,10 @@ function EditChargePersonModal(props) {
                 <Select
                     options={handleGetOptions(item.field) || []}
                     value={updateChargePerson[item.field]}
-                    onChange={e => handleUpdateDataChargePerson(e, item)}
+                    onChange={value => handleUpdateDataChargePerson({
+                        field: item.field,
+                        value: value
+                    })}
                 ></Select>
             );
         }

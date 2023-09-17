@@ -1,22 +1,22 @@
 export const fieldAddLecturer = [
     {
         label: 'Mã giáo viên',
-        field: 'lecturer_code',
+        field: 'user_code',
         type: 'INPUT',
     },
     {
         label: 'Họ và tên',
-        field: 'lecturer_name',
+        field: 'name',
         type: 'INPUT',
     },
     {
         label: 'Mã ngành',
-        field: 'major_code',
+        field: 'major_id',
         type: 'SELECT',
     },
     {
         label: 'Số điện thoại',
-        field: 'phoneNumber',
+        field: 'phone',
         type: 'INPUT',
     },
     {
@@ -35,15 +35,15 @@ export const columnConfig = [
     },
     {
         title: 'Mã giáo viên',
-        dataIndex: 'lecturer_code',
-        key: 'lecturer_code',
+        dataIndex: 'user_code',
+        key: 'user_code',
         align: 'center',
         expand: true,
     },
     {
         title: 'Họ và tên',
-        dataIndex: 'lecturer_name',
-        key: 'lecturer_name',
+        dataIndex: 'name',
+        key: 'name',
         align: 'center',
     },
     {
@@ -54,8 +54,8 @@ export const columnConfig = [
     },
     {
         title: 'Tên khoa',
-        dataIndex: 'course',
-        key: 'course',
+        dataIndex: 'department_name',
+        key: 'department_name',
         align: 'center',
     },
     {
@@ -69,18 +69,18 @@ export const columnConfig = [
 export const expandConfig = [
     {
         label: 'Mã giáo viên',
-        field: 'lecturer_code',
-        key: 'lecturer_code',
+        field: 'user_code',
+        key: 'user_code',
     },
     {
         label: 'Họ và tên',
-        field: 'lecturer_name',
-        key: 'lecturer_name',
+        field: 'name',
+        key: 'name',
     },
     {
         label: 'Tên khoa',
-        field: 'course',
-        key: 'course',
+        field: 'major_code',
+        key: 'major_code',
     },
     {
         label: 'Email',
@@ -94,8 +94,8 @@ export const expandConfig = [
     },
     {
         label: 'Số điện thoại',
-        field: 'phoneNumber',
-        key: 'phoneNumber',
+        field: 'phone',
+        key: 'phone',
     },
 ];
 

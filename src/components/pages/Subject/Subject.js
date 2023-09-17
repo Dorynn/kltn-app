@@ -135,11 +135,11 @@ const Subject = () => {
                             <i role="button" className="fa-solid fa-pen-to-square ms-2 me-3" onClick={() => {
                                 setUpdateSubject({
                                     id: record.key,
-                                    course_code: record.course_code, 
-                                    course_name: record.course_name, 
-                                    course_credits: record.course_credits, 
+                                    course_code: record.course_code,
+                                    course_name: record.course_name,
+                                    course_credits: record.course_credits,
                                     credit_coefficient: record.credit_coefficient,
-                                    major_code: record.major_code,
+                                    major_id: record.major_id
                                 })
                                 setOpenEditModal(!openEditModal)
                             }}></i>
@@ -154,13 +154,14 @@ const Subject = () => {
     subjects.forEach((item, index) => {
         dataSource.push({
             key: item.id,
-            no: index+1,
+            no: index + 1,
             course_code: item.course_code,
             course_name: item.course_name,
             course_credits: item.course_credits,
             credit_coefficient: item.credit_coefficient,
-            major_code: item.major_code,
-            major_name: item.majors.major_name
+            major_code: item.majors.major_code,
+            major_name: item.majors.major_name,
+            major_id: item.major_id
         })
 
     })

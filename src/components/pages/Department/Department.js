@@ -28,7 +28,7 @@ const Department = () => {
             .from('departments')
             .select(`
                 *,
-                profiles(name)
+                profiles(name, user_code)
             `)
     })
 
@@ -106,8 +106,9 @@ const Department = () => {
             no: index + 1,
             department_code: item.department_code,
             department_name: item.department_name,
-            dean_code: item.dean_code,
-            dean_name: item.profiles.name
+            user_code: item.profiles.user_code,
+            dean_name: item.profiles.name,
+            dean_id: item.dean_id
         })
     })
     const columns = [
@@ -128,7 +129,7 @@ const Department = () => {
         },
         {
             title: "Mã trưởng khoa",
-            dataIndex: 'dean_code',
+            dataIndex: 'user_code',
         },
         {
             title: "Tên trưởng khoa",
@@ -146,9 +147,9 @@ const Department = () => {
                             <i role="button" className="fa-solid fa-pen-to-square ms-2 me-3" onClick={() => {
                                 setUpdateDepartment({
                                     id: record.key,
-                                    department_code: record.department_code, 
-                                    department_name: record.department_name, 
-                                    dean_code: record.dean_code
+                                    department_code: record.department_code,
+                                    department_name: record.department_name,
+                                    dean_id: record.dean_id
                                 })
                                 setOpenEditModal(!openEditModal)
                             }}></i>
@@ -159,7 +160,7 @@ const Department = () => {
             )
         }
     ]
-
+    console.log('datasource', dataSource)
     return (
         <>
             <h4 className='title' onClick={() => console.log(departments)}>Quản lý khoa</h4>
