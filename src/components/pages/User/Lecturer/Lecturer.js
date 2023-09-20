@@ -52,6 +52,7 @@ const Lecturer = () => {
         if (field === 'index') {
             return index + 1;
         }
+
         if (field === 'action') {
             return (<>
                 <i
@@ -168,6 +169,7 @@ const Lecturer = () => {
     );
     console.log('lecturer', lecturer?.map(item => flattenObj({ obj: item })))
     const expandCondition = (record) => (data.length > 0);
+    
 
     return (
         <>

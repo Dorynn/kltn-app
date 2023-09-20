@@ -15,8 +15,8 @@ const EditDepartmentModal = ({ updateDepartment, setUpdateDepartment, refetchDat
     })
     console.log('update department', updateDepartment)
     const editDepartmentModalContent = (<Form
-        labelCol={{ span: 6 }}
-        wrapperCol={{ span: 18 }}
+        labelCol={{ span: 9 }}
+        wrapperCol={{ span: 15 }}
         layout="horizontal"
     >
         <Form.Item label="Mã khoa">
@@ -25,7 +25,7 @@ const EditDepartmentModal = ({ updateDepartment, setUpdateDepartment, refetchDat
         <Form.Item label="Tên Khoa">
             <Input value={updateDepartment.department_name} onChange={(e) => setUpdateDepartment(prev => ({ ...prev, department_name: e.target.value }))} />
         </Form.Item>
-        <Form.Item label="Mã trưởng khoa">
+        <Form.Item label="Trưởng khoa">
             <Select
                 showSearch
                 optionFilterProp='children'
@@ -33,6 +33,16 @@ const EditDepartmentModal = ({ updateDepartment, setUpdateDepartment, refetchDat
                 options={teachers.map(({ profiles, id }) => ({ label: `${profiles.user_code} - ${profiles.name}`, value: id }))}
                 onChange={(value) => setUpdateDepartment(prev => ({ ...prev, dean_id: value }))}
                 value={updateDepartment.dean_id}
+            />
+        </Form.Item>
+        <Form.Item label="Người phụ trách KLTN">
+            <Select
+                showSearch
+                optionFilterProp='children'
+                filterOption={(input, option) => (option?.label ?? "").includes(input)}
+                options={teachers.map(({ profiles, id }) => ({ label: `${profiles.user_code} - ${profiles.name}`, value: id }))}
+                onChange={(value) => setUpdateDepartment(prev => ({ ...prev, chargeperson_id: value }))}
+                value={updateDepartment.chargeperson_id}
             />
         </Form.Item>
     </Form>)

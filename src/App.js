@@ -11,8 +11,8 @@ import Student from './components/pages/User/Student/Student';
 import TopicList from './components/pages/TopicManagement/Teacher/TopicList/TopicList';
 import TopicRegistration from './components/pages/TopicManagement/Teacher/TopicRegistration/TopicRegistration';
 import ApprovedTopicList from './components/pages/TopicManagement/Teacher/ApprovedTopicList/ApprovedTopicList';
-import ProposedTopicList from './components/pages/TopicManagement/Teacher/ProposedTopicList/ProposedTopicList';
-import TopicRegistrationProposed from './components/pages/TopicManagement/Student/TopicRegistrationProposed/TopicRegistrationProposed';
+import ProposedTopicList from './components/pages/TopicManagement/Teacher/RecommendedTopicList/ProposedTopicList';
+import TopicRegistrationProposed from './components/pages/TopicManagement/Student/TopicRegistration/TopicRegistrationProposed';
 import {
   Route,
   Routes,
@@ -24,7 +24,7 @@ import { notification, Layout } from 'antd';
 import './styles/app.scss';
 const { Content } = Layout;
 function App() {
-  const { user, login, logout, isAdmin, fetched: fetchedAuth } = useAuth();
+  const { user, login, logout, isAdmin, isStudent, isTeacher, fetched: fetchedAuth } = useAuth();
   const [notificationApi, notificationHolder] = notification.useNotification();
   const openNotification = ({
     type = 'success',
@@ -40,7 +40,7 @@ function App() {
   if (!fetchedAuth.hasSession) {
     return (
       <NotificationContext.Provider value={{ openNotification }}>
-        <AuthContext.Provider value={{ user, login, logout, isAdmin }}>
+        <AuthContext.Provider value={{ user, login, logout, isAdmin, isStudent, isTeacher }}>
           <Login />
           {notificationHolder}
         </AuthContext.Provider>
@@ -49,7 +49,7 @@ function App() {
   }
   return (
     <NotificationContext.Provider value={{ openNotification }}>
-      <AuthContext.Provider value={{ user, login, logout, isAdmin }}>
+      <AuthContext.Provider value={{ user, login, logout, isAdmin, isStudent, isTeacher }}>
         <Layout>
           <HeaderDefault title="Title" />
           <Layout id='main-content'>

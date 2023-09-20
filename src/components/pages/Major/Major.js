@@ -131,7 +131,11 @@ const Major = () => {
             title: 'Tên trưởng ngành',
             dataIndex: 'major_chair_name'
         },
-        {
+
+    ]
+
+    if (isAdmin) {
+        columns.push({
             title: 'Thao tác',
             width: '10%',
             render: (_, record) => (
@@ -155,8 +159,8 @@ const Major = () => {
                     }
                 </>
             )
-        }
-    ]
+        })
+    }
 
     const dataSource = [];
     majors.forEach((item, index) => {

@@ -9,7 +9,8 @@ const AddDepartmentModal = ({ refetchData, isOpen }) => {
     const [newDepartment, setNewDepartment] = useState({
         department_code: '',
         department_name: '',
-        dean_id: ''
+        dean_id: '',
+        chargeperson_id: ''
     });
     const { openNotification } = useContext(NotificationContext);
     const { data: teachers } = useSupbaseAction({
@@ -19,8 +20,8 @@ const AddDepartmentModal = ({ refetchData, isOpen }) => {
             .select(`*, profiles(name, user_code)`)
     })
     const createDepartmentModalContent = (<Form
-        labelCol={{ span: 6 }}
-        wrapperCol={{ span: 18 }}
+        labelCol={{ span: 9 }}
+        wrapperCol={{ span: 15 }}
         layout="horizontal"
     >
         <Form.Item label="Mã khoa">
@@ -37,6 +38,16 @@ const AddDepartmentModal = ({ refetchData, isOpen }) => {
                 options={teachers.map(({ profiles, user_id }) => ({ label: `${profiles.user_code} - ${profiles.name}`, value: user_id }))}
                 onChange={(value) => setNewDepartment(prev => ({ ...prev, dean_id: value }))}
                 value={newDepartment.dean_id}
+            />
+        </Form.Item>
+        <Form.Item label="Mã người phụ trách KLTN">
+            <Select
+                showSearch
+                optionFilterProp='children'
+                filterOption={(input, option) => (option?.label ?? "").includes(input)}
+                options={teachers.map(({ profiles, user_id }) => ({ label: `${profiles.user_code} - ${profiles.name}`, value: user_id }))}
+                onChange={(value) => setNewDepartment(prev => ({ ...prev, chargeperson_id: value }))}
+                value={newDepartment.chargeperson_id}
             />
         </Form.Item>
     </Form>)
@@ -71,7 +82,8 @@ const AddDepartmentModal = ({ refetchData, isOpen }) => {
         setNewDepartment({
             department_code: '',
             department_name: '',
-            dean_id: ''
+            dean_id: '',
+            chargeperson_id: ''
         })
     }, [isOpen])
 

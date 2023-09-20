@@ -78,7 +78,7 @@ export const expandConfig = [
         key: 'name',
     },
     {
-        label: 'Tên khoa',
+        label: 'Tên ngành',
         field: 'major_code',
         key: 'major_code',
     },
@@ -88,7 +88,7 @@ export const expandConfig = [
         key: 'email',
     },
     {
-        label: 'Tên ngành',
+        label: 'Tên khoa',
         field: 'department_name',
         key: 'department_name',
     },

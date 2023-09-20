@@ -29,7 +29,7 @@ const Department = () => {
             .select(`*, profiles(*)`)
 
     })
-
+    console.log(departments)
 
     const handleDeleteDepartment = async ({ id }) => {
         setConfirmLoading(true);
@@ -106,7 +106,8 @@ const Department = () => {
             department_name: item.department_name,
             user_code: item.profiles.user_code,
             dean_name: item.profiles.name,
-            dean_id: item.dean_id
+            dean_id: item.dean_id,
+            chargeperson_id: item.chargeperson_id
         })
     })
     const columns = [
