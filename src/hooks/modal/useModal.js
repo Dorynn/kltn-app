@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { ConfigProvider, Modal } from 'antd';
 
-export default function useModal({ content, title = 'Modal', handleConfirm = () => { }, setIsOpen = () => { } }) {
+export default function useModal({ content, width, title = 'Modal', handleConfirm = () => { }, setIsOpen = () => { } }) {
     const [open, setOpen] = useState(false);
     const [confirmLoading, setConfirmLoading] = useState(false);
 
@@ -50,6 +50,7 @@ export default function useModal({ content, title = 'Modal', handleConfirm = () 
                 style={{ color: 'red' }}
                 okText='Đồng ý'
                 cancelText='Hủy'
+                width={width}
             >
                 {content}
             </Modal>

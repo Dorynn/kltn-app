@@ -26,10 +26,8 @@ const Department = () => {
         initialData: [],
         firstLoad: true, defaultAction: async () => supabase
             .from('departments')
-            .select(`
-                *,
-                profiles(name, user_code)
-            `)
+            .select(`*, profiles(*)`)
+
     })
 
 
@@ -135,7 +133,10 @@ const Department = () => {
             title: "Tên trưởng khoa",
             dataIndex: "dean_name"
         },
-        {
+
+    ];
+    if (isAdmin) {
+        columns.push({
             title: "Thao tác",
             dataIndex: 'action',
             width: '10%',
@@ -158,8 +159,8 @@ const Department = () => {
                     }
                 </>
             )
-        }
-    ]
+        })
+    }
     console.log('datasource', dataSource)
     return (
         <>

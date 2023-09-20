@@ -1,44 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { Link } from "react-router-dom";
 import { Layout, Menu } from 'antd';
-import {
-    AppstoreOutlined,
-    ContainerOutlined,
-    DesktopOutlined,
-    MailOutlined,
-    MenuFoldOutlined,
-    MenuUnfoldOutlined,
-    PieChartOutlined,
-} from '@ant-design/icons';
-import $ from "jquery";
+import AuthContext from '../../context/authContext';
+
+
 const { Sider } = Layout;
 const {SubMenu} = Menu;
+
 const Sidebar = () => {
-    useEffect(() => {
-        window.$('.list-group-item').click(function () {
-            $('.list-group-item').removeClass('active');
-            $(this).addClass('active');
-        })
-    })
-    const [toggle, setToggle] = useState()
-    function getItem(label, key, children, type) {
-        return {
-            key,
-            children,
-            label,
-            type,
-        };
-    }
-    const items = [
-        getItem('Quản lý khoa', '1'),
-        getItem('Quản lý ngành', '2'),
-        getItem('Quản lý học phần', '3'),
-        getItem('Quản lý người dùng', 'sub1',  [
-            getItem('Quản lý người phụ trách', '5'),
-            getItem('Quản lý giáo viên', '6'),
-            getItem('Quản lý sinh viên', '7'),
-        ]),
-    ];
+    const { isAdmin, isTeacher, isStudent } = useContext(AuthContext);
+
     return (
         <>
             <Sider
@@ -48,11 +19,15 @@ const Sidebar = () => {
                 }}
             >
                 <Menu mode='inline'>
+                {
+                    !isStudent && 
                     <Menu.Item key="1">
                         <Link to="/department">
-                            <span>Quản lý khoa</span>
+                            <span>{isAdmin ? 'Quản ': 'Danh sách '}khoa</span>
                         </Link>
                     </Menu.Item>
+                }
+
                     <Menu.Item key="2">
                         <Link to="/major">
                             <span>Quản lý ngành</span>
@@ -82,9 +57,29 @@ const Sidebar = () => {
                                 <span>Quản lý sinh viên</span>
                             </Link>
                         </Menu.Item>
-
                     </SubMenu>
+                    <Menu.Item key="7" hasRole={['admin','teacher']}>
+                        <Link to="/teacher-registration">
+                            <span>Đăng ký đề tài</span>
+                        </Link>
+                    </Menu.Item>
+                    <Menu.Item key="8">
+                        <Link to="/topic-list">
+                            <span>Danh sách đề tài</span>
+                        </Link>
+                    </Menu.Item>
+                    <Menu.Item key="9">
+                        <Link to="/student-registration">
+                            <span>Đăng ký đề tài</span>
+                        </Link>
+                    </Menu.Item>
+                    <Menu.Item key="10">
+                        <Link to="/proposed-topic-list">
+                            <span>Danh sách đề tài đề xuất</span>
+                        </Link>
+                    </Menu.Item>
                 </Menu>
+                
             </Sider>
 
         </>

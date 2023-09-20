@@ -7,6 +7,10 @@ import Login from './components/pages/Login/Login';
 import Subject from "./components/pages/Subject/Subject";
 import ChargePerson from './components/pages/User/ChargePerson/ChargePerson';
 import Lecturer from './components/pages/User/Lecturer/Lecturer';
+import TeacherRegistration from './components/pages/TeacherRegistration/TeacherRegistration';
+import StudentRegistration from './components/pages/StudentRegistration/StudentRegistration';
+import TopicList from './components/pages/TeacherRegistration/TopicList';
+import ProposedTopicList from './components/pages/ProposedTopicList/ProposedTopicList';
 import Student from './components/pages/User/Student/Student';
 import {
   Route,
@@ -60,6 +64,11 @@ function App() {
                     <Route path="/login" element={<Login />} />
                     <Route path="/lecturer" element={<Lecturer />} />
                     <Route path="/student" element={<Student />} />
+                    <Route path="/teacher-registration" element={<TeacherRegistration />} />
+                    <Route path="/student-registration" element={<StudentRegistration />} />
+                    <Route path="/topic-list" element={<TopicList />} />
+                    <Route path="/proposed-topic-list" element={<ProposedTopicList />} />
+                    
                   </Routes>
                 </div>
               </Content>
