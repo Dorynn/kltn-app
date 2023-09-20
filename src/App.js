@@ -8,6 +8,11 @@ import Subject from "./components/pages/Subject/Subject";
 import ChargePerson from './components/pages/User/ChargePerson/ChargePerson';
 import Lecturer from './components/pages/User/Lecturer/Lecturer';
 import Student from './components/pages/User/Student/Student';
+import TopicList from './components/pages/TopicManagement/Teacher/TopicList/TopicList';
+import TopicRegistration from './components/pages/TopicManagement/Teacher/TopicRegistration/TopicRegistration';
+import ApprovedTopicList from './components/pages/TopicManagement/Teacher/ApprovedTopicList/ApprovedTopicList';
+import ProposedTopicList from './components/pages/TopicManagement/Teacher/ProposedTopicList/ProposedTopicList';
+import TopicRegistrationProposed from './components/pages/TopicManagement/Student/TopicRegistrationProposed/TopicRegistrationProposed';
 import {
   Route,
   Routes,
@@ -60,6 +65,11 @@ function App() {
                     <Route path="/login" element={<Login />} />
                     <Route path="/lecturer" element={<Lecturer />} />
                     <Route path="/student" element={<Student />} />
+                    <Route path="/teacher-topic-registration" element={<TopicRegistration />} />
+                    <Route path="/topic-list" element={<TopicList />} />
+                    <Route path="/approved-topic-list" element={<ApprovedTopicList />} />
+                    <Route path="/proposed-topic-list" element={<ProposedTopicList />} />
+                    <Route path="/student-topic-registration" element={<TopicRegistrationProposed />} />
                   </Routes>
                 </div>
               </Content>
