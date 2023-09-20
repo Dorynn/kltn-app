@@ -6,10 +6,32 @@ import AuthContext from '../../context/authContext';
 
 const { Sider } = Layout;
 const {SubMenu} = Menu;
-
 const Sidebar = () => {
-    const { isAdmin, isTeacher, isStudent } = useContext(AuthContext);
-
+    useEffect(() => {
+        window.$('.list-group-item').click(function () {
+            $('.list-group-item').removeClass('active');
+            $(this).addClass('active');
+        })
+    })
+    const [toggle, setToggle] = useState()
+    function getItem(label, key, children, type) {
+        return {
+            key,
+            children,
+            label,
+            type,
+        };
+    }
+    const items = [
+        getItem('Quản lý khoa', '1'),
+        getItem('Quản lý ngành', '2'),
+        getItem('Quản lý học phần', '3'),
+        getItem('Quản lý người dùng', 'sub1',  [
+            getItem('Quản lý người phụ trách', '5'),
+            getItem('Quản lý giáo viên', '6'),
+            getItem('Quản lý sinh viên', '7'),
+        ]),
+    ];
     return (
         <>
             <Sider
@@ -42,11 +64,6 @@ const Sidebar = () => {
                         key="sub1"
                         title={<span>Quản lý người dùng</span>}
                     >
-                        <Menu.Item key="4">
-                            <Link to="/graduate-charge-person">
-                                <span>Quản lý người phụ trách</span>
-                            </Link>
-                        </Menu.Item>
                         <Menu.Item key="5">
                             <Link to="/lecturer">
                                 <span>Quản lý giáo viên</span>
@@ -58,26 +75,6 @@ const Sidebar = () => {
                             </Link>
                         </Menu.Item>
                     </SubMenu>
-                    <Menu.Item key="7" hasRole={['admin','teacher']}>
-                        <Link to="/teacher-registration">
-                            <span>Đăng ký đề tài</span>
-                        </Link>
-                    </Menu.Item>
-                    <Menu.Item key="8">
-                        <Link to="/topic-list">
-                            <span>Danh sách đề tài</span>
-                        </Link>
-                    </Menu.Item>
-                    <Menu.Item key="9">
-                        <Link to="/student-registration">
-                            <span>Đăng ký đề tài</span>
-                        </Link>
-                    </Menu.Item>
-                    <Menu.Item key="10">
-                        <Link to="/proposed-topic-list">
-                            <span>Danh sách đề tài đề xuất</span>
-                        </Link>
-                    </Menu.Item>
                 </Menu>
                 
             </Sider>
