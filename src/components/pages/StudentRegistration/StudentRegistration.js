@@ -2,13 +2,14 @@ import React, { useState, useContext } from 'react';
 import { Table, Button, Modal } from 'antd';
 import { CheckOutlined, PlusCircleOutlined, ExclamationCircleFilled } from '@ant-design/icons';
 import ProposeTopic from './ProposeTopic';
-import useSupbaseAction from '../../../hooks/useSupabase/useSupabaseAction';
-import supabase from '../../../supabaseClient';
-import AuthContext from '../../../context/authContext';
+import useSupbaseAction from '../../../../hooks/useSupabase/useSupabaseAction';
+import supabase from '../../../../supabaseClient';
+import AuthContext from '../../../../context/authContext';
 
 const { confirm } = Modal
 const StudentRegistration = () => {
-    const [isOpenProposedModal, setOpenProposedModal] = useState()
+    const [isOpenProposedModal, setOpenProposedModal] = useState();
+    const [hideProposedButton, setHideProposedButton] = useState(false)
     const { user} = useContext(AuthContext);
 
     const {data: topics, requestAction: refetchData} = useSupbaseAction({
@@ -35,7 +36,7 @@ const StudentRegistration = () => {
             centered: true,
             // confirmLoading: confirmLoading,
             onOk() {
-                
+                handleRegister({record})
             },
             onCancel() {
 
@@ -120,9 +121,9 @@ const StudentRegistration = () => {
     return (
         <>
             <h4 className='title'>Đăng ký đề tài</h4>
-            <div className='d-flex justify-content-end me-4'>
+            {hideProposedButton && <div className='d-flex justify-content-end me-4'>
                 <Button className='mb-4' icon={<PlusCircleOutlined />} onClick={() => setOpenProposedModal(!isOpenProposedModal)} >Đề xuất đề tài</Button>
-            </div>
+            </div>}
             <Table
                 columns={columns}
                 expandable={{
@@ -139,7 +140,7 @@ const StudentRegistration = () => {
                 dataSource={data}
                 bordered
             />
-            <ProposeTopic isOpen={isOpenProposedModal} />
+            <ProposeTopic isOpen={isOpenProposedModal} refetchData={refetchData} setHideProposedButton={setHideProposedButton} />
         </>
 
     );

@@ -7,11 +7,11 @@ import { Form, Input, Select } from "antd";
 
 const EditDepartmentModal = ({ updateDepartment, setUpdateDepartment, refetchData, isOpen }) => {
     const { openNotification } = useContext(NotificationContext);
-    const { data: profiles } = useSupbaseAction({
+    const { data: teachers } = useSupbaseAction({
         initialData: [],
         firstLoad: true, defaultAction: async () => supabase
-            .from('profiles')
-            .select(`*`)
+            .from('teachers')
+            .select(`*, profiles(user_code, name)`)
     })
     console.log('update department', updateDepartment)
     const editDepartmentModalContent = (<Form
@@ -30,7 +30,7 @@ const EditDepartmentModal = ({ updateDepartment, setUpdateDepartment, refetchDat
                 showSearch
                 optionFilterProp='children'
                 filterOption={(input, option) => (option?.label ?? "").includes(input)}
-                options={profiles.map(({ user_code, name, id }) => ({ label: `${user_code}-${name}`, value: id }))}
+                options={teachers.map(({ profiles, id }) => ({ label: `${profiles.user_code} - ${profiles.name}`, value: id }))}
                 onChange={(value) => setUpdateDepartment(prev => ({ ...prev, dean_id: value }))}
                 value={updateDepartment.dean_id}
             />

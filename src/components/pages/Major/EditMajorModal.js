@@ -25,11 +25,11 @@ const EditMajorModal = ({ updateMajor, setUpdateMajor, refetchData, isOpen }) =>
             .select(`*`)
     })
 
-    const { data: profiles } = useSupbaseAction({
+    const { data: teachers } = useSupbaseAction({
         initialData: [],
         firstLoad: true, defaultAction: async () => supabase
-            .from('profiles')
-            .select(`*`)
+            .from('teachers')
+            .select(`*, profiles(name, user_code)`)
     })
 
     const editMajorModalContent = (<Form
@@ -65,7 +65,7 @@ const EditMajorModal = ({ updateMajor, setUpdateMajor, refetchData, isOpen }) =>
                 showSearch
                 optionFilterProp='children'
                 filterOption={(input, option) => (option?.label ?? "").includes(input)}
-                options={profiles.map(({ user_code, name, id }) => ({ label: `${user_code}-${name}`, value: id }))}
+                options={teachers.map(({ profiles, id }) => ({ label: `${profiles.user_code} - ${profiles.name}`, value: id }))}
                 onChange={(value) => setUpdateMajor(prev => ({ ...prev, major_chair_id: value }))}
                 value={updateMajor.major_chair_id}
             />

@@ -23,11 +23,11 @@ const AddMajorModal = ({ refetchData, isOpen }) => {
             `)
     })
 
-    const { data: profiles } = useSupbaseAction({
+    const { data: teachers } = useSupbaseAction({
         initialData: [],
         firstLoad: true, defaultAction: async () => supabase
-            .from('profiles')
-            .select(`*`)
+            .from('teachers')
+            .select(`*, profiles(user_code, name)`)
     })
 
     useEffect(() => {
@@ -41,8 +41,8 @@ const AddMajorModal = ({ refetchData, isOpen }) => {
     }, [])
     console.log('*** new major ***', newMajor);
     const createMajorModalContent = (<Form
-        labelCol={{ span: 6 }}
-        wrapperCol={{ span: 18 }}
+        labelCol={{ span: 7 }}
+        wrapperCol={{ span: 17 }}
         layout="horizontal"
     >
         <Form.Item label="Mã ngành (trường)">
@@ -73,7 +73,7 @@ const AddMajorModal = ({ refetchData, isOpen }) => {
                 showSearch
                 optionFilterProp='children'
                 filterOption={(input, option) => (option?.label ?? "").includes(input)}
-                options={profiles.map(({ user_code, name, id }) => ({ label: `${user_code}-${name}`, value: id }))}
+                options={teachers.map(({ profiles, id }) => ({ label: `${profiles.user_code} - ${profiles.name}`, value: id }))}
                 onChange={(value) => setNewMajor(prev => ({ ...prev, major_chair_id: value }))}
                 value={newMajor.major_chair_id}
             />
