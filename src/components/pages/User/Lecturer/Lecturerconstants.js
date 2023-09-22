@@ -58,12 +58,6 @@ export const columnConfig = [
         key: 'department_name',
         align: 'center',
     },
-    {
-        title: 'Thao tác',
-        dataIndex: 'action',
-        key: 'action',
-        align: 'center',
-    },
 ];
 
 export const expandConfig = [

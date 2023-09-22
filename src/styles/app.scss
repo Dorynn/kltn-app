@@ -1,8 +1,40 @@
+@import 'variables.scss';
+
 .btn-none {
     border: none;
     background: transparent;
 }
+
 .text-btn-top {
     display: inline-flex;
     align-items: baseline;
+}
+
+// style cho cac status
+.status-inprogress {
+    color: $color-blue-primary;
+    background-color: $color-light-blue;
+}
+
+.status-approved {
+    color: $color-sematic-success;
+    background-color: $color-light-success;
+}
+.status-reject {
+    color: $color-sematic-error;
+    background-color: $color-light-error;
+}
+
+.status {
+    border-radius: 17px;
+    white-space: nowrap;
+    width: -webkit-fit-content;
+    width: -moz-fit-content;
+    width: fit-content;
+    margin: 0 auto;
+    height: 100%;
+    padding: 7px 15px;
+    font-weight: bold;
+    font-size: 12px;
+    text-transform: uppercase;
 }

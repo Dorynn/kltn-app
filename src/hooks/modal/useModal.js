@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { ConfigProvider, Modal } from 'antd';
 
-export default function useModal({ content, title = 'Modal', handleConfirm = () => { }, setIsOpen = () => { } }) {
+export default function useModal({ content, title = 'Modal', handleConfirm = () => { }, setIsOpen = () => { }, okText = 'Đồng ý' }) {
     const [open, setOpen] = useState(false);
     const [confirmLoading, setConfirmLoading] = useState(false);
 
@@ -48,7 +48,7 @@ export default function useModal({ content, title = 'Modal', handleConfirm = () 
                 onCancel={handleCancel}
                 centered
                 style={{ color: 'red' }}
-                okText='Đồng ý'
+                okText={okText}
                 cancelText='Hủy'
             >
                 {content}
