@@ -73,32 +73,6 @@ export const columnConfig = [
         key: 'school_year',
         align: 'center',
     },
-    // {
-    //     title: 'Lớp',
-    //     dataIndex: 'classroom',
-    //     key: 'classroom',
-    // },
-    // {
-    //     title: 'Số điện thoại',
-    //     dataIndex: 'phoneNumber',
-    //     key: 'phoneNumber',
-    // },
-    // {
-    //     title: 'Email',
-    //     dataIndex: 'email',
-    //     key: 'email',
-    // },
-    // {
-    //     title: 'Địa chỉ',
-    //     dataIndex: 'address',
-    //     key: 'address',
-    // },
-    {
-        title: 'Action',
-        dataIndex: 'action',
-        key: 'action',
-        align: 'center',
-    },
 ];
 
 export const expandConfig = [

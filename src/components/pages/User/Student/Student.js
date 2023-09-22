@@ -37,6 +37,18 @@ const Student = () => {
             .range((page - 1) * NUMBER_ITEM_PER_PAGE, NUMBER_ITEM_PER_PAGE * page - 1)
     });
 
+    const getColumnConfig = () => {
+        if (isAdmin) {
+            return columnConfig.concat({
+                title: 'Thao tác',
+                dataIndex: 'action',
+                key: 'action',
+                align: 'center',
+            });
+        }
+        return columnConfig;
+    };
+
     // tùy chọn hiển thị data
     const parseData = useCallback((item, field, index) => {
         if (field === 'index') {
@@ -143,7 +155,7 @@ const Student = () => {
     };
 
     const renderExpandContent = (record) => (
-        <div className='row mx-5'>
+        <div className='row mx-4'>
             {expandConfig.map(item => (
                 <div className='d-flex col-6'>
                     <div className='col-4'>
@@ -185,7 +197,7 @@ const Student = () => {
             </div>}
             <div className='p-5'>
                 <TableCommon
-                    columns={columnConfig}
+                    columns={getColumnConfig()}
                     primaryKey='key'
                     data={students?.map(item => flattenObj({ obj: item }))}
                     parseFunction={parseData}

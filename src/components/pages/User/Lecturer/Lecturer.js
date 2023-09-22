@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useCallback, useContext, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { ExclamationCircleFilled } from '@ant-design/icons';
 import { Modal } from 'antd';
 import AddLecturerModal from './AddLecturerModal';
@@ -30,7 +30,7 @@ const Lecturer = () => {
     const [fileList, setFileList] = useState([])
     const [confirmLoading, setConfirmLoading] = useState(false);
     const [dataRequest, setDataRequest] = useState(baseRequest);
-    const [currentPage, setCurrentPage] = useState(DEFAULT_CURRENT_PAGE)
+    const [currentPage, setCurrentPage] = useState(DEFAULT_CURRENT_PAGE);
 
 
     const { data: lecturer, requestAction: refetchData, count: totalCountData } = useSupbaseAction({
@@ -46,6 +46,18 @@ const Lecturer = () => {
             `)
             .range((page - 1) * NUMBER_ITEM_PER_PAGE, NUMBER_ITEM_PER_PAGE * page - 1)
     });
+
+    const getColumnConfig = () => {
+        if (isAdmin) {
+            return columnConfig.concat({
+                title: 'Thao tác',
+                dataIndex: 'action',
+                key: 'action',
+                align: 'center',
+            });
+        }
+        return columnConfig;
+    };
 
     // tùy chọn hiển thị data
     const parseData = useCallback((item, field, index) => {
@@ -153,7 +165,7 @@ const Lecturer = () => {
     };
 
     const renderExpandContent = (record) => (
-        <div className='row mx-5'>
+        <div className='row mx-4'>
             {expandConfig.map(item => (
                 <div className='d-flex col-6'>
                     <div className='col-4'>
@@ -195,7 +207,7 @@ const Lecturer = () => {
             </div>}
             <div className='p-5'>
                 <TableCommon
-                    columns={columnConfig}
+                    columns={getColumnConfig()}
                     data={lecturer?.map(item => flattenObj({ obj: item })) || []}
                     primaryKey='key'
                     parseFunction={parseData}
