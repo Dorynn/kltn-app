@@ -1,12 +1,29 @@
 import React, { useState } from 'react';
 import ReviewTopicModal from './ReviewTopicModal';
+import supabase from '../../../../../supabaseClient';
+import useSupbaseAction from '../../../../../hooks/useSupabase/useSupabaseAction';
 import { Table, Button } from 'antd';
-import { CheckOutlined } from '@ant-design/icons';
 
 const ProposedTopicList = () => {
     const [isOpenReviewModal, setOpenReviewModal] = useState();
     const [isReviewed, setReviewed] = useState(true);
     const [reviewedTopic, setReviewedTopic] = useState({});
+    const { data: suggestedList, requestAction: refetchData } = useSupbaseAction({
+        initialData: [],
+        firstLoad: true, 
+        defaultAction: async () => supabase
+            .from('suggested_topics')
+            .select(`*, students(*, profiles(user_code, name))`)
+    })
+
+    const { data: topics, requestAction: refetchData2 } = useSupbaseAction({
+        initialData: [],
+        firstLoad: true, defaultAction: async () => supabase
+            .from('thesis_topics')
+            .select(`*, teachers(*, profiles(name), majors(*)))`)
+    })
+    console.log(suggestedList)
+    console.log(topics)
     const columns = [
         {
             title: 'STT',
@@ -16,10 +33,10 @@ const ProposedTopicList = () => {
         },
         Table.EXPAND_COLUMN,
         {
-            title: 'Mã đề tài',
-            dataIndex: 'topic_code',
-            key: 'topic_code',
-            width: '10%'
+            title: 'Mã sinh viên',
+            dataIndex: 'student_code',
+            key: 'student_code',
+            width: '25%'
         },
         {
             title: 'Tên đề tài',
@@ -42,44 +59,21 @@ const ProposedTopicList = () => {
             </>,
         },
     ];
-    const data = [
-        {
-            id: 1,
-            no: 1,
-            topic_code: '',
-            topic_name: 'De tai 1',
-            registration_num: `${1}/${4}`,
-            topic_description: '',
-            teacher: 'Nguyễn Thị Tuyết (PI01)',
-            user_code: 'A3',
-            teacher_id: null,
-            isReviewed: true,
-        },
-        {
-            key: 2,
-            no: 2,
-            topic_code: '',
-            topic_name: 'De tai 2',
-            registration_num: `1/3`,
-            topic_description: 'Mô tả đề tài 2',
-            teacher: 'Nguyễn Thị Tuyết (PI01)',
-            user_code: 'A2',
-            teacher_id: null,
-            isReviewed: false,
-        },
-        {
-            key: 3,
-            no: 3,
-            topic_code: '',
-            topic_name: 'De tai 3',
-            registration_num: `1/3`,
-            topic_description: 'Mô tả đề tài 3',
-            teacher: 'Bùi Minh Đức (PI02)',
-            user_code: 'A1',
-            teacher_id: null,
-            isReviewed: true
-        }
-    ];
+    const data = [];
+
+    suggestedList.map((item, index) => {
+        data.push({
+            key: item.id,
+            id: item.id,
+            no: index + 1,
+            topic_name: item.topic_name,
+            topic_description: item.topic_description,
+            suggested_student_id: item.suggested_student_id,
+            student_code: `${item.students.profiles.user_code} - ${item.students.profiles.name}`
+        })
+    })
+
+    
     return (
         <>
             <h4 className='title'>Danh sách đề tài đề xuất của sinh viên</h4>

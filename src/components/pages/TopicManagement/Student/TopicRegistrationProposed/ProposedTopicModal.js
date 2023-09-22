@@ -5,15 +5,23 @@ import TextArea from 'antd/es/input/TextArea';
 import supabase from '../../../../../supabaseClient';
 import NotificationContext from '../../../../../context/notificationContext';
 import AuthContext from '../../../../../context/authContext';
-
+import useSupbaseAction from '../../../../../hooks/useSupabase/useSupabaseAction';
 const ProposeTopicModal = ({isOpen, refetchData, setHideProposedButton}) => {
     const { openNotification } = useContext(NotificationContext);
-    const { user} = useContext(AuthContext);
     
     const [proposedTopic, setProposedTopic] = useState({
         topic_name: '',
         topic_description: '',
+        suggested_student_id: '',
+        status: 'pending' 
     })
+    const { data: students, requestAction: refetchData1 } = useSupbaseAction({
+        initialData: [],
+        firstLoad: true, defaultAction: async () => supabase
+            .from('profiles')
+            .select(`*`)
+    })
+    console.log(proposedTopic)
     const createProposedTopicModalContent = (
         <Form
             labelCol={{span: 6}}
@@ -30,12 +38,15 @@ const ProposeTopicModal = ({isOpen, refetchData, setHideProposedButton}) => {
 
     const handleProposedTopic = async () => {
         const {error} = await supabase
-        .from('proposedlist')
-        .insert([...proposedTopic, user.user_code])
-        .select()
-        setHideProposedButton(false);
+        .from('suggested_topics')
+        .insert([{
+            suggested_student_id: students[0].id,
+            topic_name: proposedTopic.topic_name,
+            topic_description: proposedTopic.topic_description,
+            status: 'pending'
+        }])
+        
         if (!error) {
-            await refetchData({})
             return openNotification({
                 message: 'Propose topic successfully'
             })
@@ -60,6 +71,8 @@ const ProposeTopicModal = ({isOpen, refetchData, setHideProposedButton}) => {
         setProposedTopic({
             topic_name: '',
             topic_description: '',
+            suggested_student_id: '',
+            status: ''
         })
         
     },[isOpen])

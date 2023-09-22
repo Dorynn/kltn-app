@@ -21,7 +21,7 @@ const ReviewTopicModal = ({ isOpen, setReviewedTopic, reviewedTopic, setReviewed
             <Form.Item
                 label="Sinh viên"
             >
-                <Input value={reviewedTopic.user_code} disabled />
+                <Input value={reviewedTopic.student_code} disabled />
             </Form.Item>
             <Form.Item
                 label="Giáo viên hướng dẫn"

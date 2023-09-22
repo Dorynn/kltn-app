@@ -11,8 +11,8 @@ import Student from './components/pages/User/Student/Student';
 import TopicList from './components/pages/TopicManagement/Teacher/TopicList/TopicList';
 import TopicRegistration from './components/pages/TopicManagement/Teacher/TopicRegistration/TopicRegistration';
 import ApprovedTopicList from './components/pages/TopicManagement/Teacher/ApprovedTopicList/ApprovedTopicList';
-import ProposedTopicList from './components/pages/TopicManagement/Teacher/RecommendedTopicList/ProposedTopicList';
-import TopicRegistrationProposed from './components/pages/TopicManagement/Student/TopicRegistration/TopicRegistrationProposed';
+import ProposedTopicList from './components/pages/TopicManagement/Teacher/ProposedTopicList/ProposedTopicList';
+import TopicRegistrationProposed from './components/pages/TopicManagement/Student/TopicRegistrationProposed/TopicRegistrationProposed';
 import {
   Route,
   Routes,

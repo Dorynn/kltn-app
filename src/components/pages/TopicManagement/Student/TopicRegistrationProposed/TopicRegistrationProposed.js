@@ -5,29 +5,60 @@ import ProposeTopicModal from './ProposedTopicModal';
 import useSupbaseAction from '../../../../../hooks/useSupabase/useSupabaseAction';
 import supabase from '../../../../../supabaseClient';
 import AuthContext from '../../../../../context/authContext';
+import NotificationContext from '../../../../../context/notificationContext';
+
 const { confirm } = Modal
 
 const TopicRegistrationProposed = () => {
     const [isOpenProposedModal, setOpenProposedModal] = useState();
     const [isRegistered, setRegistered] = useState(true);
-    const [registeredTopic, setRegisteredTopic] = useState()
-    const { user } = useContext(AuthContext);
+    const [registeredTopic, setRegisteredTopic] = useState();
+    const { openNotification } = useContext(NotificationContext);
+
+    // const { user } = useContext(AuthContext);
+    // console.log(user)
+
+    const { data: students, requestAction: refetchData1 } = useSupbaseAction({
+        initialData: [],
+        firstLoad: true, defaultAction: async () => supabase
+            .from('profiles')
+            .select(`*`)
+    })
+    const { data: student_theses, requestAction: refetchData2 } = useSupbaseAction({
+        initialData: [],
+        firstLoad: true, defaultAction: async () => supabase
+            .from('student_theses')
+            .select(`*`)
+    })
+
+    console.log(student_theses)
 
     const { data: topics, requestAction: refetchData } = useSupbaseAction({
         initialData: [],
         firstLoad: true, defaultAction: async () => supabase
-            .from('topics')
-            .select(`*, profiles(*),`)
-            .eq('major_code', 'N2')
+            .from('thesis_topics')
+            .select(`*, teachers(*, profiles(name), majors(*)))`)
     })
+    console.log(topics)
 
-    const handleRegister = async ({ record }) => {
+    const handleRegister = async ({ topic_id }) => {
         const { error } = await supabase
-            .from('registrationlist')
-            .insert([...record, user.user_code])
+            .from('thesis_topics')
+            .insert([{topic_id:topic_id, student_id:students.id, status:'pending'}])
+        if (!error) {
+            await refetchData({})
+            return openNotification({
+                message: 'Register the topic successfully'
+            })
+        }
+        return openNotification({
+            type: 'error',
+            message: 'Register the topic failed',
+            description: error.message
+        })
     }
 
-    const ConfirmRegisterModal = ({ record }) => {
+    const ConfirmRegisterModal = ({ topic_id }) => {
         confirm({
             title: "Bạn có thực sự muốn đăng ký đề tài này?",
             icon: <ExclamationCircleFilled />,
@@ -37,8 +68,9 @@ const TopicRegistrationProposed = () => {
             centered: true,
             // confirmLoading: confirmLoading,
             onOk() {
-                setRegisteredTopic(record.id)
+                setRegisteredTopic(topic_id   )
                 setRegistered(false)
+                handleRegister(topic_id)
             },
             onCancel() {
 
@@ -83,49 +115,33 @@ const TopicRegistrationProposed = () => {
             render: (_, record) => <>
                 {
                     isRegistered ? <Button onClick={() => {
-                        ConfirmRegisterModal({ record });
-                    } 
+                        ConfirmRegisterModal({ topic_id: record.topic_id });
+                    }
                     }>Đăng ký</Button> :
-                    registeredTopic === record.id ?
-                    <Button disabled>Đã đăng ký </Button>
-                    :<Button disabled>Đăng ký</Button>
+                        registeredTopic === record.id ?
+                            <Button disabled>Đã đăng ký </Button>
+                            : <Button disabled>Đăng ký</Button>
                 }
             </>,
         },
     ];
-    const data = [
-        {
-            id: 1,
-            no: 1,
-            topic_code: 'DT01',
-            topic_name: 'De tai 1',
-            registration_num: `${1}/${4}`,
-            topic_description: 'Mô tả đề tài 1',
-            teacher: 'Nguyễn Thị Tuyết (PI01)'
-        },
-        {
-            id: 2,
-            no: 2,
-            topic_code: 'DT02',
-            topic_name: 'De tai 2',
-            registration_num: `1/3`,
-            topic_description: 'Mô tả đề tài 2',
-            teacher: 'Nguyễn Thị Tuyết (PI01)'
+    const data = [];
 
-        },
-        {
-            id: 3,
-            no: 3,
-            topic_code: 'DT03',
-            topic_name: 'De tai 3',
-            registration_num: `1/3`,
-            topic_description: 'Mô tả đề tài 3',
-            teacher: 'Bùi Minh Đức (PI02)'
+    topics.map((item, index) => {
+        data.push({
+            no: index + 1,
+            key: item.id,
+            id: item.id,
+            topic_code: item.topic_code,
+            topic_name: item.topic_name,
+            topic_description: item.topic_description,
+            registration_num: `${item.register_number}/${item.limit_register_number}`,
+            teacher: ``
+            // teacher: `${item.teachers.profiles.name}`
+        })
+    })
 
-        }
-    ];
 
-    
 
     return (
         <>
@@ -139,7 +155,7 @@ const TopicRegistrationProposed = () => {
                     expandedRowRender: (record) => (
                         <p
                             style={{
-                                margin: 0,
+                                margin: '0 0 0 40px',
                             }}
                         >
                             {record.topic_description}

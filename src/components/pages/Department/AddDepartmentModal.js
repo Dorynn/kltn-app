@@ -10,7 +10,7 @@ const AddDepartmentModal = ({ refetchData, isOpen }) => {
         department_code: '',
         department_name: '',
         dean_id: '',
-        chargeperson_id: ''
+        // chargeperson_id: ''
     });
     const { openNotification } = useContext(NotificationContext);
     const { data: teachers } = useSupbaseAction({
@@ -40,7 +40,7 @@ const AddDepartmentModal = ({ refetchData, isOpen }) => {
                 value={newDepartment.dean_id}
             />
         </Form.Item>
-        <Form.Item label="Mã người phụ trách KLTN">
+        {/* <Form.Item label="Mã người phụ trách KLTN">
             <Select
                 showSearch
                 optionFilterProp='children'
@@ -49,7 +49,7 @@ const AddDepartmentModal = ({ refetchData, isOpen }) => {
                 onChange={(value) => setNewDepartment(prev => ({ ...prev, chargeperson_id: value }))}
                 value={newDepartment.chargeperson_id}
             />
-        </Form.Item>
+        </Form.Item> */}
     </Form>)
     const handleCreateDepartment = async () => {
         const { error } = await supabase
@@ -83,7 +83,7 @@ const AddDepartmentModal = ({ refetchData, isOpen }) => {
             department_code: '',
             department_name: '',
             dean_id: '',
-            chargeperson_id: ''
+            // chargeperson_id: ''
         })
     }, [isOpen])
 
