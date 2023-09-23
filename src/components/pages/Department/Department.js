@@ -177,7 +177,7 @@ const Department = () => {
                     maxCount={1}
                 />
             </div>}
-
+        <div className='p-5'>
             <Table
                 columns={columns}
                 dataSource={dataSource}
@@ -185,6 +185,7 @@ const Department = () => {
                 bordered
                 pagination={false}
             />
+        </div>
             <AddDepartmentModal isOpen={openAddModal} refetchData={refetchData} />
             <EditDepartmentModal isOpen={openEditModal} setUpdateDepartment={setUpdateDepartment} updateDepartment={updateDepartment} refetchData={refetchData} />
         </>

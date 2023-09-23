@@ -57,7 +57,7 @@ const TopicRegistrationProposed = () => {
             onOk() {
                 setRegisteredTopic(topic_id)
                 setRegistered(false)
-                handleRegister({topic_id})
+                handleRegister({ topic_id })
             },
             onCancel() {
 
@@ -101,10 +101,10 @@ const TopicRegistrationProposed = () => {
             width: '10%',
             render: (_, record) => <>
                 {
-                   <Button onClick={() => {
+                    <Button onClick={() => {
                         ConfirmRegisterModal({ topic_id: record.id });
                     }
-                    }>Đăng ký</Button> 
+                    }>Đăng ký</Button>
                 }
             </>,
         },
@@ -133,22 +133,25 @@ const TopicRegistrationProposed = () => {
             <div className='d-flex justify-content-end me-4'>
                 <Button className='mb-4' icon={<PlusCircleOutlined />} onClick={() => setOpenProposedModal(!isOpenProposedModal)} >Đề xuất đề tài</Button>
             </div>
-            <Table
-                columns={columns}
-                expandable={{
-                    expandedRowRender: (record) => (
-                        <p
-                            style={{
-                                margin: '0 0 0 40px',
-                            }}
-                        >
-                            {record.topic_description}
-                        </p>
-                    ),
-                }}
-                dataSource={data}
-                bordered
-            />
+            <div className='p-5'>
+                <Table
+                    columns={columns}
+                    expandable={{
+                        expandedRowRender: (record) => (
+                            <p
+                                style={{
+                                    margin: '0 0 0 40px',
+                                }}
+                            >
+                                {record.topic_description}
+                            </p>
+                        ),
+                    }}
+                    dataSource={data}
+                    bordered
+                />
+
+            </div>
             <ProposeTopicModal isOpen={isOpenProposedModal} />
         </>
 

@@ -10,7 +10,7 @@ const ProposedTopicList = () => {
     const [reviewedTopic, setReviewedTopic] = useState({});
     const { data: suggestedList, requestAction: refetchData } = useSupbaseAction({
         initialData: [],
-        firstLoad: true, 
+        firstLoad: true,
         defaultAction: async () => supabase
             .from('suggested_topics')
             .select(`*, students(*, profiles(user_code, name))`)
@@ -22,7 +22,7 @@ const ProposedTopicList = () => {
             .from('thesis_topics')
             .select(`*, teachers(*, profiles(name), majors(*)))`)
     })
-   
+
     const columns = [
         {
             title: 'STT',
@@ -71,28 +71,29 @@ const ProposedTopicList = () => {
         })
     })
 
-    
+
     return (
         <>
             <h4 className='title'>Danh sách đề tài đề xuất của sinh viên</h4>
+            <div className='p-5'>
+                <Table
+                    columns={columns}
+                    expandable={{
+                        expandedRowRender: (record) => (
+                            <p
+                                style={{
+                                    margin: 0,
+                                }}
+                            >
+                                {record.topic_description}
 
-            <Table
-                columns={columns}
-                expandable={{
-                    expandedRowRender: (record) => (
-                        <p
-                            style={{
-                                margin: 0,
-                            }}
-                        >
-                            {record.topic_description}
-
-                        </p>
-                    ),
-                }}
-                dataSource={data}
-                bordered
-            />
+                            </p>
+                        ),
+                    }}
+                    dataSource={data}
+                    bordered
+                />
+            </div>
             <ReviewTopicModal isOpen={isOpenReviewModal} setReviewedTopic={setReviewedTopic} reviewedTopic={reviewedTopic} setReviewed={setReviewed} />
         </>
     );
