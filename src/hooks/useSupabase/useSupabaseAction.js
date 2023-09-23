@@ -29,7 +29,7 @@ export default function useSupbaseAction({ defaultAction, firstLoad = true, init
             }
         } catch (err) {
             setError({
-                message: error.message
+                message: err.message
             });
         } finally {
             setLoading(false);
