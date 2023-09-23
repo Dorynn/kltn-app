@@ -1,11 +1,16 @@
 import React, {useEffect, useState, useContext} from 'react';
 import useModal from '../../../../../hooks/modal/useModal';
-import {Form, Input} from 'antd';
+import {Form, Input, Modal} from 'antd';
 import TextArea from 'antd/es/input/TextArea';
 import supabase from '../../../../../supabaseClient';
+import {ExclamationCircleFilled } from '@ant-design/icons';
+
 import NotificationContext from '../../../../../context/notificationContext';
 import AuthContext from '../../../../../context/authContext';
 import useSupbaseAction from '../../../../../hooks/useSupabase/useSupabaseAction';
+
+const { confirm } = Modal
+
 const ProposeTopicModal = ({isOpen, refetchData, setHideProposedButton}) => {
     const { openNotification } = useContext(NotificationContext);
     
@@ -20,6 +25,8 @@ const ProposeTopicModal = ({isOpen, refetchData, setHideProposedButton}) => {
             .from('profiles')
             .select(`*`)
     })
+
+    
     const createProposedTopicModalContent = (
         <Form
             labelCol={{span: 6}}
@@ -54,13 +61,32 @@ const ProposeTopicModal = ({isOpen, refetchData, setHideProposedButton}) => {
             description: error.message
         })
     }
+    
+    const ConfirmProposedModal = () => {
+        confirm({
+            title: "Bạn có thực sự muốn đề xuất đề tài này?",
+            icon: <ExclamationCircleFilled />,
+            content: 'Bạn sẽ không thể thay đổi đề tài sau khi đề xuất',
+            okText: 'Đồng ý',
+            cancleText: 'Hủy',
+            centered: true,
+            // confirmLoading: confirmLoading,
+            onOk() {
+                handleProposedTopic();
+                toggleModal(false)
+            },
+            onCancel() {
 
+            }
+        })
+    }
     const {modal: createProposedTopic, toggleModal} = useModal({
         content: createProposedTopicModalContent,
         title: 'Đề xuất đề tài',
-        handleConfirm: handleProposedTopic,
+        handleConfirm: ConfirmProposedModal,
         width: 1000
     })
+
 
     useEffect(() => {
         if (isOpen !== undefined)
