@@ -135,7 +135,11 @@ const Department = () => {
             title: "Tên trưởng khoa",
             dataIndex: "dean_name"
         },
-        {
+
+    ]
+
+    if (isAdmin) {
+        columns.push({
             title: "Thao tác",
             dataIndex: 'action',
             width: '10%',
@@ -158,12 +162,11 @@ const Department = () => {
                     }
                 </>
             )
-        }
-    ]
-    console.log('datasource', dataSource)
+        })
+    }
     return (
         <>
-            <h4 className='title' onClick={() => console.log(departments)}>Quản lý khoa</h4>
+            <h4 className='title'>Quản lý khoa</h4>
             {isAdmin && <div className='d-flex justify-content-end me-4'>
                 <div className='me-3' role="button" onClick={() => setOpenAddModal(!openAddModal)}>
                     <i className="fa-solid fa-circle-plus"></i>
@@ -177,14 +180,15 @@ const Department = () => {
                     maxCount={1}
                 />
             </div>}
-
-            <Table
-                columns={columns}
-                dataSource={dataSource}
-                rowClassName={(_, index) => (index % 2 === 0 ? 'even-row' : 'odd-row')}
-                bordered
-                pagination={false}
-            />
+            <div className='p-5'>
+                <Table
+                    columns={columns}
+                    dataSource={dataSource}
+                    rowClassName={(_, index) => (index % 2 === 0 ? 'even-row' : 'odd-row')}
+                    bordered
+                    pagination={false}
+                />
+            </div>
             <AddDepartmentModal isOpen={openAddModal} refetchData={refetchData} />
             <EditDepartmentModal isOpen={openEditModal} setUpdateDepartment={setUpdateDepartment} updateDepartment={updateDepartment} refetchData={refetchData} />
         </>

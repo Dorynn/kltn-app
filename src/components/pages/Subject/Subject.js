@@ -29,7 +29,6 @@ const Subject = () => {
                 majors(major_name, major_code)
             `)
     })
-    console.log(subjects)
     const handleDeleteSubject = async ({ id }) => {
         setConfirmLoading(true);
         const { error } = await supabase
@@ -182,14 +181,16 @@ const Subject = () => {
                     maxCount={1}
                 />
             </div>}
-            <Table
-                columns={columns}
-                dataSource={dataSource}
-                bordered
-                pagination={false}
-                rowClassName={(_, index) => (index % 2 === 0 ? 'even-row' : 'odd-row')}
+            <div className='p-5'>
+                <Table
+                    columns={columns}
+                    dataSource={dataSource}
+                    bordered
+                    pagination={false}
+                    rowClassName={(_, index) => (index % 2 === 0 ? 'even-row' : 'odd-row')}
 
-            />
+                />
+            </div>
             <AddSubjectModal isOpen={openAddModal} refetchData={refetchData} />
             <EditSubjectModal isOpen={openEditModal} setUpdateSubject={setUpdateSubject} updateSubject={updateSubject} refetchData={refetchData} />
 

@@ -131,7 +131,11 @@ const Major = () => {
             title: 'Tên trưởng ngành',
             dataIndex: 'major_chair_name'
         },
-        {
+
+    ]
+
+    if (isAdmin) {
+        columns.push({
             title: 'Thao tác',
             width: '10%',
             render: (_, record) => (
@@ -155,9 +159,8 @@ const Major = () => {
                     }
                 </>
             )
-        }
-    ]
-
+        })
+    }
     const dataSource = [];
     majors.forEach((item, index) => {
         dataSource.push({
@@ -191,13 +194,15 @@ const Major = () => {
                     maxCount={1}
                 />
             </div>}
-            <Table
-                columns={columns}
-                dataSource={dataSource}
-                bordered
-                rowClassName={(_, index) => (index % 2 === 0 ? 'even-row' : 'odd-row')}
-                pagination={false}
-            />
+            <div className='p-5'>
+                <Table
+                    columns={columns}
+                    dataSource={dataSource}
+                    bordered
+                    rowClassName={(_, index) => (index % 2 === 0 ? 'even-row' : 'odd-row')}
+                    pagination={false}
+                />
+            </div>
             <AddMajorModal
                 isOpen={openAddModal}
                 refetchData={refetchData}

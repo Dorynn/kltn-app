@@ -51,6 +51,7 @@ body {
 .title {
   padding-top: 15px;
   font-size: 24px;
+  margin-bottom: 50px;
 }
 
 .avatar {
@@ -239,6 +240,10 @@ aside.ant-layout-sider.ant-layout-sider-dark {
   padding: 16px;
 }
 
+.ant-input[disabled] {
+  color: #000 !important;
+}
+
 /* import file */
 .ant-upload .ant-btn-default {
   background-color: transparent !important;
@@ -293,3 +298,4 @@ aside.ant-layout-sider.ant-layout-sider-dark {
 .ant-table-wrapper .ant-table-thead>tr>th {
   padding: 8px 16px!important;
 }
+

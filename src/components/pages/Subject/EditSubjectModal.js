@@ -15,7 +15,6 @@ const EditSubjectModal = ({ updateSubject, setUpdateSubject, refetchData, isOpen
             .from('majors')
             .select(`major_name, major_code, id`)
     })
-    console.log('majors', majors)
     const editSubjectModalContent = (<Form
         labelCol={{ span: 6 }}
         wrapperCol={{ span: 18 }}

@@ -17,8 +17,9 @@ export default function useAuth() {
         })
         return supabase.auth.signOut()
     }
-    const isAdmin = user && user.university_role === 'admin'
+    const isAdmin = user && user.university_role === 'admin';
     const isTeacher = user && user.university_role === 'teacher';
+    const isStudent = user && user.university_role === 'student';
 
     const getUserProfile = async () => {
         const { data: profile, error } = await supabase
@@ -61,5 +62,5 @@ export default function useAuth() {
             setUser(null)
         }
     }, [session])
-    return { user, login, logout, isAdmin, fetched, session, isTeacher }
+    return { user, login, logout, isAdmin, isTeacher, isStudent, fetched, session }
 }
