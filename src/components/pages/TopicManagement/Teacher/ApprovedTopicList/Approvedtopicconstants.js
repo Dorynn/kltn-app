@@ -7,15 +7,15 @@ export const columnConfig = [
     },
     {
         title: 'Mã sinh viên',
-        dataIndex: 'suggested_student_id',
-        key: 'suggested_student_id',
+        dataIndex: 'student_id',
+        key: 'student_id',
         align: 'center',
         expand: true,
     },
     {
         title: 'Tên đề tài',
-        dataIndex: 'topic_name',
-        key: 'topic_name',
+        dataIndex: 'topic_id',
+        key: 'topic_id',
         align: 'center',
     },
     {

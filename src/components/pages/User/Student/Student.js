@@ -15,7 +15,7 @@ import { NUMBER_ITEM_PER_PAGE, DEFAULT_CURRENT_PAGE } from '../../../../const/ta
 const { confirm } = Modal;
 
 const Student = () => {
-    const { isAdmin } = useContext(AuthContext);
+    const { isAdmin, isTeacher } = useContext(AuthContext);
     const { openNotification } = useContext(NotificationContext);
     const [openEditModal, setOpenEditModal] = useState();
     const [openAddModal, setOpenAddModal] = useState();
@@ -170,11 +170,11 @@ const Student = () => {
     );
 
     const expandCondition = (record) => (data.length > 0);
-    console.log('students', students?.map(item => flattenObj({ obj: item })))
+
     return (
         <>
             <h4 className='title'>Quản lý sinh viên</h4>
-            {isAdmin && <div className='d-flex justify-content-end me-4'>
+            {(isAdmin || isTeacher) && <div className='d-flex justify-content-end me-4'>
                 <button
                     type="button"
                     className='btn-none text-btn-top me-3'
