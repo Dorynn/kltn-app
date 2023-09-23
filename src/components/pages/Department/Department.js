@@ -138,7 +138,7 @@ const Department = () => {
 
     ]
 
-    if (!isAdmin) {
+    if (isAdmin) {
         columns.push({
             title: "Thao tác",
             dataIndex: 'action',

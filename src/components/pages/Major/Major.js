@@ -134,7 +134,7 @@ const Major = () => {
 
     ]
 
-    if (!isAdmin) {
+    if (isAdmin) {
         columns.push({
             title: 'Thao tác',
             width: '10%',
