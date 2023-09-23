@@ -24,7 +24,7 @@ import { notification, Layout } from 'antd';
 import './styles/app.scss';
 const { Content } = Layout;
 function App() {
-  const { user, login, logout, isAdmin, fetched: fetchedAuth } = useAuth();
+  const { user, login, logout, isAdmin, isTeacher, fetched: fetchedAuth } = useAuth();
   const [notificationApi, notificationHolder] = notification.useNotification();
   const openNotification = ({
     type = 'success',
@@ -40,7 +40,7 @@ function App() {
   if (!fetchedAuth.hasSession) {
     return (
       <NotificationContext.Provider value={{ openNotification }}>
-        <AuthContext.Provider value={{ user, login, logout, isAdmin }}>
+        <AuthContext.Provider value={{ user, login, logout, isAdmin, isTeacher }}>
           <Login />
           {notificationHolder}
         </AuthContext.Provider>
@@ -49,7 +49,7 @@ function App() {
   }
   return (
     <NotificationContext.Provider value={{ openNotification }}>
-      <AuthContext.Provider value={{ user, login, logout, isAdmin }}>
+      <AuthContext.Provider value={{ user, login, logout, isAdmin, isTeacher }}>
         <Layout>
           <HeaderDefault title="Title" />
           <Layout id='main-content'>
