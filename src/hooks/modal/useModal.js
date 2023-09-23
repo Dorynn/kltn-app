@@ -50,6 +50,7 @@ export default function useModal({ content, title = 'Modal', handleConfirm = () 
                 style={{ color: 'red' }}
                 okText={okText}
                 cancelText='Hủy'
+                width={width}
             >
                 {content}
             </Modal>
