@@ -13,7 +13,6 @@ const EditDepartmentModal = ({ updateDepartment, setUpdateDepartment, refetchDat
             .from('teachers')
             .select(`*, profiles(user_code, name)`)
     })
-    console.log('update department', updateDepartment)
     const editDepartmentModalContent = (<Form
         labelCol={{ span: 9 }}
         wrapperCol={{ span: 15 }}
@@ -41,8 +40,8 @@ const EditDepartmentModal = ({ updateDepartment, setUpdateDepartment, refetchDat
                 optionFilterProp='children'
                 filterOption={(input, option) => (option?.label ?? "").includes(input)}
                 options={teachers.map(({ profiles, id }) => ({ label: `${profiles.user_code} - ${profiles.name}`, value: id }))}
-                onChange={(value) => setUpdateDepartment(prev => ({ ...prev, chargeperson_id: value }))}
-                value={updateDepartment.chargeperson_id}
+                onChange={(value) => setUpdateDepartment(prev => ({ ...prev, charge_person_id: value }))}
+                value={updateDepartment.charge_person_id}
             />
         </Form.Item>
     </Form>)

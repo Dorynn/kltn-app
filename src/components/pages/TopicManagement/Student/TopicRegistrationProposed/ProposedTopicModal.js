@@ -13,7 +13,6 @@ const ProposeTopicModal = ({isOpen, refetchData, setHideProposedButton}) => {
         topic_name: '',
         topic_description: '',
         suggested_student_id: '',
-        status: 'pending' 
     })
     const { data: students, requestAction: refetchData1 } = useSupbaseAction({
         initialData: [],
@@ -21,7 +20,6 @@ const ProposeTopicModal = ({isOpen, refetchData, setHideProposedButton}) => {
             .from('profiles')
             .select(`*`)
     })
-    console.log(proposedTopic)
     const createProposedTopicModalContent = (
         <Form
             labelCol={{span: 6}}
@@ -43,7 +41,6 @@ const ProposeTopicModal = ({isOpen, refetchData, setHideProposedButton}) => {
             suggested_student_id: students[0].id,
             topic_name: proposedTopic.topic_name,
             topic_description: proposedTopic.topic_description,
-            status: 'pending'
         }])
         
         if (!error) {
@@ -72,7 +69,6 @@ const ProposeTopicModal = ({isOpen, refetchData, setHideProposedButton}) => {
             topic_name: '',
             topic_description: '',
             suggested_student_id: '',
-            status: ''
         })
         
     },[isOpen])

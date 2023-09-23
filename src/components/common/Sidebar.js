@@ -9,7 +9,6 @@ const { SubMenu } = Menu;
 
 const Sidebar = () => {
     const { isAdmin, isTeacher, isStudent } = useContext(AuthContext);
-    console.log(isStudent, isAdmin, isTeacher)
     return (
         <>
             <Sider

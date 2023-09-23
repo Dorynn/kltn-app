@@ -29,7 +29,6 @@ const Subject = () => {
                 majors(major_name, major_code)
             `)
     })
-    console.log(subjects)
     const handleDeleteSubject = async ({ id }) => {
         setConfirmLoading(true);
         const { error } = await supabase

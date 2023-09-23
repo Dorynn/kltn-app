@@ -15,23 +15,12 @@ const TopicRegistrationProposed = () => {
     const [registeredTopic, setRegisteredTopic] = useState();
     const { openNotification } = useContext(NotificationContext);
 
-    // const { user } = useContext(AuthContext);
-    // console.log(user)
-
     const { data: students, requestAction: refetchData1 } = useSupbaseAction({
         initialData: [],
         firstLoad: true, defaultAction: async () => supabase
             .from('profiles')
             .select(`*`)
     })
-    const { data: student_theses, requestAction: refetchData2 } = useSupbaseAction({
-        initialData: [],
-        firstLoad: true, defaultAction: async () => supabase
-            .from('student_theses')
-            .select(`*`)
-    })
-
-    console.log(student_theses)
 
     const { data: topics, requestAction: refetchData } = useSupbaseAction({
         initialData: [],
@@ -39,14 +28,12 @@ const TopicRegistrationProposed = () => {
             .from('thesis_topics')
             .select(`*, teachers(*, profiles(name), majors(*)))`)
     })
-    console.log(topics)
 
     const handleRegister = async ({ topic_id }) => {
         const { error } = await supabase
-            .from('thesis_topics')
-            .insert([{topic_id:topic_id, student_id:students.id, status:'pending'}])
+            .from('student_theses')
+            .insert([{ topic_id: topic_id, student_id: students[0].id, status: 'pending' }])
         if (!error) {
-            await refetchData({})
             return openNotification({
                 message: 'Register the topic successfully'
             })
@@ -68,9 +55,9 @@ const TopicRegistrationProposed = () => {
             centered: true,
             // confirmLoading: confirmLoading,
             onOk() {
-                setRegisteredTopic(topic_id   )
+                setRegisteredTopic(topic_id)
                 setRegistered(false)
-                handleRegister(topic_id)
+                handleRegister({topic_id})
             },
             onCancel() {
 
@@ -114,13 +101,10 @@ const TopicRegistrationProposed = () => {
             width: '10%',
             render: (_, record) => <>
                 {
-                    isRegistered ? <Button onClick={() => {
-                        ConfirmRegisterModal({ topic_id: record.topic_id });
+                   <Button onClick={() => {
+                        ConfirmRegisterModal({ topic_id: record.id });
                     }
-                    }>Đăng ký</Button> :
-                        registeredTopic === record.id ?
-                            <Button disabled>Đã đăng ký </Button>
-                            : <Button disabled>Đăng ký</Button>
+                    }>Đăng ký</Button> 
                 }
             </>,
         },
@@ -136,7 +120,7 @@ const TopicRegistrationProposed = () => {
             topic_name: item.topic_name,
             topic_description: item.topic_description,
             registration_num: `${item.register_number}/${item.limit_register_number}`,
-            teacher: ``
+            teacher: item.teacher_id
             // teacher: `${item.teachers.profiles.name}`
         })
     })

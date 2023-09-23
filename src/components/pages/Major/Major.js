@@ -32,7 +32,6 @@ const Major = () => {
         departments(department_name, department_code)
         `)
     })
-    console.log('majors', majors)
 
 
 

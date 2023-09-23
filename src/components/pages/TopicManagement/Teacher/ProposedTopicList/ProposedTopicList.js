@@ -22,8 +22,7 @@ const ProposedTopicList = () => {
             .from('thesis_topics')
             .select(`*, teachers(*, profiles(name), majors(*)))`)
     })
-    console.log(suggestedList)
-    console.log(topics)
+   
     const columns = [
         {
             title: 'STT',
@@ -53,7 +52,6 @@ const ProposedTopicList = () => {
                     record.isReviewed ? <Button disabled>Đã duyệt </Button> : <Button onClick={() => {
                         setOpenReviewModal(!isOpenReviewModal)
                         setReviewedTopic(record)
-                        console.log(record)
                     }}>Duyệt</Button>
                 }
             </>,

@@ -6,7 +6,6 @@ import supabase from '../../../../../supabaseClient';
 import useSupbaseAction from '../../../../../hooks/useSupabase/useSupabaseAction';
 
 const ReviewTopicModal = ({ isOpen, setReviewedTopic, reviewedTopic, setReviewed }) => {
-    console.log(reviewedTopic, reviewedTopic.user_code)
     const {data: teachers} = useSupbaseAction({
         initialData: [],
         firstLoad: true, defaultAction: async () => supabase

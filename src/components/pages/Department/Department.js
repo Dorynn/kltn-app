@@ -29,7 +29,6 @@ const Department = () => {
             .select(`*, profiles(*)`)
 
     })
-    console.log(departments)
 
     const handleDeleteDepartment = async ({ id }) => {
         setConfirmLoading(true);
@@ -107,7 +106,7 @@ const Department = () => {
             user_code: item.profiles.user_code,
             dean_name: item.profiles.name,
             dean_id: item.dean_id,
-            chargeperson_id: item.chargeperson_id
+            charge_person_id: item.charge_person_id
         })
     })
     const columns = [
@@ -151,7 +150,9 @@ const Department = () => {
                                     id: record.key,
                                     department_code: record.department_code,
                                     department_name: record.department_name,
-                                    dean_id: record.dean_id
+                                    dean_id: record.dean_id,
+                                    charge_person_id: record.charge_person_id
+
                                 })
                                 setOpenEditModal(!openEditModal)
                             }}></i>
@@ -162,10 +163,9 @@ const Department = () => {
             )
         })
     }
-    console.log('datasource', dataSource)
     return (
         <>
-            <h4 className='title' onClick={() => console.log(departments)}>Quản lý khoa</h4>
+            <h4 className='title'>Quản lý khoa</h4>
             {isAdmin && <div className='d-flex justify-content-end me-4'>
                 <div className='me-3' role="button" onClick={() => setOpenAddModal(!openAddModal)}>
                     <i className="fa-solid fa-circle-plus"></i>
