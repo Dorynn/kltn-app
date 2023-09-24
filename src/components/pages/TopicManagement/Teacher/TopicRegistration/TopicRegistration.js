@@ -24,6 +24,7 @@ const TopicRegistration = () => {
     const [confirmLoading, setConfirmLoading] = useState(false);
     const [currentPage, setCurrentPage] = useState(DEFAULT_CURRENT_PAGE);
 
+    const idUser = sessionStorage.getItem('user_login');
 
     const { data: topicRegistration, requestAction: refetchData, loading: tableLoading, count: totalCountData } = useSupbaseAction({
         initialData: [],
@@ -33,6 +34,7 @@ const TopicRegistration = () => {
             .select(`
                 *
             `, { count: 'exact' })
+            .match(isTeacher ? { 'teacher_id': idUser } : {})
             // .join('teachers', { 'thesis_topics.teacher_id': 'teachers.id' })
             // .join('profiles', { 'teachers.user_id': 'profiles.id' })
             .range((page - 1) * NUMBER_ITEM_PER_PAGE, NUMBER_ITEM_PER_PAGE * page - 1)
