@@ -16,28 +16,33 @@ import EditTopicModal from './EditTopicModal';
 const { confirm } = Modal;
 
 const TopicRegistration = () => {
-    const { isAdmin, isTeacher } = useContext(AuthContext);
+    const { isAdmin, isTeacher, user } = useContext(AuthContext);
     const { openNotification } = useContext(NotificationContext);
     const [openEditModal, setOpenEditModal] = useState(false);
     const [openAddModal, setOpenAddModal] = useState(false);
     const [updateTopic, setUpdateTopic] = useState({});
     const [confirmLoading, setConfirmLoading] = useState(false);
     const [currentPage, setCurrentPage] = useState(DEFAULT_CURRENT_PAGE);
-
+    
     const idUser = sessionStorage.getItem('user_login');
 
     const { data: topicRegistration, requestAction: refetchData, loading: tableLoading, count: totalCountData } = useSupbaseAction({
         initialData: [],
         firstLoad: true,
-        defaultAction: async ({ page = 1 }) => supabase
+        deps: [user],
+        defaultAction:  async ({ page = 1 }) => {
+            console.log('*** get topics ***', user)
+            return supabase
             .from('thesis_topics')
             .select(`
                 *
             `, { count: 'exact' })
-            .match(isTeacher ? { 'teacher_id': idUser } : {})
+            .eq('teacher_id', user.user_id)
+            // .match(isTeacher ? { 'teacher_id': idUser } : {})
             // .join('teachers', { 'thesis_topics.teacher_id': 'teachers.id' })
             // .join('profiles', { 'teachers.user_id': 'profiles.id' })
             .range((page - 1) * NUMBER_ITEM_PER_PAGE, NUMBER_ITEM_PER_PAGE * page - 1)
+        }
     });
 
     const { data: teachers } = useSupbaseAction({
@@ -73,11 +78,11 @@ const TopicRegistration = () => {
                         setUpdateTopic(item);
                     }}
                 ></i>
-                <i
+                {/* <i
                     role="button"
                     className="fa-solid fa-trash mx-2"
                     onClick={() => { ConfirmModal(item.id) }}
-                ></i>
+                ></i> */}
             </>);
         }
         return item[field];
@@ -147,7 +152,7 @@ const TopicRegistration = () => {
     );
 
     const expandCondition = (record) => (topicRegistration.length > 0);
-
+    console.log('2222')
     return (
         <>
             <h4 className='title'>Đăng ký đề tài</h4>

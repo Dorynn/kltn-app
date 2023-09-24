@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 
-export default function useSupbaseAction({ defaultAction, firstLoad = true, initialData = {} }) {
+export default function useSupbaseAction({ defaultAction, firstLoad = true, initialData = {}, deps =[] }) {
     const [fetched, setFetched] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
@@ -37,9 +37,11 @@ export default function useSupbaseAction({ defaultAction, firstLoad = true, init
     }
     useEffect(() => {
         if (firstLoad) {
+            console.log('*** run action ***')
+
             requestAction({});
         }
-    }, [])
+    }, deps)
     return {
         fetched,
         loading,

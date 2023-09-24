@@ -4,13 +4,16 @@ import supabase from '../../../../../supabaseClient';
 import useModal from '../../../../../hooks/modal/useModal';
 import { Form, Input, Select } from "antd";
 import { fieldAddTopic, optionLimitStudent } from './TopicRegistrationconstant';
-
+import AuthContext from '../../../../../context/authContext';
 
 function AddTopicModal(props) {
+    const {user} = useContext(AuthContext)
     const { TextArea } = Input;
     const baseData = {
+        topic_code: '',
         topic_name: '',
         topic_description: '',
+        limit_register_number: '',
     };
     const { refetchData, isOpen, setIsOpen } = props;
     const [newTopic, setNewTopic] = useState(baseData);
@@ -25,17 +28,17 @@ function AddTopicModal(props) {
     const handleCreateTopic = async () => {
         const { error } = await supabase
             .from('thesis_topics')
-            .insert({...newTopic})
+            .insert({...newTopic, teacher_id: user.user_id, register_number:0})
         if (!error) {
             await refetchData({})
             setIsOpen(false);
             return openNotification({
-                message: 'Create student successfully'
+                message: 'Create topic successfully'
             })
         }
         return openNotification({
             type: 'error',
-            message: 'Create student failed',
+            message: 'Create topic failed',
         })
     };
 
