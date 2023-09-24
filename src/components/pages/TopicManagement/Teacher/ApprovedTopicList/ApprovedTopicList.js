@@ -34,18 +34,14 @@ const ApprovedTopicList = () => {
         firstLoad: true,
         defaultAction: async () => supabase
             .from('thesis_topics')
-            .select(`
-                *
-        `)
+            .select(`*`)
     });
     const { data: students } = useSupbaseAction({
         initialData: [],
         firstLoad: true,
         defaultAction: async () => supabase
             .from('profiles')
-            .select(`
-                *
-            `)
+            .select(`*`)
             .eq('university_role', 'student')
     });
 
@@ -59,7 +55,7 @@ const ApprovedTopicList = () => {
         }
         if (field === 'student_id') {
             const student = students && students.find(value => value.id === item[field]) || {};
-            return student.name || '-';
+            return `${student?.user_code} - ${student?.name}` || '-';
         }
         if (field === 'topic_id') {
             const thesisTopic = thesisTopics && thesisTopics.find(topic => topic.id === item[field]) || {};
