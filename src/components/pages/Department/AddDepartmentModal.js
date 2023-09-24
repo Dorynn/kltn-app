@@ -56,7 +56,6 @@ const AddDepartmentModal = ({ refetchData, isOpen }) => {
         return openNotification({
             type: 'error',
             message: 'Create department failed',
-            description: error.message
         })
     }
 

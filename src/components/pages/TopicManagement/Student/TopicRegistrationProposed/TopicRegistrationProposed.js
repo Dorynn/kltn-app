@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { Table, Button, Modal } from 'antd';
 import { CheckOutlined, PlusCircleOutlined, ExclamationCircleFilled } from '@ant-design/icons';
 import ProposeTopicModal from './ProposedTopicModal';
@@ -11,29 +11,34 @@ const { confirm } = Modal
 
 const TopicRegistrationProposed = () => {
     const [isOpenProposedModal, setOpenProposedModal] = useState();
-    const [isRegistered, setRegistered] = useState(true);
-    const [registeredTopic, setRegisteredTopic] = useState();
     const { openNotification } = useContext(NotificationContext);
+    const [registeredTopic, setRegisteredTopic] = useState([])
+    const { user } = useContext(AuthContext)
 
-    const { data: students, requestAction: refetchData1 } = useSupbaseAction({
-        initialData: [],
-        firstLoad: true, defaultAction: async () => supabase
-            .from('profiles')
-            .select(`*`)
-    })
+    const getRegisteredTopic = async () => {
+        const { data, error } = await supabase
+            .from('student_theses')
+            .select(`topic_id`)
+        setRegisteredTopic(data)
+    }
+    useEffect(() => {
+        getRegisteredTopic()
+    }, [])
 
     const { data: topics, requestAction: refetchData } = useSupbaseAction({
         initialData: [],
-        firstLoad: true, defaultAction: async () => supabase
+        firstLoad: true, defaultAction: async () => await supabase
             .from('thesis_topics')
-            .select(`*, teachers(*, profiles(name), majors(*)))`)
+            .select(`*, teachers(*, profiles(name, user_code)))`)
     })
 
     const handleRegister = async ({ topic_id }) => {
         const { error } = await supabase
             .from('student_theses')
-            .insert([{ topic_id: topic_id, student_id: students[0].id, status: 'pending' }])
-        if (!error) {
+            .insert([{ topic_id: topic_id, student_id: user.user_id, status: 'pending' }])
+            
+            if (!error) {
+            getRegisteredTopic()
             return openNotification({
                 message: 'Register the topic successfully'
             })
@@ -41,7 +46,6 @@ const TopicRegistrationProposed = () => {
         return openNotification({
             type: 'error',
             message: 'Register the topic failed',
-            description: error.message
         })
     }
 
@@ -55,8 +59,6 @@ const TopicRegistrationProposed = () => {
             centered: true,
             // confirmLoading: confirmLoading,
             onOk() {
-                setRegisteredTopic(topic_id)
-                setRegistered(false)
                 handleRegister({ topic_id })
             },
             onCancel() {
@@ -101,10 +103,17 @@ const TopicRegistrationProposed = () => {
             width: '10%',
             render: (_, record) => <>
                 {
-                    <Button onClick={() => {
-                        ConfirmRegisterModal({ topic_id: record.id });
-                    }
-                    }>Đăng ký</Button>
+
+                    registeredTopic.length > 0 ? ((record.id === registeredTopic[0].topic_id) ? <Button>Đã đăng ký</Button> :
+                        <Button onClick={() => {
+                            ConfirmRegisterModal({ topic_id: record.id });
+
+                        }
+                        }> Đăng ký</Button>) : <Button onClick={() => {
+                            ConfirmRegisterModal({ topic_id: record.id });
+
+                        }
+                        }> Đăng ký</Button>
                 }
             </>,
         },
@@ -120,8 +129,7 @@ const TopicRegistrationProposed = () => {
             topic_name: item.topic_name,
             topic_description: item.topic_description,
             registration_num: `${item.register_number}/${item.limit_register_number}`,
-            teacher: item.teacher_id
-            // teacher: `${item.teachers.profiles.name}`
+            teacher: `${item.teachers.profiles.name} (${item.teachers.profiles.user_code})`
         })
     })
 

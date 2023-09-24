@@ -30,7 +30,10 @@ export default function useAuth() {
         if (error) {
             return console.error(error)
         }
-        setUser({ ...profile, ...session.user })
+        let user_id = {
+            user_id: profile.id
+        }
+        setUser({ ...profile, ...session.user, ...user_id });
     }
 
     const getSession = async () => {

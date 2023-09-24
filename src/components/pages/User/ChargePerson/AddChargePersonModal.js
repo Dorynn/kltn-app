@@ -48,7 +48,6 @@ function AddChargePersonModal(props) {
         return openNotification({
             type: 'error',
             message: 'Create chargePerson failed',
-            description: error.message
         })
     };
 

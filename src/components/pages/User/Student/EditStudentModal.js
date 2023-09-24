@@ -54,7 +54,6 @@ function EditStudentModal(props) {
         return openNotification({
             type: 'error',
             message: 'Update teacher failed',
-            description: error.message
         });
     };
 

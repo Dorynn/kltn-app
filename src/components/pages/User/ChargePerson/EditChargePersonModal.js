@@ -53,7 +53,6 @@ function EditChargePersonModal(props) {
         return openNotification({
             type: 'error',
             message: 'Update chargePerson failed',
-            description: error.message
         });
     };
 

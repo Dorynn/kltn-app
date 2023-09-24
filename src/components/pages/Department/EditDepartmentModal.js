@@ -52,7 +52,6 @@ const EditDepartmentModal = ({ updateDepartment, setUpdateDepartment, refetchDat
         return openNotification({
             type: 'error',
             message: 'Update department failed',
-            description: error.message
         })
     }
 

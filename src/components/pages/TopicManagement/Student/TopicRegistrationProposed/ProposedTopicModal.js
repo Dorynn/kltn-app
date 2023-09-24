@@ -13,19 +13,12 @@ const { confirm } = Modal
 
 const ProposeTopicModal = ({isOpen, refetchData, setHideProposedButton}) => {
     const { openNotification } = useContext(NotificationContext);
-    
+    const {user} = useContext(AuthContext)
     const [proposedTopic, setProposedTopic] = useState({
         topic_name: '',
         topic_description: '',
         suggested_student_id: '',
     })
-    const { data: students, requestAction: refetchData1 } = useSupbaseAction({
-        initialData: [],
-        firstLoad: true, defaultAction: async () => supabase
-            .from('profiles')
-            .select(`*`)
-    })
-
     
     const createProposedTopicModalContent = (
         <Form
@@ -45,7 +38,7 @@ const ProposeTopicModal = ({isOpen, refetchData, setHideProposedButton}) => {
         const {error} = await supabase
         .from('suggested_topics')
         .insert([{
-            suggested_student_id: students[0].id,
+            suggested_student_id: user.user_id,
             topic_name: proposedTopic.topic_name,
             topic_description: proposedTopic.topic_description,
         }])
@@ -58,7 +51,6 @@ const ProposeTopicModal = ({isOpen, refetchData, setHideProposedButton}) => {
         return openNotification({
             type: 'error',
             message: 'Propose topic failed',
-            description: error.message
         })
     }
     

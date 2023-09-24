@@ -96,7 +96,6 @@ const AddMajorModal = ({ refetchData, isOpen }) => {
         return openNotification({
             type: 'error',
             message: 'Create major failed',
-            description: error.message
         })
     }
 

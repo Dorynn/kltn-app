@@ -93,7 +93,6 @@ const TopicRegistration = () => {
         return openNotification({
             type: 'error',
             message: 'Delete topicRegistration failed',
-            description: error.message
         })
     };
 

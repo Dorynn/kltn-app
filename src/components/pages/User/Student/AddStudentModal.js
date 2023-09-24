@@ -51,7 +51,6 @@ function AddStudentModal(props) {
         return openNotification({
             type: 'error',
             message: 'Create student failed',
-            description: error.message
         })
     };
 
