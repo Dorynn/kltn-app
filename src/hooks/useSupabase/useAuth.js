@@ -15,6 +15,7 @@ export default function useAuth() {
             fetched: true,
             hasSession: false
         })
+        sessionStorage.clear();
         return supabase.auth.signOut()
     }
     const isAdmin = user && user.university_role === 'admin';
@@ -30,6 +31,7 @@ export default function useAuth() {
         if (error) {
             return console.error(error)
         }
+        sessionStorage.setItem("user_login", profile?.id);
         setUser({ ...profile, ...session.user })
     }
 
