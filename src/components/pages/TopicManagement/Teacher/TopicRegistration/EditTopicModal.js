@@ -32,12 +32,12 @@ function EditTopicModal(props) {
             await refetchData({});
             setIsOpen(false);
             return openNotification({
-                message: 'Update teacher successfully'
+                message: 'Update topic successfully'
             });
         }
         return openNotification({
             type: 'error',
-            message: 'Update teacher failed',
+            message: 'Update topic failed',
         });
     };
 
