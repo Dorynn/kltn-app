@@ -36,7 +36,6 @@ function AddTopicModal(props) {
         return openNotification({
             type: 'error',
             message: 'Create student failed',
-            description: error.message
         })
     };
 

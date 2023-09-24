@@ -65,7 +65,6 @@ const AddSubjectModal = ({ refetchData, isOpen }) => {
         return openNotification({
             type: 'error',
             message: 'Create subject failed',
-            description: error.message
         })
     }
 

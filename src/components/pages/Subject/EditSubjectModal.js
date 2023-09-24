@@ -59,7 +59,6 @@ const EditSubjectModal = ({ updateSubject, setUpdateSubject, refetchData, isOpen
         return openNotification({
             type: 'error',
             message: 'Update subject failed',
-            description: error.message
         })
     }
 

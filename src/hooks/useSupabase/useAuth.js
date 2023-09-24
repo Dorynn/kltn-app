@@ -32,7 +32,10 @@ export default function useAuth() {
             return console.error(error)
         }
         sessionStorage.setItem("user_login", profile?.id);
-        setUser({ ...profile, ...session.user })
+        let user_id = {
+            user_id: profile.id
+        }
+        setUser({ ...profile, ...session.user, ...user_id });
     }
 
     const getSession = async () => {

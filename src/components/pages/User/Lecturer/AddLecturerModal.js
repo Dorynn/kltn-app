@@ -50,7 +50,6 @@ function AddLecturerModal(props) {
         return openNotification({
             type: 'error',
             message: 'Create lecturer failed',
-            description: error.message
         })
     };
 

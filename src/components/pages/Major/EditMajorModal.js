@@ -87,7 +87,6 @@ const EditMajorModal = ({ updateMajor, setUpdateMajor, refetchData, isOpen }) =>
         return openNotification({
             type: 'error',
             message: 'Update major failed',
-            description: error.message
         })
     }
 

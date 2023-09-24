@@ -61,7 +61,7 @@ const Major = () => {
             await refetchData({});
             return;
         }
-        openNotification({ type: 'error', message: 'Import failed', description: error.message })
+        openNotification({ type: 'error', message: 'Import failed' })
     }
     const handleOnChangeImportFile = async (info) => {
         setFileList([...info.fileList]);
@@ -83,7 +83,6 @@ const Major = () => {
         return openNotification({
             type: 'error',
             message: 'Delete major failed',
-            description: error.message
         })
 
     }

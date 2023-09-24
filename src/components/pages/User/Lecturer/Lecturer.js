@@ -114,7 +114,6 @@ const Lecturer = () => {
         return openNotification({
             type: 'error',
             message: 'Delete lecturer failed',
-            description: error.message
         })
     };
 
@@ -142,7 +141,7 @@ const Lecturer = () => {
             await refetchData({});
             return;
         }
-        openNotification({ type: 'error', message: 'Import failed', description: error.message })
+        openNotification({ type: 'error', message: 'Import failed' })
     };
 
     const handleOnChangeImportFile = async (info) => {

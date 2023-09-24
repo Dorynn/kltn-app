@@ -105,8 +105,7 @@ const ApprovedTopicList = () => {
         }
         return openNotification({
             type: 'error',
-            message: 'Approve registeredTopic failed',
-            description: error.message
+            message: 'Approve suggestedTopic failed',
         })
     };
 
