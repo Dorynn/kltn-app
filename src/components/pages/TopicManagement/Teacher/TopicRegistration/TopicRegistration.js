@@ -16,7 +16,7 @@ import EditTopicModal from './EditTopicModal';
 const { confirm } = Modal;
 
 const TopicRegistration = () => {
-    const { isAdmin } = useContext(AuthContext);
+    const { isAdmin, isTeacher } = useContext(AuthContext);
     const { openNotification } = useContext(NotificationContext);
     const [openEditModal, setOpenEditModal] = useState(false);
     const [openAddModal, setOpenAddModal] = useState(false);
@@ -150,7 +150,7 @@ const TopicRegistration = () => {
     return (
         <>
             <h4 className='title'>Đăng ký đề tài</h4>
-            {isAdmin && <div className='d-flex justify-content-end mx-5'>
+            {(isAdmin || isTeacher) && <div className='d-flex justify-content-end mx-5'>
                 <button
                     type="button"
                     className='btn-none text-btn-top me-3'
