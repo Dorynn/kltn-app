@@ -12,7 +12,6 @@ const TopicList = () => {
 
     const [currentPage, setCurrentPage] = useState(DEFAULT_CURRENT_PAGE);
 
-
     const { data: topicList, requestAction: refetchData, loading: tableLoading, count: totalCountData } = useSupbaseAction({
         initialData: [],
         firstLoad: true,
@@ -23,6 +22,16 @@ const TopicList = () => {
             `, { count: 'exact' })
             .range((page - 1) * NUMBER_ITEM_PER_PAGE, NUMBER_ITEM_PER_PAGE * page - 1)
     });
+    const { data: teachers } = useSupbaseAction({
+        initialData: [],
+        firstLoad: true,
+        defaultAction: async () => supabase
+            .from('profiles')
+            .select(`
+                *
+            `)
+            .eq('university_role', 'teacher')
+    });
 
     // tùy chọn hiển thị data
     const parseData = useCallback((item, field, index) => {
@@ -32,8 +41,12 @@ const TopicList = () => {
         if (field === 'register_number') {
             return `${item[field] || 0} / ${item.limit_register_number || 0}`;
         }
+        if (field === 'teacher_id') {
+            const teacher = teachers && teachers.find(value => value.id === item[field]) || {};
+            return teacher.name || '-';
+        }
         return item[field];
-    }, []);
+    }, [teachers]);
 
     // gọi lại api khi change page
     const onChangePage = useCallback(
@@ -70,6 +83,7 @@ const TopicList = () => {
             <h4 className='title'>Danh sách đề tài</h4>
             <div className='p-5'>
                 <TableCommon
+                    loading={tableLoading}
                     columns={columnConfig}
                     primaryKey='id'
                     data={topicList?.map(item => flattenObj({ obj: item }))}

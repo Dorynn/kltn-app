@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { ExclamationCircleFilled } from '@ant-design/icons';
 import { Modal } from 'antd';
 import AddTopic from './AddTopic';
@@ -16,7 +16,7 @@ import EditTopicModal from './EditTopicModal';
 const { confirm } = Modal;
 
 const TopicRegistration = () => {
-    const { isAdmin } = useContext(AuthContext);
+    const { isAdmin, isTeacher } = useContext(AuthContext);
     const { openNotification } = useContext(NotificationContext);
     const [openEditModal, setOpenEditModal] = useState(false);
     const [openAddModal, setOpenAddModal] = useState(false);
@@ -33,7 +33,20 @@ const TopicRegistration = () => {
             .select(`
                 *
             `, { count: 'exact' })
+            // .join('teachers', { 'thesis_topics.teacher_id': 'teachers.id' })
+            // .join('profiles', { 'teachers.user_id': 'profiles.id' })
             .range((page - 1) * NUMBER_ITEM_PER_PAGE, NUMBER_ITEM_PER_PAGE * page - 1)
+    });
+
+    const { data: teachers } = useSupbaseAction({
+        initialData: [],
+        firstLoad: true,
+        defaultAction: async () => supabase
+            .from('profiles')
+            .select(`
+                *
+            `)
+            .eq('university_role', 'teacher')
     });
 
     // tùy chọn hiển thị data
@@ -43,6 +56,10 @@ const TopicRegistration = () => {
         }
         if (field === 'register_number') {
             return `${item[field] || 0} / ${item.limit_register_number || 0}`;
+        }
+        if (field === 'teacher_id') {
+            const teacher = teachers.find(value => value.id === item[field]) || {};
+            return teacher.name || '-';
         }
         if (field === 'action') {
             return (<>
@@ -57,12 +74,12 @@ const TopicRegistration = () => {
                 <i
                     role="button"
                     className="fa-solid fa-trash mx-2"
-                    onClick={() => { console.log('item', item); ConfirmModal(item.id) }}
+                    onClick={() => { ConfirmModal(item.id) }}
                 ></i>
             </>);
         }
         return item[field];
-    }, []);
+    }, [teachers]);
 
     // gọi lại api khi change page
     const onChangePage = useCallback(
@@ -132,7 +149,7 @@ const TopicRegistration = () => {
     return (
         <>
             <h4 className='title'>Đăng ký đề tài</h4>
-            {isAdmin && <div className='d-flex justify-content-end mx-5'>
+            {(isAdmin || isTeacher) && <div className='d-flex justify-content-end mx-5'>
                 <button
                     type="button"
                     className='btn-none text-btn-top me-3'
@@ -145,6 +162,7 @@ const TopicRegistration = () => {
             <div className='p-5'>
                 <TableCommon
                     columns={columnConfig}
+                    loading={tableLoading}
                     primaryKey='id'
                     data={topicRegistration?.map(item => flattenObj({ obj: item }))}
                     parseFunction={parseData}

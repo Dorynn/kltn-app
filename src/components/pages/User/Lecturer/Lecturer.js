@@ -78,7 +78,7 @@ const Lecturer = () => {
                 <i
                     role="button"
                     className="fa-solid fa-trash mx-2"
-                    onClick={() => { ConfirmModal(item.id); console.log('delete', item) }}
+                    onClick={() => { ConfirmModal(item.id) }}
                 ></i>
             </>);
         }
@@ -178,7 +178,7 @@ const Lecturer = () => {
             ))}
         </div>
     );
-    console.log('lecturer', lecturer?.map(item => flattenObj({ obj: item })))
+
     const expandCondition = (record) => (data.length > 0);
     
 
