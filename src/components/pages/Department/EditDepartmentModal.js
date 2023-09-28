@@ -13,7 +13,15 @@ const EditDepartmentModal = ({ updateDepartment, setUpdateDepartment, refetchDat
             .from('profiles')
             .select(`*`)
     })
-    console.log('update department', updateDepartment)
+    const { data: chargePersons } = useSupbaseAction({
+        initialData: [],
+        firstLoad: true, defaultAction: async () => supabase
+            .from('teachers')
+            .select(`
+                *,
+                profiles(name, user_code)
+            `)
+    })
     const editDepartmentModalContent = (<Form
         labelCol={{ span: 6 }}
         wrapperCol={{ span: 18 }}
@@ -33,6 +41,16 @@ const EditDepartmentModal = ({ updateDepartment, setUpdateDepartment, refetchDat
                 options={profiles.map(({ user_code, name, id }) => ({ label: `${user_code}-${name}`, value: id }))}
                 onChange={(value) => setUpdateDepartment(prev => ({ ...prev, dean_id: value }))}
                 value={updateDepartment.dean_id}
+            />
+        </Form.Item>
+        <Form.Item label="Người phụ trách">
+            <Select
+                showSearch
+                optionFilterProp='children'
+                filterOption={(input, option) => (option?.label ?? "").includes(input)}
+                options={chargePersons?.map(({ profiles, user_id }) => ({ label: `${profiles?.user_code} - ${profiles?.name}`, value: user_id }))}
+                onChange={(value) => setUpdateDepartment(prev => ({ ...prev, charge_person_id: value }))}
+                value={updateDepartment.charge_person_id}
             />
         </Form.Item>
     </Form>)

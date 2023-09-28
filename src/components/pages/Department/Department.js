@@ -31,8 +31,15 @@ const Department = () => {
                 profiles(name, user_code)
             `)
     })
-
-
+    const { data: teachers } = useSupbaseAction({
+        initialData: [],
+        firstLoad: true, defaultAction: async () => supabase
+            .from('teachers')
+            .select(`
+                *,
+                profiles(name, user_code)
+            `)
+    })
     const handleDeleteDepartment = async ({ id }) => {
         setConfirmLoading(true);
         const { error } = await supabase
@@ -100,20 +107,24 @@ const Department = () => {
     };
     const dataSource = [];
     departments.map((item, index) => {
+        const chargePerson = teachers?.find(value => value.user_id === item.charge_person_id) || {};
         dataSource.push({
+            ...item,
             key: item.id,
-            no: index + 1,
-            department_code: item.department_code,
-            department_name: item.department_name,
-            user_code: item.profiles.user_code,
-            dean_name: item.profiles.name,
-            dean_id: item.dean_id
+            stt: index + 1,
+            department_code: item.department_code || '-',
+            department_name: item.department_name || '-',
+            user_code: item.profiles.user_code || '-',
+            dean_name: item.profiles.name || '-',
+            dean_id: item.dean_id || '-',
+            charge_person_code: chargePerson?.profiles?.user_code || '-',
+            charge_person_name: chargePerson?.profiles?.name || '-'
         })
     })
     const columns = [
         {
             title: "STT",
-            dataIndex: 'no',
+            dataIndex: 'stt',
             width: '5%'
         },
         {
@@ -134,7 +145,14 @@ const Department = () => {
             title: "Tên trưởng khoa",
             dataIndex: "dean_name"
         },
-
+        {
+            title: "Mã người phụ trách",
+            dataIndex: "charge_person_code"
+        },
+        {
+            title: "Tên người phụ trách",
+            dataIndex: "charge_person_name"
+        },
     ]
 
     if (isAdmin) {
@@ -150,9 +168,10 @@ const Department = () => {
                             <i role="button" className="fa-solid fa-pen-to-square ms-2 me-3" onClick={() => {
                                 setUpdateDepartment({
                                     id: record.key,
+                                    dean_id: record.dean_id,
                                     department_code: record.department_code,
                                     department_name: record.department_name,
-                                    dean_id: record.dean_id
+                                    charge_person_id: record.charge_person_id
                                 })
                                 setOpenEditModal(!openEditModal)
                             }}></i>
