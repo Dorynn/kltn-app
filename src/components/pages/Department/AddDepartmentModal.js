@@ -6,17 +6,29 @@ import { Form, Input, Select } from "antd";
 import useSupbaseAction from '../../../hooks/useSupabase/useSupabaseAction';
 
 const AddDepartmentModal = ({ refetchData, isOpen }) => {
-    const [newDepartment, setNewDepartment] = useState({
+    const baseDepartment = {
         department_code: '',
         department_name: '',
-        dean_id: ''
-    });
+        dean_id: '',
+        chare_person_id: ''
+    };
+    const [newDepartment, setNewDepartment] = useState(baseDepartment);
     const { openNotification } = useContext(NotificationContext);
     const { data: profiles } = useSupbaseAction({
         initialData: [],
         firstLoad: true, defaultAction: async () => supabase
             .from('profiles')
             .select(`*`)
+            .eq('university_role', 'teacher')
+    })
+    const { data: chargePersons } = useSupbaseAction({
+        initialData: [],
+        firstLoad: true, defaultAction: async () => supabase
+            .from('teachers')
+            .select(`
+                *,
+                profiles(name, user_code)
+            `)
     })
     const createDepartmentModalContent = (<Form
         labelCol={{ span: 6 }}
@@ -37,6 +49,16 @@ const AddDepartmentModal = ({ refetchData, isOpen }) => {
                 options={profiles.map(({ user_code, name, id }) => ({ label: `${user_code} - ${name}`, value: id }))}
                 onChange={(value) => setNewDepartment(prev => ({ ...prev, dean_id: value }))}
                 value={newDepartment.dean_id}
+            />
+        </Form.Item>
+        <Form.Item label="Người phụ trách">
+            <Select
+                showSearch
+                optionFilterProp='children'
+                filterOption={(input, option) => (option?.label ?? "").includes(input)}
+                options={chargePersons?.map(({ profiles, user_id }) => ({ label: `${profiles?.user_code} - ${profiles?.name}`, value: user_id }))}
+                onChange={(value) => setNewDepartment(prev => ({ ...prev, charge_person_id: value }))}
+                value={newDepartment.charge_person_id}
             />
         </Form.Item>
     </Form>)
@@ -67,11 +89,7 @@ const AddDepartmentModal = ({ refetchData, isOpen }) => {
     useEffect(() => {
         if (isOpen !== undefined)
             toggleModal(true)
-        setNewDepartment({
-            department_code: '',
-            department_name: '',
-            dean_id: ''
-        })
+        setNewDepartment(baseDepartment);
     }, [isOpen])
 
     return (
