@@ -4,7 +4,7 @@ import { ExclamationCircleFilled } from '@ant-design/icons';
 import NotificationContext from '../../../../../context/notificationContext';
 import supabase from '../../../../../supabaseClient';
 import useModal from '../../../../../hooks/modal/useModal';
-import { fieldAddTopic, optionLimitStudent } from './TopicRegistrationconstant';
+import { fieldUpdateTopic, optionLimitStudent } from './TopicRegistrationconstant';
 
 function EditTopicModal(props) {
 
@@ -115,7 +115,7 @@ function EditTopicModal(props) {
             wrapperCol={{ span: 18 }}
             layout="horizontal"
         >
-            {fieldAddTopic.map(item => (
+            {fieldUpdateTopic.map(item => (
                 <Form.Item label={item.label} key={item.field}>
                     {renderInput(item)}
                 </Form.Item>

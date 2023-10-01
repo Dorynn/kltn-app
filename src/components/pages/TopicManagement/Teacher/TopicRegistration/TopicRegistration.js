@@ -10,7 +10,7 @@ import useSupbaseAction from '../../../../../hooks/useSupabase/useSupabaseAction
 import flattenObj from '../../../../../helpers/flattenObj';
 import TableCommon from '../../../../common/TableCommon/TableCommon';
 import Loading from '../../../../common/Loading/Loading';
-import { columnConfig, expandConfig } from './TopicRegistrationconstant';
+import { columnConfigAdmin, columnConfigTeacher, expandConfig } from './TopicRegistrationconstant';
 import EditTopicModal from './EditTopicModal';
 
 const { confirm } = Modal;
@@ -55,6 +55,9 @@ const TopicRegistration = () => {
     const parseData = useCallback((item, field, index) => {
         if (field === 'index') {
             return index + 1;
+        }
+        if (field === 'topic_code') {
+            return `DT${item.id}`;
         }
         if (field === 'register_number') {
             return `${item[field] || 0} / ${item.limit_register_number || 0}`;
@@ -115,6 +118,16 @@ const TopicRegistration = () => {
         })
     };
 
+    const getColumnConfig = () => {
+        if (isAdmin) {
+            return columnConfigAdmin;
+        }
+        if (isTeacher) {
+            return columnConfigTeacher;
+        }
+        return [];
+    }
+
     const ConfirmModal = (id) => {
         confirm({
             title: 'Bạn có thực sự muốn xóa đề tài này?',
@@ -163,7 +176,7 @@ const TopicRegistration = () => {
             </div>}
             <div className='p-5'>
                 <TableCommon
-                    columns={columnConfig}
+                    columns={getColumnConfig()}
                     loading={tableLoading}
                     primaryKey='id'
                     data={topicRegistration?.map(item => flattenObj({ obj: item }))}

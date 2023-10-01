@@ -1,0 +1,35 @@
+@import 'scss/variables';
+
+.file-upload {
+    .box-file-selected{
+        height: 100%;
+        width: 100%;
+        border: 1px solid $hr-color;
+        .file-selected{
+            background-color: $bg-primary;
+            color: $primary;
+            padding: 5px;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            i{
+                &:hover{
+                    color: $error;
+                    cursor: pointer;
+                }
+                font-size: 16px;
+                font-weight: 600;
+
+            }
+        }
+        .file-selected-error{
+            color: $danger;
+        }
+
+    }
+    .btn-upload-file{
+        background-color: $bg-primary;
+        color: $primary;
+        border-radius: 4px;
+    }
+}

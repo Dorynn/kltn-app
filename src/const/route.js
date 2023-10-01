@@ -1,0 +1,117 @@
+import Department from "../components/pages/Department/Department";
+import GraduationThesisInfo from "../components/pages/GraduationThesis/Student/GraduationThesisInfo/GraduationThesisInfo";
+import GraduationThesisSubmit from "../components/pages/GraduationThesis/Student/GraduationThesisSubmit/GraduationThesisSubmit";
+import GraduationThesisManager from "../components/pages/GraduationThesis/Teacher/GraduationThesisManager/GraduationThesisManager";
+import ReviewReportGraduation from "../components/pages/GraduationThesis/Teacher/ReviewReportGraduation/ReviewReportGraduation";
+import Login from "../components/pages/Login/Login";
+import Major from "../components/pages/Major/Major";
+import Subject from "../components/pages/Subject/Subject";
+import TopicRegistrationProposed from "../components/pages/TopicManagement/Student/TopicRegistrationProposed/TopicRegistrationProposed";
+import ApprovedTopicList from "../components/pages/TopicManagement/Teacher/ApprovedTopicList/ApprovedTopicList";
+import ProposedTopicList from "../components/pages/TopicManagement/Teacher/ProposedTopicList/ProposedTopicList";
+import TopicList from "../components/pages/TopicManagement/Teacher/TopicList/TopicList";
+import TopicRegistration from "../components/pages/TopicManagement/Teacher/TopicRegistration/TopicRegistration";
+import ChargePerson from "../components/pages/User/ChargePerson/ChargePerson";
+import Lecturer from "../components/pages/User/Lecturer/Lecturer";
+import Student from "../components/pages/User/Student/Student";
+
+// URL
+import { 
+    URL_APPROVED_TOPIC_LIST,
+    URL_DEPARTMENT, 
+    URL_GRADUATE_CHARGE_PERSON, 
+    URL_GRADUATION_THESIS_INFO, 
+    URL_GRADUATION_THESIS_MANAGER, 
+    URL_GRADUATION_THESIS_SUBMIT, 
+    URL_LECTURER, 
+    URL_LOGIN, 
+    URL_MAJOR, 
+    URL_PROPOSED_TOPIC_LIST, 
+    URL_REVIEW_REPORT_GRADUATION, 
+    URL_STUDENT,
+    URL_STUDENT_TOPIC_REGISTRATION,
+    URL_SUBJECT,
+    URL_TEACHER_TOPIC_REGISTRATION,
+    URL_TOPIC_LIST
+} from "./configUrl";
+
+export const routes = [
+    // quản lý khoa
+    { 
+        path: URL_DEPARTMENT, 
+        element: <Department /> 
+    },
+    // quản lý ngành
+    { 
+        path: URL_MAJOR, 
+        element: <Major /> 
+    },
+    // quản lý người phụ trách
+    { 
+        path: URL_GRADUATE_CHARGE_PERSON, 
+        element: <ChargePerson /> 
+    },
+    // quản lý học phần
+    { 
+        path: URL_SUBJECT, 
+        element: <Subject /> 
+    },
+    { 
+        path: URL_LOGIN, 
+        element: <Login /> 
+    },
+    // quản lý giáo viên
+    { 
+        path: URL_LECTURER, 
+        element: <Lecturer /> 
+    },
+    // quản lý học sinh
+    { 
+        path: URL_STUDENT, 
+        element: <Student /> 
+    },
+    // đăng ký đề tài
+    { 
+        path: URL_TEACHER_TOPIC_REGISTRATION, 
+        element: <TopicRegistration /> 
+    },
+    // danh sách đề tài
+    { 
+        path: URL_TOPIC_LIST, 
+        element: <TopicList /> 
+    },
+    // duyệt đề tài đăng ký
+    { 
+        path: URL_APPROVED_TOPIC_LIST, 
+        element: <ApprovedTopicList /> 
+    },
+    // duyệt đề tài đề xuất
+    { 
+        path: URL_PROPOSED_TOPIC_LIST, 
+        element: <ProposedTopicList /> 
+    },
+    { 
+        path: URL_STUDENT_TOPIC_REGISTRATION, 
+        element: <TopicRegistrationProposed /> 
+    },
+    // thông tin khóa luận
+    { 
+        path: URL_GRADUATION_THESIS_INFO, 
+        element: <GraduationThesisInfo /> 
+    },
+    // nộp tài liệu
+    { 
+        path: URL_GRADUATION_THESIS_SUBMIT, 
+        element: <GraduationThesisSubmit /> 
+    },
+    // quản lý khóa luận
+    { 
+        path: URL_GRADUATION_THESIS_MANAGER, 
+        element: <GraduationThesisManager /> 
+    },
+    // Xét duyệt báo cáo
+    { 
+        path: URL_REVIEW_REPORT_GRADUATION, 
+        element: <ReviewReportGraduation /> 
+    }
+];

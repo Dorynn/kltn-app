@@ -35,16 +35,6 @@ const ReviewTopicModal = ({ isOpen, setReviewedTopic, reviewedTopic, setReviewed
                 />
             </Form.Item>
             <Form.Item
-                label="Mã đề tài"
-            >
-                <Input placeholder='DT01, DT02...' onChange={(value) => setReviewedTopic(prev => ({...prev, topic_code: value}))} />
-            </Form.Item>
-            <Form.Item
-                label="Giới hạn"
-            >
-                <Input value={1} disabled />
-            </Form.Item>
-            <Form.Item
                 label="Tên đề tài"
             >
                 <Input value={reviewedTopic.topic_name} disabled />
