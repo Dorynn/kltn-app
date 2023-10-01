@@ -22,6 +22,7 @@ import NotificationContext from './context/notificationContext';
 import useAuth from './hooks/useSupabase/useAuth'
 import { notification, Layout } from 'antd';
 import './styles/app.scss';
+import { routes } from './const/route';
 const { Content } = Layout;
 function App() {
   const { user, login, logout, isAdmin, isStudent, isTeacher, fetched: fetchedAuth } = useAuth();
@@ -58,18 +59,7 @@ function App() {
               <Content className='content'>
                 <div className="router-wrapper mt-4 mx-3 text-center">
                   <Routes >
-                    <Route path='/department' element={<Department />} />
-                    <Route path="/major" element={<Major />} />
-                    <Route path="/graduate-charge-person" element={<ChargePerson />} />
-                    <Route path="/subject" element={<Subject />} />
-                    <Route path="/login" element={<Login />} />
-                    <Route path="/lecturer" element={<Lecturer />} />
-                    <Route path="/student" element={<Student />} />
-                    <Route path="/teacher-topic-registration" element={<TopicRegistration />} />
-                    <Route path="/topic-list" element={<TopicList />} />
-                    <Route path="/approved-topic-list" element={<ApprovedTopicList />} />
-                    <Route path="/proposed-topic-list" element={<ProposedTopicList />} />
-                    <Route path="/student-topic-registration" element={<TopicRegistrationProposed />} />
+                    {routes.map(item => <Route path={item.path} element={item.element} />)}
                   </Routes>
                 </div>
               </Content>

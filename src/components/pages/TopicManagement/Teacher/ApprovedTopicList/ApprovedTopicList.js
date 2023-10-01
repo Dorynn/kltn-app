@@ -36,6 +36,7 @@ const ApprovedTopicList = () => {
             .from('thesis_topics')
             .select(`*`)
     });
+    console.log('thesisTopics', thesisTopics);
     const { data: students } = useSupbaseAction({
         initialData: [],
         firstLoad: true,
@@ -51,23 +52,31 @@ const ApprovedTopicList = () => {
             return index + 1;
         }
         if (field === 'register_number') {
-            return `${item[field] || 0} / ${item.limit_register_number || 0}`;
+            const thesisTopic = thesisTopics && thesisTopics.find(topic => topic.id === item.topic_id) || {};
+            return `${thesisTopic[field] || 0} / ${thesisTopic.limit_register_number || 0}`;
         }
         if (field === 'student_id') {
             const student = students && students.find(value => value.id === item[field]) || {};
-            return `${student?.user_code} - ${student?.name}` || '-';
+            return `${student?.user_code || ''} - ${student?.name || ''}` || '-';
         }
         if (field === 'topic_id') {
-            const thesisTopic = thesisTopics && thesisTopics.find(topic => topic.id === item[field]) || {};
+            const thesisTopic = thesisTopics && thesisTopics.find(topic => topic.id === item.topic_id) || {};
             return thesisTopic.topic_name || '-';
         }
         if (field === 'action') {
             return (<>
-                {item.status === 'pending' ? <button
+                {item.status === 'pending' ? <>
+                    <button
+                        type="button"
+                        className="btn btn-none"
+                        onClick={() => { ConfirmModal(item) }}
+                    ><i className='fas fa-check'></i></button>
+                    <button
                     type="button"
-                    className="btn btn-outline-secondary"
+                    className="btn btn-none"
                     onClick={() => { ConfirmModal(item) }}
-                >Duyệt</button> : <></>}
+                ><i className='fas fa-times'></i></button>
+                </> : <></>}
             </>);
         }
         if (field === 'status') {
@@ -125,20 +134,23 @@ const ApprovedTopicList = () => {
         });
     };
 
-    const renderExpandContent = (record) => (
-        <div className='row mx-4'>
-            {expandConfig.map(item => (
-                <div className='d-flex col-6'>
-                    <div className='col-4'>
-                        <label>{item.label} :</label>
+    const renderExpandContent = (record) => {
+        const topic = thesisTopics?.find(value => value.id === record.topic_id);
+        return (
+            <div className='row mx-4'>
+                {expandConfig.map(item => (
+                    <div className='d-flex col-6'>
+                        <div className='col-4'>
+                            <label>{item.label} :</label>
+                        </div>
+                        <div className='col-8'>
+                            <span>{topic[item.field]}</span>
+                        </div>
                     </div>
-                    <div className='col-8'>
-                        <span>{record[item.field]}</span>
-                    </div>
-                </div>
-            ))}
-        </div>
-    );
+                ))}
+            </div>
+        )
+    };
 
     const expandCondition = (record) => (registeredTopic.length > 0);
 

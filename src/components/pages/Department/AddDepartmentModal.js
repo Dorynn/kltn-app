@@ -41,7 +41,7 @@ const AddDepartmentModal = ({ refetchData, isOpen }) => {
         <Form.Item label="Tên Khoa">
             <Input value={newDepartment.department_name} onChange={(e) => setNewDepartment(prev => ({ ...prev, department_name: e.target.value }))} />
         </Form.Item>
-        <Form.Item label="Mã trưởng khoa">
+        <Form.Item label="Trưởng khoa">
             <Select
                 showSearch
                 optionFilterProp='children'

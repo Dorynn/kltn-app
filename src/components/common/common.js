@@ -7,7 +7,7 @@ export const getStatus = (status) => {
     if (status === 'pending') {
         return <div className="status status-inprogress">Chờ duyệt</div>;
     }
-    if (status === 'approved') {
+    if (status === 'doing') {
         return <div className="status status-approved">Đã duyệt</div>;
     }
     if (status === 'reject') {
