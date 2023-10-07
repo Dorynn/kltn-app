@@ -112,7 +112,7 @@ const Department = () => {
             ...item,
             key: item.id,
             stt: index + 1,
-            department_code: item.department_code || '-',
+            department_code: `DPM${item.id}` || '-',
             department_name: item.department_name || '-',
             user_code: item.profiles.user_code || '-',
             dean_name: item.profiles.name || '-',
@@ -204,11 +204,10 @@ const Department = () => {
                     dataSource={dataSource}
                     rowClassName={(_, index) => (index % 2 === 0 ? 'even-row' : 'odd-row')}
                     bordered
-                    pagination={false}
                 />
             </div>
-            <AddDepartmentModal isOpen={openAddModal} refetchData={refetchData} />
-            <EditDepartmentModal isOpen={openEditModal} setUpdateDepartment={setUpdateDepartment} updateDepartment={updateDepartment} refetchData={refetchData} />
+            {openAddModal && <AddDepartmentModal isOpen={openAddModal} refetchData={refetchData} />}
+            {openEditModal && <EditDepartmentModal isOpen={openEditModal} setUpdateDepartment={setUpdateDepartment} updateDepartment={updateDepartment} refetchData={refetchData} />}
         </>
     );
 };

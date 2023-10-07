@@ -23,27 +23,22 @@ const TopicRegistration = () => {
     const [updateTopic, setUpdateTopic] = useState({});
     const [confirmLoading, setConfirmLoading] = useState(false);
     const [currentPage, setCurrentPage] = useState(DEFAULT_CURRENT_PAGE);
-    
+
     const idUser = sessionStorage.getItem('user_login');
 
     const { data: topicRegistration, requestAction: refetchData, loading: tableLoading, count: totalCountData } = useSupbaseAction({
         initialData: [],
         firstLoad: true,
         deps: [user],
-        defaultAction:  async ({ page = 1 }) => {
-            console.log('*** get topics ***', user)
-            return supabase
+        defaultAction: async ({ page = 1 }) => await supabase
             .from('thesis_topics')
             .select(`
                 *
             `, { count: 'exact' })
             .eq('teacher_id', user.user_id)
-            // .match(isTeacher ? { 'teacher_id': idUser } : {})
-            // .join('teachers', { 'thesis_topics.teacher_id': 'teachers.id' })
-            // .join('profiles', { 'teachers.user_id': 'profiles.id' })
             .range((page - 1) * NUMBER_ITEM_PER_PAGE, NUMBER_ITEM_PER_PAGE * page - 1)
-        }
-    });
+    }
+    );
 
     const { data: teachers } = useSupbaseAction({
         initialData: [],
@@ -165,7 +160,7 @@ const TopicRegistration = () => {
     );
 
     const expandCondition = (record) => (topicRegistration.length > 0);
-    console.log('2222')
+    
     return (
         <>
             <h4 className='title'>Đăng ký đề tài</h4>

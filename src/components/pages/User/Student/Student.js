@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { ExclamationCircleFilled } from '@ant-design/icons';
 import { Modal } from 'antd';
 import AddStudentModal from './AddStudentModal';
@@ -7,7 +7,7 @@ import AuthContext from '../../../../context/authContext';
 import NotificationContext from '../../../../context/notificationContext';
 import useSupbaseAction from '../../../../hooks/useSupabase/useSupabaseAction';
 import supabase from '../../../../supabaseClient';
-import { columnConfig, data, expandConfig } from './Studentconstants';
+import { columnConfig, expandConfig } from './Studentconstants';
 import TableCommon from '../../../common/TableCommon/TableCommon';
 import UploadFile from '../../../UploadFile/UploadFile';
 import flattenObj from '../../../../helpers/flattenObj'
@@ -22,7 +22,17 @@ const Student = () => {
     const [updateStudent, setUpdateStudent] = useState({});
     const [fileList, setFileList] = useState([])
     const [confirmLoading, setConfirmLoading] = useState(false);
-    const [currentPage, setCurrentPage] = useState(DEFAULT_CURRENT_PAGE)
+    const [isChargePerson, setIsChargePerson] = useState(false);
+    const [currentPage, setCurrentPage] = useState(DEFAULT_CURRENT_PAGE);
+
+    const checkIsChargePerson = async () => {
+        const { data } = await supabase.rpc('is_charge_person');
+        setIsChargePerson(data);
+    };
+
+    useEffect(() => {
+        checkIsChargePerson();
+    }, []);
 
 
     const { data: students, requestAction: refetchData, count: totalCountData } = useSupbaseAction({
@@ -36,6 +46,7 @@ const Student = () => {
             `)
             .range((page - 1) * NUMBER_ITEM_PER_PAGE, NUMBER_ITEM_PER_PAGE * page - 1)
     });
+    console.log('totalCountData', totalCountData);
 
     const getColumnConfig = () => {
         if (isAdmin) {
@@ -168,12 +179,12 @@ const Student = () => {
         </div>
     );
 
-    const expandCondition = (record) => (data.length > 0);
+    const expandCondition = (record) => (students.length > 0);
 
     return (
         <>
             <h4 className='title'>Quản lý sinh viên</h4>
-            {(isAdmin || isTeacher) && <div className='d-flex justify-content-end me-4'>
+            {(isAdmin || (isTeacher && isChargePerson)) && <div className='d-flex justify-content-end me-4'>
                 <button
                     type="button"
                     className='btn-none text-btn-top me-3'

@@ -100,11 +100,6 @@ export const fieldAddTopic = [
 
 export const fieldUpdateTopic = [
     {
-        label: 'Mã đề tài',
-        field: 'topic_code',
-        type: 'INPUT',
-    },
-    {
         label: 'Tên đề tài',
         field: 'topic_name',
         type: 'INPUT',

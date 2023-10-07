@@ -12,6 +12,7 @@ const EditDepartmentModal = ({ updateDepartment, setUpdateDepartment, refetchDat
         firstLoad: true, defaultAction: async () => supabase
             .from('profiles')
             .select(`*`)
+            .eq('university_role', 'teacher')
     })
     const { data: chargePersons } = useSupbaseAction({
         initialData: [],
@@ -27,9 +28,6 @@ const EditDepartmentModal = ({ updateDepartment, setUpdateDepartment, refetchDat
         wrapperCol={{ span: 18 }}
         layout="horizontal"
     >
-        <Form.Item label="Mã khoa">
-            <Input value={updateDepartment.department_code} onChange={(e) => setUpdateDepartment(prev => ({ ...prev, department_code: e.target.value }))} />
-        </Form.Item>
         <Form.Item label="Tên Khoa">
             <Input value={updateDepartment.department_name} onChange={(e) => setUpdateDepartment(prev => ({ ...prev, department_name: e.target.value }))} />
         </Form.Item>

@@ -30,6 +30,7 @@ const EditMajorModal = ({ updateMajor, setUpdateMajor, refetchData, isOpen }) =>
         firstLoad: true, defaultAction: async () => supabase
             .from('profiles')
             .select(`*`)
+            .eq('university_role', 'teacher')
     })
 
     const editMajorModalContent = (<Form
@@ -37,9 +38,6 @@ const EditMajorModal = ({ updateMajor, setUpdateMajor, refetchData, isOpen }) =>
         wrapperCol={{ span: 18 }}
         layout="horizontal"
     >
-        <Form.Item label="Mã ngành (trường)">
-            <Input value={updateMajor.major_code} onChange={(e) => setUpdateMajor(prev => ({ ...prev, major_code: e.target.value }))} />
-        </Form.Item>
         <Form.Item label="Mã ngành (bộ)">
             <Select
                 showSearch
@@ -50,13 +48,13 @@ const EditMajorModal = ({ updateMajor, setUpdateMajor, refetchData, isOpen }) =>
                 onChange={(value) => setUpdateMajor(prev => ({ ...prev, ministry_major_code: value, major_name: ministryMajorData.find(item => item.code === value).name }))}
             />
         </Form.Item>
-        <Form.Item label="Tên khoa">
+        <Form.Item label="Mã khoa">
             <Select
                 showSearch
                 optionFilterProp='children'
                 filterOption={(input, option) => (option?.label ?? "").includes(input)}
                 onChange={(value) => setUpdateMajor(prev => ({ ...prev, department_id: value }))}
-                options={departments.map(item => ({ value: item.id, label: `${item.department_code} - ${item.department_name}` }))}
+                options={departments.map(item => ({ value: item.id, label: `DPM${item.id} - ${item.department_name}` }))}
                 value={updateMajor.department_id}
             />
         </Form.Item>

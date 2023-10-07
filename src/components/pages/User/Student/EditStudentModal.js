@@ -3,7 +3,7 @@ import { Form, Input, Select } from "antd";
 import NotificationContext from '../../../../context/notificationContext';
 import supabase from '../../../../supabaseClient';
 import useModal from '../../../../hooks/modal/useModal';
-import { fieldAddStudent, options } from './Studentconstants';
+import { fieldAddStudent } from './Studentconstants';
 import useSupbaseAction from '../../../../hooks/useSupabase/useSupabaseAction';
 import prepareOptions from '../../../../helpers/prepareOptions';
 

@@ -20,13 +20,10 @@ const EditSubjectModal = ({ updateSubject, setUpdateSubject, refetchData, isOpen
         wrapperCol={{ span: 18 }}
         layout="horizontal"
     >
-        <Form.Item label="Mã học phần">
-            <Input value={updateSubject.course_code} onChange={(e) => setUpdateSubject(prev => ({ ...prev, course_code: e.target.value }))} />
-        </Form.Item>
         <Form.Item label="Tên học phần">
             <Input value={updateSubject.course_name} onChange={(e) => setUpdateSubject(prev => ({ ...prev, course_name: e.target.value }))} />
         </Form.Item>
-        <Form.Item label="Ngành">
+        <Form.Item label="Mã ngành">
             <Select
                 showSearch
                 optionFilterProp='children'
@@ -38,9 +35,6 @@ const EditSubjectModal = ({ updateSubject, setUpdateSubject, refetchData, isOpen
         </Form.Item>
         <Form.Item label="Số tín chỉ">
             <Input value={updateSubject.course_credits} onChange={(e) => setUpdateSubject(prev => ({ ...prev, course_credits: e.target.value }))} />
-        </Form.Item>
-        <Form.Item label="Hệ số">
-            <Input value={updateSubject.credit_coefficient} onChange={(e) => setUpdateSubject(prev => ({ ...prev, credit_coefficient: e.target.value }))} />
         </Form.Item>
     </Form>)
 

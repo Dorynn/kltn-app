@@ -7,10 +7,9 @@ import useSupbaseAction from '../../../hooks/useSupabase/useSupabaseAction';
 
 const AddDepartmentModal = ({ refetchData, isOpen }) => {
     const baseDepartment = {
-        department_code: '',
         department_name: '',
         dean_id: '',
-        chare_person_id: ''
+        charge_person_id: ''
     };
     const [newDepartment, setNewDepartment] = useState(baseDepartment);
     const { openNotification } = useContext(NotificationContext);
@@ -30,14 +29,22 @@ const AddDepartmentModal = ({ refetchData, isOpen }) => {
                 profiles(name, user_code)
             `)
     })
+    const { data: departments } = useSupbaseAction({
+        initialData: [],
+        firstLoad: true, defaultAction: async () => supabase
+            .from('departments')
+            .select(`
+            *,
+            profiles(name, user_code)
+            `)
+    })
+    const deanValue = profiles.filter(value => !departments.some(element => value.user_code === element.profiles.user_code));
+
     const createDepartmentModalContent = (<Form
         labelCol={{ span: 6 }}
         wrapperCol={{ span: 18 }}
         layout="horizontal"
     >
-        <Form.Item label="Mã khoa">
-            <Input value={newDepartment.department_code} onChange={(e) => setNewDepartment(prev => ({ ...prev, department_code: e.target.value }))} />
-        </Form.Item>
         <Form.Item label="Tên Khoa">
             <Input value={newDepartment.department_name} onChange={(e) => setNewDepartment(prev => ({ ...prev, department_name: e.target.value }))} />
         </Form.Item>
@@ -46,7 +53,7 @@ const AddDepartmentModal = ({ refetchData, isOpen }) => {
                 showSearch
                 optionFilterProp='children'
                 filterOption={(input, option) => (option?.label ?? "").includes(input)}
-                options={profiles.map(({ user_code, name, id }) => ({ label: `${user_code} - ${name}`, value: id }))}
+                options={deanValue.map(({ user_code, name, id }) => ({ label: `${user_code} - ${name}`, value: id }))}
                 onChange={(value) => setNewDepartment(prev => ({ ...prev, dean_id: value }))}
                 value={newDepartment.dean_id}
             />
@@ -63,6 +70,7 @@ const AddDepartmentModal = ({ refetchData, isOpen }) => {
         </Form.Item>
     </Form>)
     const handleCreateDepartment = async () => {
+        console.log('newDepartment', newDepartment);
         const { error } = await supabase
             .from('departments')
             .insert([
