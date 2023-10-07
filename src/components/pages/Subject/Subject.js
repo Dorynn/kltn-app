@@ -29,6 +29,7 @@ const Subject = () => {
                 majors(major_name, major_code)
             `)
     })
+    console.log('subjects', subjects);
     const handleDeleteSubject = async ({ id }) => {
         setConfirmLoading(true);
         const { error } = await supabase
@@ -106,16 +107,20 @@ const Subject = () => {
             dataIndex: 'course_code'
         },
         {
+            title: 'Số tín chỉ',
+            dataIndex: 'course_credits'
+        },
+        {
             title: 'Tên học phần',
             dataIndex: 'course_name'
         },
         {
-            title: 'Tên ngành',
-            dataIndex: 'major_name'
+            title: 'Mã ngành',
+            dataIndex: 'major_code'
         },
         {
-            title: 'Số tín chỉ',
-            dataIndex: 'course_credits'
+            title: 'Tên ngành',
+            dataIndex: 'major_name'
         },
         {
             title: 'Hệ số',
@@ -153,7 +158,7 @@ const Subject = () => {
         dataSource.push({
             key: item.id,
             no: index + 1,
-            course_code: item.course_code,
+            course_code: `SJ${item.id}`,
             course_name: item.course_name,
             course_credits: item.course_credits,
             credit_coefficient: item.credit_coefficient,
@@ -185,7 +190,6 @@ const Subject = () => {
                     columns={columns}
                     dataSource={dataSource}
                     bordered
-                    pagination={false}
                     rowClassName={(_, index) => (index % 2 === 0 ? 'even-row' : 'odd-row')}
 
                 />

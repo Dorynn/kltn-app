@@ -42,10 +42,11 @@ const Lecturer = () => {
                 user_id,
                 major_id,
                 profiles(name, user_code, phone, address, email, auth_id),
-                majors(major_code, departments(department_name))
+                majors(major_code, major_name, departments(department_name))
             `)
             .range((page - 1) * NUMBER_ITEM_PER_PAGE, NUMBER_ITEM_PER_PAGE * page - 1)
     });
+    console.log('lecturer', lecturer);
 
     const getColumnConfig = () => {
         if (isAdmin) {

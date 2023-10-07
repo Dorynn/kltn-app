@@ -48,8 +48,8 @@ export const columnConfig = [
     },
     {
         title: 'Tên ngành',
-        dataIndex: 'department_name',
-        key: 'department_name',
+        dataIndex: 'major_name',
+        key: 'major_name',
         align: 'center',
     },
     {

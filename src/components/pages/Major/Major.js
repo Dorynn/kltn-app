@@ -27,15 +27,11 @@ const Major = () => {
         firstLoad: true, defaultAction: async () => supabase
             .from('majors')
             .select(`
-        *,
-        profiles(name, user_code),
-        departments(department_name, department_code)
-        `)
+                *,
+                profiles(name, user_code),
+                departments(department_name, department_code)
+            `)
     })
-    console.log('majors', majors)
-
-
-
 
     function getDataFromFile(file) {
         return new Promise((resolve, reject) => {
@@ -112,7 +108,7 @@ const Major = () => {
         },
         {
             title: 'Mã ngành',
-            dataIndex: 'major_code'
+            dataIndex: 'ministry_major_code'
         },
         {
             title: 'Tên ngành',
@@ -199,14 +195,18 @@ const Major = () => {
                     dataSource={dataSource}
                     bordered
                     rowClassName={(_, index) => (index % 2 === 0 ? 'even-row' : 'odd-row')}
-                    pagination={false}
                 />
             </div>
-            <AddMajorModal
+            {openAddModal && <AddMajorModal
                 isOpen={openAddModal}
-                refetchData={refetchData}
-            />
-            <EditMajorModal isOpen={openEditModal} setUpdateMajor={setUpdateMajor} updateMajor={updateMajor} refetchData={refetchData} />
+                refetchData={refetchData} />
+            }
+            {openEditModal && <EditMajorModal
+                isOpen={openEditModal}
+                setUpdateMajor={setUpdateMajor}
+                updateMajor={updateMajor}
+                refetchData={refetchData} />
+            }
         </>
     );
 };

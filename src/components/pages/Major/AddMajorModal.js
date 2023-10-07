@@ -2,14 +2,14 @@ import React, { useContext, useState, useEffect } from 'react';
 import supabase from '../../../supabaseClient';
 import NotificationContext from '../../../context/notificationContext';
 import useModal from '../../../hooks/modal/useModal';
-import { Form, Input, Select } from "antd";
+import { Form, Select } from "antd";
 import useSupbaseAction from '../../../hooks/useSupabase/useSupabaseAction';
 
 const AddMajorModal = ({ refetchData, isOpen }) => {
     const [newMajor, setNewMajor] = useState({
-        major_code: '',
         ministry_major_code: '',
-        major_chair_id: ''
+        major_chair_id: '',
+        department_id: ''
     });
     const [ministryMajorData, setMinistryMajorData] = useState([]);
     const { openNotification } = useContext(NotificationContext);
@@ -28,6 +28,18 @@ const AddMajorModal = ({ refetchData, isOpen }) => {
         firstLoad: true, defaultAction: async () => supabase
             .from('profiles')
             .select(`*`)
+            .eq('university_role', 'teacher')
+    })
+
+    const { data: majors } = useSupbaseAction({
+        initialData: [],
+        firstLoad: true, defaultAction: async () => supabase
+            .from('majors')
+            .select(`
+        *,
+        profiles(name, user_code),
+        departments(department_name, department_code)
+        `)
     })
 
     useEffect(() => {
@@ -36,18 +48,15 @@ const AddMajorModal = ({ refetchData, isOpen }) => {
                 method: 'GET',
                 headers: { "content-type": "application/json" },
             })
-            setMinistryMajorData(data.data)
+            const ministryDepartment = data.data?.filter(value => !majors.some(element => value.code === element.ministry_major_code));
+            setMinistryMajorData(ministryDepartment);
         })()
     }, [])
-    console.log('*** new major ***', newMajor);
     const createMajorModalContent = (<Form
         labelCol={{ span: 6 }}
         wrapperCol={{ span: 18 }}
         layout="horizontal"
     >
-        <Form.Item label="Mã ngành (trường)">
-            <Input value={newMajor.major_code} onChange={(e) => setNewMajor(prev => ({ ...prev, major_code: e.target.value }))} />
-        </Form.Item>
         <Form.Item label="Mã ngành (bộ)">
             <Select
                 showSearch
@@ -58,13 +67,13 @@ const AddMajorModal = ({ refetchData, isOpen }) => {
                 onChange={(value) => setNewMajor(prev => ({ ...prev, ministry_major_code: value, major_name: ministryMajorData.find(item => item.code === value).name }))}
             />
         </Form.Item>
-        <Form.Item label="Tên khoa">
+        <Form.Item label="Mã khoa">
             <Select
                 showSearch
                 optionFilterProp='children'
                 filterOption={(input, option) => (option?.label ?? "").includes(input)}
                 onChange={(value) => setNewMajor(prev => ({ ...prev, department_id: value }))}
-                options={departments.map(item => ({ value: item.id, label: `${item.department_code} - ${item.department_name}` }))}
+                options={departments.map(item => ({ value: item.id, label: `DPM${item.id} - ${item.department_name}` }))}
                 value={newMajor.department_id}
             />
         </Form.Item>
@@ -81,6 +90,7 @@ const AddMajorModal = ({ refetchData, isOpen }) => {
     </Form>)
 
     const handleCreateMajor = async () => {
+        console.log('newMajor', newMajor);
         const { error } = await supabase
             .from('majors')
             .insert([
@@ -109,7 +119,6 @@ const AddMajorModal = ({ refetchData, isOpen }) => {
             toggleModal(true)
         }
         setNewMajor({
-            major_code: '',
             ministry_major_code: '',
             major_chair_id: '',
             department_id: '',

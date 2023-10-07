@@ -9,7 +9,6 @@ import prepareOptions from '../../../../helpers/prepareOptions';
 
 function AddStudentModal(props) {
     const baseData = {
-        user_code: '',
         name: '',
         major_id: '',
         school_year: '',
@@ -32,11 +31,10 @@ function AddStudentModal(props) {
         initialData: [],
         firstLoad: true, defaultAction: async () => supabase
             .from('majors')
-            .select(`major_code, id`)
+            .select(`major_code, id, major_name`)
     })
 
     const handleCreateStudent = async () => {
-        console.log('*** data ***', newStudent)
         const { error } = await supabase.functions.invoke('users', {
             method: 'POST',
             body: { user: { ...newStudent, university_role: 'student' } }
@@ -61,7 +59,7 @@ function AddStudentModal(props) {
     // get data cho các select options
     const handleGetOptions = field => {
         if (field === 'major_id') {
-            return prepareOptions({ data: majors, labelField: 'major_code', valueField: 'id' })
+            return prepareOptions({ data: majors, labelField: 'major_name', valueField: 'id' })
         }
         return [];
     };

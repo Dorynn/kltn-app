@@ -5,15 +5,18 @@ import useModal from '../../../../../hooks/modal/useModal';
 import { Form, Input, Select } from "antd";
 import { fieldAddTopic, optionLimitStudent } from './TopicRegistrationconstant';
 import AuthContext from '../../../../../context/authContext';
+import useSupbaseAction from '../../../../../hooks/useSupabase/useSupabaseAction';
 
 function AddTopicModal(props) {
-    const {user} = useContext(AuthContext)
+    const {user} = useContext(AuthContext);
     const { TextArea } = Input;
     const baseData = {
         topic_code: '',
         topic_name: '',
         topic_description: '',
         limit_register_number: '',
+        register_number: 0,
+        teacher_id: user.user_id
     };
     const { refetchData, isOpen, setIsOpen } = props;
     const [newTopic, setNewTopic] = useState(baseData);
@@ -25,10 +28,22 @@ function AddTopicModal(props) {
         }
     }, [isOpen])
 
+    const { data: teachers } = useSupbaseAction({
+        initialData: [],
+        firstLoad: true,
+        defaultAction: async () => supabase
+            .from('teachers')
+            .select(`
+                *
+            `)
+            .eq('user_id', user.user_id)
+    });
+    console.log('teachers', teachers);
+
     const handleCreateTopic = async () => {
         const { error } = await supabase
             .from('thesis_topics')
-            .insert({...newTopic, teacher_id: user.user_id, register_number:0})
+            .insert({...newTopic})
         if (!error) {
             await refetchData({})
             setIsOpen(false);

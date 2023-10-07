@@ -1,16 +1,11 @@
 export const fieldAddStudent = [
     {
-        label: 'Mã sinh viên',
-        field: 'user_code',
-        type: 'INPUT',
-    },
-    {
         label: 'Họ và tên',
         field: 'name',
         type: 'INPUT',
     },
     {
-        label: 'Mã ngành',
+        label: 'Ngành',
         field: 'major_id',
         type: 'SELECT',
     },
@@ -25,13 +20,13 @@ export const fieldAddStudent = [
         type: 'INPUT',
     },
     {
-        label: 'Số điện thoại',
-        field: 'phone',
+        label: 'Email',
+        field: 'email',
         type: 'INPUT',
     },
     {
-        label: 'Email',
-        field: 'email',
+        label: 'Số điện thoại',
+        field: 'phone',
         type: 'INPUT',
     },
     {
@@ -115,64 +110,5 @@ export const expandConfig = [
         label: 'Địa chỉ',
         field: 'address',
         key: 'address',
-    },
-];
-
-export const data = [
-    {
-        "student_code": "2ec3d821-b943",
-        "student_name": "Nguyễn Thị Hồng",
-        "department_code": "KT444",
-        "course": "PI834",
-        "classroom": "Khoa Kinh tế - Quản lý",
-        "phoneNumber": '0234768234',
-        "email": 'true',
-        "address": 'true',
-    },
-    {
-        "student_code": "2ec3d821-b943",
-        "student_name": "Nguyễn Thị Hồng",
-        "department_code": "KT444",
-        "course": "PI834",
-        "classroom": "Khoa Kinh tế - Quản lý",
-        "phoneNumber": '0234768234',
-        "email": 'true',
-        "address": 'true',
-    },
-    {
-        "student_code": "2ec3d821-b943",
-        "student_name": "Nguyễn Thị Hồng",
-        "department_code": "KT444",
-        "course": "PI834",
-        "classroom": "Khoa Kinh tế - Quản lý",
-        "phoneNumber": '0234768234',
-        "email": 'true',
-        "address": 'true',
-    },
-    {
-        "student_code": "2ec3d821-b943",
-        "student_name": "Nguyễn Thị Hồng",
-        "department_code": "KT444",
-        "course": "PI834",
-        "classroom": "Khoa Kinh tế - Quản lý",
-        "phoneNumber": '0234768234',
-        "email": 'true',
-        "address": 'true',
-    },
-];
-
-
-export const options = [
-    {
-        value: 'jack',
-        label: 'Jack',
-    },
-    {
-        value: 'lucy',
-        label: 'Lucy',
-    },
-    {
-        value: 'Yiminghe',
-        label: 'yiminghe',
     },
 ];
