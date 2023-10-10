@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 import { Input } from "antd";
 import {
     CloudUploadOutlined,
@@ -8,59 +8,39 @@ import {
 } from '@ant-design/icons';
 import { configInput } from "./GraduationThesisSubmitconstants";
 import SubmitModal from "./SubmitModal";
+import './style.scss';
 
 function GraduationThesisSubmit() {
     const [isOpenModal, setIsOpenModal] = useState(false);
     const [idInput, setIdInput] = useState('');
-    const [statusInputOutline, setStatusInputOutline] = useState('normal');
-    const [statusInputReport, setStatusInputReport] = useState('disable');
-    const [statusInputFinalReport, setStatusInputFinalReport] = useState('disable');
+    const [statusInput, setStatusInput] = useState({
+        outline: 'normal',
+        reportTeacher: 'disable',
+        reportReviewTeacher: 'disable',
+        finalReport: 'disable'
+    });
 
     const getSuffixInput = (id) => {
-        if (id === 'outline') {
-            if (statusInputOutline === 'normal') {
-                return <CloudUploadOutlined onClick={() => {setIsOpenModal(true); setIdInput(id)}} />
-            }
-            if (statusInputOutline === 'pending') {
-                return <LoadingOutlined />
-            }
-            if (statusInputOutline === 'success') {
-                return <CheckOutlined />
-            }
+        if (statusInput[id] === 'normal') {
+            return <CloudUploadOutlined />
         }
-        if (id === 'report') {
-            if (statusInputReport === 'normal') {
-                return <CloudUploadOutlined onClick={() => {setIsOpenModal(true); setIdInput(id)}} />
-            }
-            if (statusInputReport === 'pending') {
-                return <LoadingOutlined />
-            }
-            if (statusInputReport === 'success') {
-                return <CheckOutlined />
-            }
+        if (statusInput[id] === 'pending') {
+            return <LoadingOutlined />
         }
-        if (id === 'finalReport') {
-            if (statusInputFinalReport === 'normal') {
-                return <CloudUploadOutlined onClick={() => {setIsOpenModal(true); setIdInput(id)}} />
-            }
-            if (statusInputFinalReport === 'pending') {
-                return <LoadingOutlined />
-            }
-            if (statusInputFinalReport === 'success') {
-                return <CheckOutlined />
-            }
+        if (statusInput[id] === 'success') {
+            return <CheckOutlined />
         }
-        return <LockOutlined/>
+        return <LockOutlined />
     };
     const getDisabledInput = (id) => {
-        if (id === 'outline') {
-            return statusInputOutline === 'success';
+        if (id === 'reportTeacher') {
+            return statusInput[id] === 'disable';
         }
-        if (id === 'report') {
-            return statusInputReport === 'disable' || statusInputReport === 'success';
+        if (id === 'reportReviewTeacher') {
+            return statusInput[id] === 'disable';
         }
         if (id === 'finalReport') {
-            return statusInputFinalReport === 'disable' || statusInputFinalReport === 'success'
+            return statusInput[id] === 'disable'
         }
         return false;
     };
@@ -69,27 +49,27 @@ function GraduationThesisSubmit() {
         <>
             <h4 className='title'>Nộp tài liệu KLTN</h4>
             <div style={{ width: '50%', margin: 'auto' }}>
-            {configInput.map(item => (
-                <div className="mb-5" key={item.id}>
-                    <Input
-                        id={item.id}
-                        value={item.value}
-                        readOnly
-                        suffix={getSuffixInput(item.id)}
-                        size="large"
-                        disabled={getDisabledInput(item.id)}
-                    ></Input>
-                </div>
-            ))}
+                {configInput.map(item => (
+                    <div className="mb-4" key={item.id}>
+                        <Input
+                            type="button"
+                            id={item.id}
+                            value={item.value}
+                            readOnly
+                            suffix={getSuffixInput(item.id)}
+                            size="large"
+                            disabled={getDisabledInput(item.id)}
+                            className="input-add-file"
+                            onClick={() => { setIsOpenModal(true); setIdInput(item.id) }}
+                        ></Input>
+                    </div>
+                ))}
             </div>
             {isOpenModal && <SubmitModal
                 isOpen={isOpenModal}
                 setIsOpen={setIsOpenModal}
                 idInput={idInput}
-                setStatusInputOutline={setStatusInputOutline}
-                setStatusInputReport={setStatusInputReport}
-                setStatusInputFinalReport={setStatusInputFinalReport}
-                // refetchData={refetchData}
+                setStatusInput={setStatusInput}
             ></SubmitModal>}
         </>
     );

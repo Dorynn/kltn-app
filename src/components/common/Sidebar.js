@@ -18,7 +18,8 @@ import {
     URL_STUDENT_TOPIC_REGISTRATION,
     URL_SUBJECT,
     URL_TEACHER_TOPIC_REGISTRATION,
-    URL_TOPIC_LIST
+    URL_TOPIC_LIST,
+    URL_VIEW_GRADES
 } from "../../const/configUrl";
 
 
@@ -128,6 +129,11 @@ const Sidebar = () => {
                             <Menu.Item key="13">
                                 <Link to={URL_GRADUATION_THESIS_SUBMIT}>
                                     <span>Nộp tài liệu</span>
+                                </Link>
+                            </Menu.Item>
+                            <Menu.Item key="16">
+                                <Link to={URL_VIEW_GRADES}>
+                                    <span>Xem điểm</span>
                                 </Link>
                             </Menu.Item>
                         </SubMenu>
