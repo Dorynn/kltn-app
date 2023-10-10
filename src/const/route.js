@@ -14,6 +14,13 @@ import TopicRegistration from "../components/pages/TopicManagement/Teacher/Topic
 import ChargePerson from "../components/pages/User/ChargePerson/ChargePerson";
 import Lecturer from "../components/pages/User/Lecturer/Lecturer";
 import Student from "../components/pages/User/Student/Student";
+import ThesisGrade from "../components/pages/GraduationThesis/Student/ThesisGrade/ThesisGrade";
+import AchievedRecord from "../components/pages/ThesisDefenseManagement/AchievedRecord/AchievedRecord";
+import DefenseEstablish from "../components/pages/ThesisDefenseManagement/DefenseEstablish/DefenseEstablish";
+import GradeManagement from "../components/pages/ThesisDefenseManagement/GradeManagement/GradeManagement";
+import GraduationThesesStudentInfo from "../components/pages/ThesisDefenseManagement/GraduationThesesStudentInfo/GraduationThesesStudentInfo";
+import ResultUpdate from "../components/pages/ThesisDefenseManagement/ResultUpdate/ResultUpdate";
+import ReviewerTeacherAssignment from "../components/pages/ThesisDefenseManagement/ReviewerTeacherAssignment/ReviewerTeacherAssignment";
 
 // URL
 import { 
@@ -32,7 +39,14 @@ import {
     URL_STUDENT_TOPIC_REGISTRATION,
     URL_SUBJECT,
     URL_TEACHER_TOPIC_REGISTRATION,
-    URL_TOPIC_LIST
+    URL_TOPIC_LIST,
+    URL_ACHIEVED_RECORD,
+    URL_GRADE_MANAGEMENT,
+    URL_RESULT_UPDATE,
+    URL_GRADUATION_THESES_STUDENT_INFO,
+    URL_DEFENSE_ESTABLISH,
+    URL_REVIEWER_TEACHER_ASSIGNMENT,
+    URL_THESIS_GRADE,
 } from "./configUrl";
 
 export const routes = [
@@ -113,5 +127,40 @@ export const routes = [
     { 
         path: URL_REVIEW_REPORT_GRADUATION, 
         element: <ReviewReportGraduation /> 
+    },
+    // Xem điểm
+    {
+        path: URL_THESIS_GRADE,
+        element: <ThesisGrade/>
+    },
+    // Lưu trữ hồ sơ
+    {
+        path: URL_ACHIEVED_RECORD,
+        element: <AchievedRecord/>
+    },
+    // Quản lý điểm
+    {
+        path: URL_GRADE_MANAGEMENT,
+        element: <GradeManagement/>
+    },
+    // Cập nhật kết quả
+    {
+        path: URL_RESULT_UPDATE,
+        element: <ResultUpdate/>
+    },
+    // Danh sách bảo vệ KLTN
+    {
+        path: URL_GRADUATION_THESES_STUDENT_INFO,
+        element: <GraduationThesesStudentInfo/>
+    },
+    // Thành lập hội đồng bảo vệ KLTN
+    {
+        path: URL_DEFENSE_ESTABLISH,
+        element: <DefenseEstablish/>
+    },
+    // Phân công giáo viên phụ trách
+    {
+        path: URL_REVIEWER_TEACHER_ASSIGNMENT,
+        element: <ReviewerTeacherAssignment/>
     }
 ];
