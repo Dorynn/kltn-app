@@ -5,8 +5,13 @@ export const configInput = [
         class: '',
     },
     {
-        id: 'report',
-        value: 'Nộp báo cáo',
+        id: 'reportTeacher',
+        value: 'Nộp báo cáo (Cho giáo viên hướng dẫn)',
+        class: '',
+    },
+    {
+        id: 'reportReviewTeacher',
+        value: 'Nộp báo cáo (Cho giáo viên phản biện)',
         class: '',
     },
     {
@@ -18,7 +23,7 @@ export const configInput = [
 
 export const fieldSubmit = [
     {
-        label: '',
+        label: 'File tài liệu',
         field: 'limit_register_number',
         type: 'FILEUPLOAD',
     },
