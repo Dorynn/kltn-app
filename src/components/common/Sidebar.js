@@ -4,16 +4,16 @@ import { Layout, Menu } from 'antd';
 import AuthContext from '../../context/authContext';
 
 // URL
-import { 
+import {
     URL_APPROVED_TOPIC_LIST,
     URL_DEPARTMENT,
-    URL_GRADUATION_THESIS_INFO, 
-    URL_GRADUATION_THESIS_MANAGER, 
-    URL_GRADUATION_THESIS_SUBMIT, 
+    URL_GRADUATION_THESIS_INFO,
+    URL_GRADUATION_THESIS_MANAGER,
+    URL_GRADUATION_THESIS_SUBMIT,
     URL_LECTURER,
-    URL_MAJOR, 
-    URL_PROPOSED_TOPIC_LIST, 
-    URL_REVIEW_REPORT_GRADUATION, 
+    URL_MAJOR,
+    URL_PROPOSED_TOPIC_LIST,
+    URL_REVIEW_REPORT_GRADUATION,
     URL_STUDENT,
     URL_STUDENT_TOPIC_REGISTRATION,
     URL_SUBJECT,
@@ -26,6 +26,7 @@ import {
     URL_DEFENSE_ESTABLISH,
     URL_REVIEWER_TEACHER_ASSIGNMENT,
     URL_THESIS_GRADE,
+    URL_VIEW_GRADES,
 
 } from "../../const/configUrl";
 
@@ -128,47 +129,52 @@ const Sidebar = () => {
                             key="sub3"
                             title={<span>Khóa luận tốt nghiệp</span>}
                         >
-                        {
-                            isStudent || isAdmin && 
-                            <Menu.Item key="12">
-                                <Link to={URL_GRADUATION_THESIS_INFO}>
-                                    <span>Thông tin</span>
-                                </Link>
-                            </Menu.Item>
-                        }
-                        {
-                            isStudent || isAdmin && 
-                            <Menu.Item key="13">
-                                <Link to={URL_GRADUATION_THESIS_SUBMIT}>
-                                    <span>Nộp tài liệu</span>
-                                </Link>
-                            </Menu.Item>
-                        }
-                        {
-                            isStudent || isAdmin && 
-                            <Menu.Item key="21">
-                                <Link to={URL_THESIS_GRADE}>
+                            {
+                                isStudent || isAdmin &&
+                                <Menu.Item key="12">
+                                    <Link to={URL_GRADUATION_THESIS_INFO}>
+                                        <span>Thông tin</span>
+                                    </Link>
+                                </Menu.Item>
+                            }
+                            {
+                                isStudent || isAdmin &&
+                                <Menu.Item key="13">
+                                    <Link to={URL_GRADUATION_THESIS_SUBMIT}>
+                                        <span>Nộp tài liệu</span>
+                                    </Link>
+                                </Menu.Item>
+                            }
+                            {
+                                isStudent || isAdmin &&
+                                <Menu.Item key="21">
+                                    <Link to={URL_THESIS_GRADE}>
+                                        <span>Xem điểm</span>
+                                    </Link>
+                                </Menu.Item>
+                            }
+                            <Menu.Item key="16">
+                                <Link to={URL_VIEW_GRADES}>
                                     <span>Xem điểm</span>
                                 </Link>
                             </Menu.Item>
-                        }
-                        {
-                            (isTeacher || isAdmin) && 
-                            <Menu.Item key="14">
-                                <Link to={URL_GRADUATION_THESIS_MANAGER}>
-                                    {/* <span>Quản lý khóa luận tốt nghiệp</span> */}
-                                    <span>Duyệt đề cương</span>
-                                </Link>
-                            </Menu.Item>
-                        }
-                        {
-                            (isTeacher || isAdmin) && 
-                            <Menu.Item key="15">
-                                <Link to={URL_REVIEW_REPORT_GRADUATION}>
-                                    <span>Duyệt báo cáo bảo vệ</span>
-                                </Link>
-                            </Menu.Item>
-                        }
+                            {
+                                (isTeacher || isAdmin) &&
+                                <Menu.Item key="14">
+                                    <Link to={URL_GRADUATION_THESIS_MANAGER}>
+                                        {/* <span>Quản lý khóa luận tốt nghiệp</span> */}
+                                        <span>Duyệt đề cương</span>
+                                    </Link>
+                                </Menu.Item>
+                            }
+                            {
+                                (isTeacher || isAdmin) &&
+                                <Menu.Item key="15">
+                                    <Link to={URL_REVIEW_REPORT_GRADUATION}>
+                                        <span>Duyệt báo cáo bảo vệ</span>
+                                    </Link>
+                                </Menu.Item>
+                            }
                         </SubMenu>
                     }
                     {
@@ -207,7 +213,7 @@ const Sidebar = () => {
                                     <span>Hồ sơ lưu trữ</span>
                                 </Link>
                             </Menu.Item>
-                            
+
                         </SubMenu>
                     }
                 </Menu>

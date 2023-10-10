@@ -26,6 +26,8 @@ export const URL_STUDENT_TOPIC_REGISTRATION = '/student-topic-registration';
 export const URL_GRADUATION_THESIS_INFO = '/graduation-thesis-info';
 // nộp tài liệu
 export const URL_GRADUATION_THESIS_SUBMIT = '/graduation-thesis-submit';
+// xem điểm
+export const URL_VIEW_GRADES = '/view-grades';
 // quản lý khóa luận
 export const URL_GRADUATION_THESIS_MANAGER = '/graduation-thesis-manager';
 // Xét duyệt báo cáo

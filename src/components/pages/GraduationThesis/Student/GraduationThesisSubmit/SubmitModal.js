@@ -5,16 +5,14 @@ import useModal from '../../../../../hooks/modal/useModal';
 import { Form, Input, Modal, Select } from "antd";
 import { fieldSubmit } from './GraduationThesisSubmitconstants';
 import { FileAddOutlined, CloudUploadOutlined, ExclamationCircleFilled } from '@ant-design/icons';
+import './style.scss';
 
 function SubmitModal(props) {
     const {
-        refetchData,
         isOpen,
         setIsOpen,
         idInput,
-        setStatusInputOutline,
-        setStatusInputReport,
-        setStatusInputFinalReport,
+        setStatusInput,
     } = props;
     const inputRef = useRef();
     const { confirm } = Modal;
@@ -22,6 +20,7 @@ function SubmitModal(props) {
     const [fileName, setFileName] = useState('');
     const { openNotification } = useContext(NotificationContext);
     const [title, setTitle] = useState('Nộp đề cương');
+    const arrStatus = ['outline', 'reportTeacher', 'reportReviewTeacher', 'finalReport'];
 
     useEffect(() => {
         if (isOpen) {
@@ -33,8 +32,11 @@ function SubmitModal(props) {
         if (idInput === 'outline') {
             setTitle('Nộp đề cương');
         }
-        if (idInput === 'report' || idInput === 'finalReport') {
+        if (idInput === 'reportTeacher' || idInput === 'reportReviewTeacher') {
             setTitle('Nộp báo cáo');
+        }
+        if (idInput === 'finalReport') {
+            setTitle('Nộp báo cáo cuối');
         }
     }, [idInput])
 
@@ -44,15 +46,23 @@ function SubmitModal(props) {
             .from('thesis_topics')
         // .insert({ ...newTopic })
         if (!error) {
-            await refetchData({})
+            // await refetchData({})
             setIsOpen(false);
+            setStatusInput(prev => {
+                const indexIdInput = arrStatus.findIndex(i => i === idInput);
+                return ({
+                    ...prev, 
+                    [idInput]: 'success',
+                    [arrStatus[indexIdInput+1]]: 'normal'
+                });
+            });
             return openNotification({
-                message: 'Create student successfully'
+                message: `${title} thành công`
             })
         }
         return openNotification({
             type: 'error',
-            message: 'Create student failed',
+            message: `${title} thất bại`,
         })
     };
 
@@ -63,9 +73,9 @@ function SubmitModal(props) {
     };
     const ConfirmModal = (id) => {
         confirm({
-            title: 'Bạn có thực sự muốn thay đổi đề tài này?',
+            title: 'Bạn có thực sự muốn nộp tài liệu này?',
             icon: <ExclamationCircleFilled />,
-            content: 'Đề tài sẽ không được khôi phục sau khi bạn nhấn đồng ý!',
+            content: 'Tài liệu sẽ gửi lên hệ thống sau khi bạn nhấn đồng ý!',
             okText: 'Đồng ý',
             cancelText: 'Hủy',
             centered: true,
@@ -82,24 +92,22 @@ function SubmitModal(props) {
             return (
                 <>
                     <Input
+                        type="button"
                         value={fileName}
                         prefix={fileName ? <FileAddOutlined /> : <></>}
                         suffix={<div>
-                            <span
-                                role="button"
-                                onClick={() => inputRef.current.click()}
-                            >
-                                <CloudUploadOutlined />
-                                <input
-                                    hidden
-                                    ref={inputRef}
-                                    type="file"
-                                    id="inputFile"
-                                    onChange={(event) => handleOnUpload(event)}
-                                ></input>
-                            </span>
+                            <CloudUploadOutlined />
+                            <input
+                                hidden
+                                ref={inputRef}
+                                type="file"
+                                id="inputFile"
+                                onChange={(event) => handleOnUpload(event)}
+                            ></input>
                         </div>}
                         size='large'
+                        className="input-add-file"
+                        onClick={() => inputRef.current.click()}
                     />
                     {!fileName && (
                         <div className="invalid-feedback d-block">
