@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useContext } from 'react';
 import { Link } from "react-router-dom";
 import { Layout, Menu } from 'antd';
 import AuthContext from '../../context/authContext';
@@ -25,7 +25,6 @@ import {
     URL_GRADUATION_THESES_STUDENT_INFO,
     URL_DEFENSE_ESTABLISH,
     URL_REVIEWER_TEACHER_ASSIGNMENT,
-    URL_THESIS_GRADE,
     URL_VIEW_GRADES,
 
 } from "../../const/configUrl";
@@ -148,16 +147,11 @@ const Sidebar = () => {
                             {
                                 isStudent || isAdmin &&
                                 <Menu.Item key="21">
-                                    <Link to={URL_THESIS_GRADE}>
+                                    <Link to={URL_VIEW_GRADES}>
                                         <span>Xem điểm</span>
                                     </Link>
                                 </Menu.Item>
                             }
-                            <Menu.Item key="16">
-                                <Link to={URL_VIEW_GRADES}>
-                                    <span>Xem điểm</span>
-                                </Link>
-                            </Menu.Item>
                             {
                                 (isTeacher || isAdmin) &&
                                 <Menu.Item key="14">
