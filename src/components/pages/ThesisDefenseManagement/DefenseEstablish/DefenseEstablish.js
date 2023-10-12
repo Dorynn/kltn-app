@@ -5,13 +5,14 @@ import supabase from '../../../../supabaseClient';
 import DefenseEstablishModal from './DefenseEstablishModal';
 
 const DefenseEstablish = () => {
-    const [isOpenModal, setOpenModal] = useState()
+    const [isOpenModal, setOpenModal] = useState();
+    const [thesisInfo, setThesisInfo] = useState();
     const {data: reviewList, requestAction: refetchData} = useSupbaseAction({
         initialData: [],
         firstLoad: true, defaultAction: async () => await supabase
         .from ('thesis_phases')
-        .select(`*, student_theses(*, students(*, profiles(name)), thesis_topics(*, teachers(*, profiles(name))))`)
-        // .eq('phase_order', 3)
+        .select(`*, student_theses(*, teachers(*, profiles(name)), students(*, profiles(name)), thesis_topics(*, teachers(*, profiles(name))))`)
+        .eq('phase_order', 3)
     })
     const data=[]
     const columns = [
@@ -52,7 +53,18 @@ const DefenseEstablish = () => {
             render: (_, record) => <>
                 <Button onClick={()=>{
                     setOpenModal(!isOpenModal)
-                }}>
+                    setThesisInfo({
+                        student_code: record.student_code,
+                        student_name: record.student_name,
+                        instructor_id: record.student_theses.thesis_topics.teachers.user_id,
+                        instructor_name: record.student_theses.thesis_topics.teachers.profiles.name,
+                        reviewer_teacher_id: record.student_theses.reviewer_teacher_id,
+                        reviewer_teacher_name: record.student_theses.teachers.profiles.name,
+                        topic_name: record.student_theses.thesis_topics.topic_name,
+                        
+                    })
+                }
+                }>
                     Thành lập
                 </Button>
             </>

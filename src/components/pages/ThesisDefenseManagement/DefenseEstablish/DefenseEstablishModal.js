@@ -19,6 +19,29 @@ const DefenseEstablishModal = ({isOpen}) => {
         .select(`*`)
     }) 
     console.log(teachers)
+    useEffect(() => {
+        (async () => {
+            const thesis_id = 79
+            const { data, error } = await supabase.functions.invoke(`get-available-schedules?thesis_id=${thesis_id}`, {
+                method: 'GET',
+                headers: { "content-type": "application/json" },
+            })
+            if (error) {
+                return console.log('=== get_available_defense_schedules error ===', error);
+            }
+            console.log('=== get_available_defense_schedules data ===', data)
+        })()
+
+    }, [])
+    useEffect(() => {
+        (async () => {
+            const { data, error } = await supabase.rpc('is_charge_person')
+            if (error) {
+                return console.log('=== is_charge_person error ===', error);
+            }
+            console.log('=== is_charge_person data ===', data)
+        })()
+    }, [])
     const defenseModalContent = (
         <Form
             labelCol = {{ span: 8}}

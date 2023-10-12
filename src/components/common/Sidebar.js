@@ -129,7 +129,7 @@ const Sidebar = () => {
                             title={<span>Khóa luận tốt nghiệp</span>}
                         >
                         {
-                            isStudent || isAdmin && 
+                            (isStudent || isAdmin) && 
                             <Menu.Item key="12">
                                 <Link to={URL_GRADUATION_THESIS_INFO}>
                                     <span>Thông tin</span>
@@ -137,7 +137,7 @@ const Sidebar = () => {
                             </Menu.Item>
                         }
                         {
-                            isStudent || isAdmin && 
+                            (isStudent || isAdmin) && 
                             <Menu.Item key="13">
                                 <Link to={URL_GRADUATION_THESIS_SUBMIT}>
                                     <span>Nộp tài liệu</span>
