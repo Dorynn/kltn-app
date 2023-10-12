@@ -162,7 +162,7 @@ const Sidebar = () => {
                             </Menu.Item>
                         }
                         {
-                            (isTeacher || isAdmin) && 
+                            isTeacher || isAdmin && 
                             <Menu.Item key="15">
                                 <Link to={URL_REVIEW_REPORT_GRADUATION}>
                                     <span>Duyệt báo cáo bảo vệ</span>
@@ -172,7 +172,7 @@ const Sidebar = () => {
                         </SubMenu>
                     }
                     {
-                        (isAdmin) &&
+                        isAdmin || isTeacher &&
                         <SubMenu
                             key="sub4"
                             title={<span>Quản lý bảo vệ KLTN</span>}
