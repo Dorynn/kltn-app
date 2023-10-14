@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import { Table, Button } from 'antd';
 import useSupbaseAction from '../../../../hooks/useSupabase/useSupabaseAction';
 import supabase from '../../../../supabaseClient';
@@ -6,15 +6,17 @@ import DefenseEstablishModal from './DefenseEstablishModal';
 
 const DefenseEstablish = () => {
     const [isOpenModal, setOpenModal] = useState();
-    const [thesisInfo, setThesisInfo] = useState();
-    const {data: reviewList, requestAction: refetchData} = useSupbaseAction({
+    const [thesisInfo, setThesisInfo] = useState({});
+    const { data: reviewList, requestAction: refetchData } = useSupbaseAction({
         initialData: [],
         firstLoad: true, defaultAction: async () => await supabase
-        .from ('thesis_phases')
-        .select(`*, student_theses(*, teachers(*, profiles(name)), students(*, profiles(name)), thesis_topics(*, teachers(*, profiles(name))))`)
-        .eq('phase_order', 3)
+            .from('thesis_phases')
+            .select(`*, student_theses(*, teachers(*, profiles(name)), students(*, profiles(name)), thesis_topics(*, teachers(*, profiles(name))))`)
+            .eq('phase_order', 3)
+            .eq('status', 'approved')
     })
-    const data=[]
+    console.log(reviewList)
+    const data = []
     const columns = [
         {
             title: 'STT',
@@ -51,17 +53,19 @@ const DefenseEstablish = () => {
             dataIndex: 'action',
             width: '10%',
             render: (_, record) => <>
-                <Button onClick={()=>{
+                <Button onClick={() => {
                     setOpenModal(!isOpenModal)
                     setThesisInfo({
+                        id: record.id,
                         student_code: record.student_code,
                         student_name: record.student_name,
-                        instructor_id: record.student_theses.thesis_topics.teachers.user_id,
-                        instructor_name: record.student_theses.thesis_topics.teachers.profiles.name,
-                        reviewer_teacher_id: record.student_theses.reviewer_teacher_id,
-                        reviewer_teacher_name: record.student_theses.teachers.profiles.name,
-                        topic_name: record.student_theses.thesis_topics.topic_name,
-                        
+                        instructor_id: record.instructor_id,
+                        instructor_name: record.instructor_name,
+                        reviewer_teacher_id: record.reviewer_teacher_id,
+                        reviewer_teacher_name: record.reviewer_teacher_name,
+                        topic_name: record.topic_name,
+                        student_thesis_id: record.student_thesis_id
+
                     })
                 }
                 }>
@@ -70,17 +74,20 @@ const DefenseEstablish = () => {
             </>
         }
     ]
-    reviewList.map((item, index)=> {
+    console.log(thesisInfo)
+    reviewList.map((item, index) => {
         data.push({
             no: index + 1,
             key: item.id,
             id: item.id,
             student_code: `MSV${item.student_theses.student_id}`,
             student_name: item.student_theses.students.profiles.name,
-            instructor: item.student_theses.thesis_topics.teachers.profiles.name,
             instructor_id: item.student_theses.thesis_topics.teacher_id,
+            instructor_name: item.student_theses.thesis_topics.teachers.profiles.name,
+            reviewer_teacher_id: item.student_theses.reviewer_teacher_id,
+            reviewer_teacher_name: item.student_theses.teachers.profiles.name,
             topic_name: item.student_theses.thesis_topics.topic_name,
-            topic_description: item.student_theses.thesis_topics.topic_description,     
+            student_thesis_id: item.student_thesis_id
         })
     })
     return (
@@ -92,15 +99,15 @@ const DefenseEstablish = () => {
                     dataSource={data}
                     expandable={{
                         expandedRowRender: (record) => (
-                            
+
                             <p style={{
                                 margin: '0 0 0 40px',
-                            }}>hihi</p>
+                            }}>{record.topic_description}</p>
                         )
                     }}
                 />
             </div>
-            <DefenseEstablishModal isOpen={isOpenModal}/>
+            <DefenseEstablishModal thesisInfo={thesisInfo} isOpen={isOpenModal} />
         </>
     );
 };

@@ -35,7 +35,7 @@ const TeacherAssignmentModal = ({ isOpen, updateTeacherAssignment, refetchData }
                     showSearch
                     optionFilterProp='children'
                     filterOption={(input, option) => (option?.label ?? '').includes(input)}
-                    options={teachers.filter(item => item.user_id != updateTeacherAssignment.instructor_id || item.user_id != user.user_id).map(({ profiles, user_id }) => ({ label: `MGV${profiles.id} - ${profiles.name}`, value: user_id }))}
+                    options={teachers.filter(item => item.user_id != updateTeacherAssignment.instructor_id && item.user_id != user.user_id).map(({ profiles, user_id }) => ({ label: `MGV${profiles.id} - ${profiles.name}`, value: user_id }))}
                     onChange={(value) => setReviewerTeacher(value)}
                     value={reviewerTeacher}
                 />
@@ -44,19 +44,12 @@ const TeacherAssignmentModal = ({ isOpen, updateTeacherAssignment, refetchData }
     )
 
     const confirmTeacherAssignment = async () => {
-        const { error } = await supabase
-            .from('thesis_phases')
-            .update({ reviewer_id: reviewerTeacher, status: 'pending' })
-            .eq('student_thesis_id', updateTeacherAssignment.student_thesis_id)
-            .eq('phase_order', 3)
-        
-        console.log(updateTeacherAssignment.student_thesis_id)
-        const { error2 } = await supabase
+        const { error} = await supabase
             .from('student_theses')
             .update({ reviewer_teacher_id: reviewerTeacher })
             .eq('id', updateTeacherAssignment.student_thesis_id)
 
-        if (!error2 && !error) {
+        if (!error) {
             await refetchData({})
             return openNotification({
                 message: 'Assign reviewer teacher successfully!'

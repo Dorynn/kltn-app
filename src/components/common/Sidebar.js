@@ -172,7 +172,7 @@ const Sidebar = () => {
                         </SubMenu>
                     }
                     {
-                        isAdmin || isTeacher &&
+                        (isAdmin || isTeacher) &&
                         <SubMenu
                             key="sub4"
                             title={<span>Quản lý bảo vệ KLTN</span>}
