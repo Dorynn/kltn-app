@@ -48,12 +48,12 @@ function AddTopicModal(props) {
             await refetchData({})
             setIsOpen(false);
             return openNotification({
-                message: 'Create topic successfully'
+                message: 'Tạo mới đề tài thành công'
             })
         }
         return openNotification({
             type: 'error',
-            message: 'Create topic failed',
+            message: 'Tạo mới đề tài thất bại',
         })
     };
 

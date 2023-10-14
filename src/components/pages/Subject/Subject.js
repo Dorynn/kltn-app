@@ -29,7 +29,6 @@ const Subject = () => {
                 majors(major_name, major_code)
             `)
     })
-    console.log('subjects', subjects);
     const handleDeleteSubject = async ({ id }) => {
         setConfirmLoading(true);
         const { error } = await supabase
@@ -40,12 +39,12 @@ const Subject = () => {
         if (!error) {
             await refetchData({})
             return openNotification({
-                message: 'Delete subject successfully'
+                message: 'Xóa học phần thành công'
             })
         }
         return openNotification({
             type: 'error',
-            message: 'Delete subject failed',
+            message: 'Xóa học phần thất bại',
         })
 
     }
@@ -69,11 +68,11 @@ const Subject = () => {
             }
         })
         if (!error) {
-            openNotification({ message: 'Imported successfully' })
+            openNotification({ message: 'Import file thành công' })
             await refetchData({});
             return;
         }
-        openNotification({ type: 'error', message: 'Import failed' })
+        openNotification({ type: 'error', message: 'Import file thất bại' })
     }
     const handleOnChangeImportFile = async (info) => {
         setFileList([...info.fileList]);
@@ -162,7 +161,7 @@ const Subject = () => {
             course_name: item.course_name,
             course_credits: item.course_credits,
             credit_coefficient: item.credit_coefficient,
-            major_code: item.majors.major_code,
+            major_code: `DPM${item.major_id}`,
             major_name: item.majors.major_name,
             major_id: item.major_id
         })

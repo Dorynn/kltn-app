@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Input } from "antd";
 import {
     CloudUploadOutlined,
@@ -9,16 +9,51 @@ import {
 import { configInput } from "./GraduationThesisSubmitconstants";
 import SubmitModal from "./SubmitModal";
 import './style.scss';
+import useSupbaseAction from "../../../../../hooks/useSupabase/useSupabaseAction";
+import supabase from "../../../../../supabaseClient";
+import AuthContext from "../../../../../context/authContext";
 
 function GraduationThesisSubmit() {
+    const { user } = useContext(AuthContext);
     const [isOpenModal, setIsOpenModal] = useState(false);
-    const [idInput, setIdInput] = useState('');
+    const [itemInput, setItemInput] = useState('');
+    const [valueThesisPhase, setValueThesisPhase] = useState({});
     const [statusInput, setStatusInput] = useState({
-        outline: 'normal',
-        reportTeacher: 'disable',
-        reportReviewTeacher: 'disable',
-        finalReport: 'disable'
+        phase1: 'normal',
+        phase2: 'locked',
+        phase3: 'locked',
+        phase4: 'locked',
     });
+    const { data: thesisPhasesId } = useSupbaseAction({
+        initialData: {},
+        firstLoad: true,
+        defaultAction: async () => supabase
+            .from('student_theses')
+            .select(`id`)
+            .eq('student_id', user.user_id)
+    });
+    const { data: thesisPhases, requestAction: refetchData } = useSupbaseAction({
+        initialData: [],
+        firstLoad: true,
+        defaultAction: async () => supabase
+            .from('thesis_phases')
+            .select(`
+                *
+            `)
+            .eq('student_thesis_id', 116)
+            .order('phase_order', { ascending: true })
+    });
+
+    console.log('thesisPhases', thesisPhases);
+    useEffect(() => {
+        if (thesisPhases) {
+            thesisPhases.map((value, index) => {
+                if (value.phase_order === index + 1) {
+                    setStatusInput(prev => ({ ...prev, [`phase${index + 1}`]: value.status }));
+                }
+            });
+        }
+    }, [thesisPhases])
 
     const getSuffixInput = (id) => {
         if (statusInput[id] === 'normal') {
@@ -27,23 +62,21 @@ function GraduationThesisSubmit() {
         if (statusInput[id] === 'pending') {
             return <LoadingOutlined />
         }
-        if (statusInput[id] === 'success') {
+        if (statusInput[id] === 'approved') {
             return <CheckOutlined />
         }
         return <LockOutlined />
     };
     const getDisabledInput = (id) => {
-        if (id === 'reportTeacher') {
-            return statusInput[id] === 'disable';
-        }
-        if (id === 'reportReviewTeacher') {
-            return statusInput[id] === 'disable';
-        }
-        if (id === 'finalReport') {
-            return statusInput[id] === 'disable'
-        }
-        return false;
+        return statusInput[id] === 'locked' || statusInput[id] === 'pending';
     };
+    const handleClickSubmit = item => {
+        setIsOpenModal(true);
+        setItemInput(item.id);
+        console.log('thesisPhases', thesisPhases);
+        const thesisByPhasesOrder = thesisPhases.find(value => value.phase_order === item.key) || {};
+        setValueThesisPhase(thesisByPhasesOrder);
+    }
 
     return (
         <>
@@ -54,13 +87,13 @@ function GraduationThesisSubmit() {
                         <Input
                             type="button"
                             id={item.id}
-                            value={item.value}
+                            value={item.title}
                             readOnly
                             suffix={getSuffixInput(item.id)}
                             size="large"
                             disabled={getDisabledInput(item.id)}
                             className="input-add-file"
-                            onClick={() => { setIsOpenModal(true); setIdInput(item.id) }}
+                            onClick={() => handleClickSubmit(item)}
                         ></Input>
                     </div>
                 ))}
@@ -68,8 +101,10 @@ function GraduationThesisSubmit() {
             {isOpenModal && <SubmitModal
                 isOpen={isOpenModal}
                 setIsOpen={setIsOpenModal}
-                idInput={idInput}
+                itemInput={itemInput}
                 setStatusInput={setStatusInput}
+                valueThesisPhase={valueThesisPhase}
+                refetchData={refetchData}
             ></SubmitModal>}
         </>
     );

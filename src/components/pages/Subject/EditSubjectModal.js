@@ -36,6 +36,9 @@ const EditSubjectModal = ({ updateSubject, setUpdateSubject, refetchData, isOpen
         <Form.Item label="Số tín chỉ">
             <Input value={updateSubject.course_credits} onChange={(e) => setUpdateSubject(prev => ({ ...prev, course_credits: e.target.value }))} />
         </Form.Item>
+        <Form.Item label="Hệ số">
+            <Input value={updateSubject.credit_coefficient} onChange={(e) => setUpdateSubject(prev => ({ ...prev, credit_coefficient: e.target.value }))} />
+        </Form.Item>
     </Form>)
 
     const handleUpdateSubject = async () => {
@@ -47,12 +50,12 @@ const EditSubjectModal = ({ updateSubject, setUpdateSubject, refetchData, isOpen
         if (!error) {
             await refetchData({})
             return openNotification({
-                message: 'Update subject successfully'
+                message: 'Cập nhật học phần thành công'
             })
         }
         return openNotification({
             type: 'error',
-            message: 'Update subject failed',
+            message: 'Cập nhật học phần thất bại',
         })
     }
 

@@ -14,26 +14,23 @@ function GraduationThesisManager() {
     const { isAdmin, isTeacher } = useContext(AuthContext);
     const [currentPage, setCurrentPage] = useState(DEFAULT_CURRENT_PAGE);
     const [openModal, setOpenModal] = useState(false);
+    const [phasesId, setPhasesId] = useState('');
 
-    const { data: topicList, requestAction: refetchData, loading: tableLoading, count: totalCountData } = useSupbaseAction({
+    const { data: outlineList, requestAction: refetchData, loading: tableLoading, count: totalCountData } = useSupbaseAction({
         initialData: [],
         firstLoad: true,
         defaultAction: async ({ page = 1 }) => supabase
-            .from('thesis_topics')
+            .from('thesis_phases')
             .select(`
-                *
+                *,
+                student_theses(
+                    topic_id, status, student_id, reviewer_teacher_id, thesis_grade_id,
+                    thesis_topics(topic_name, topic_description),
+                    students(user_id, profiles(name))
+                )
             `, { count: 'exact' })
+            .eq('phase_order', 1)
             .range((page - 1) * NUMBER_ITEM_PER_PAGE, NUMBER_ITEM_PER_PAGE * page - 1)
-    });
-    const { data: teachers } = useSupbaseAction({
-        initialData: [],
-        firstLoad: true,
-        defaultAction: async () => supabase
-            .from('profiles')
-            .select(`
-                *
-            `)
-            .eq('university_role', 'teacher')
     });
 
     // tùy chọn hiển thị data
@@ -41,17 +38,20 @@ function GraduationThesisManager() {
         if (field === 'index') {
             return index + 1;
         }
+        if (field === 'user_code') {
+            return `SV${item.user_id} - ${item.name}`;
+        }
         if (field === 'action') {
             return (
                 <button
                     type='button'
                     className='btn btn-outline-secondary'
-                    onClick={() => setOpenModal(true)}
+                    onClick={() => {setOpenModal(true); setPhasesId(item.id)}}
                 >Xem</button>
             );
         }
         return item[field];
-    }, [teachers]);
+    }, []);
 
     // gọi lại api khi change page
     const onChangePage = useCallback(
@@ -81,26 +81,26 @@ function GraduationThesisManager() {
         </div>
     );
 
-    const expandCondition = (record) => (topicList.length > 0);
+    const expandCondition = (record) => (outlineList.length > 0);
 
     return (
         <>
-            <h4 className='title'>Danh sách sinh viên làm khóa luận tốt nghiệp</h4>
+            <h4 className='title'>Danh sách sinh viên nộp đề cương khóa luận tốt nghiệp</h4>
             <div className='p-5'>
                 <TableCommon
                     loading={tableLoading}
                     columns={columnConfig}
                     primaryKey='id'
-                    data={topicList?.map(item => flattenObj({ obj: item }))}
+                    data={outlineList?.map(item => flattenObj({ obj: item }))}
                     parseFunction={parseData}
                     isShowPaging
-                    onChangePage={page => onChangePage(page - 1)}
+                    onChangePage={page => onChangePage(page)}
                     totalCountData={totalCountData}
                     defaultPage={DEFAULT_CURRENT_PAGE}
                     currentPage={currentPage}
                     totalDisplay={NUMBER_ITEM_PER_PAGE}
                     expandCondition={(record) => expandCondition(record)}
-                    renderExpandContent={topicList?.map(item => flattenObj({ obj: item })).length > 0 ?
+                    renderExpandContent={outlineList?.map(item => flattenObj({ obj: item })).length > 0 ?
                         (record) => renderExpandContent(record) : null}
                     bordered
                 />
@@ -110,6 +110,8 @@ function GraduationThesisManager() {
                 <ModalViewDetail
                     isOpen={openModal}
                     setIsOpen={setOpenModal}
+                    phasesId={phasesId}
+                    refetchData={refetchData}
                 />}
         </>
     );

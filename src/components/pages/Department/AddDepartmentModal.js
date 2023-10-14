@@ -53,7 +53,7 @@ const AddDepartmentModal = ({ refetchData, isOpen }) => {
                 showSearch
                 optionFilterProp='children'
                 filterOption={(input, option) => (option?.label ?? "").includes(input)}
-                options={deanValue.map(({ user_code, name, id }) => ({ label: `${user_code} - ${name}`, value: id }))}
+                options={deanValue.map(({ user_code, name, id }) => ({ label: `GV${id} - ${name}`, value: id }))}
                 onChange={(value) => setNewDepartment(prev => ({ ...prev, dean_id: value }))}
                 value={newDepartment.dean_id}
             />
@@ -63,7 +63,7 @@ const AddDepartmentModal = ({ refetchData, isOpen }) => {
                 showSearch
                 optionFilterProp='children'
                 filterOption={(input, option) => (option?.label ?? "").includes(input)}
-                options={chargePersons?.map(({ profiles, user_id }) => ({ label: `${profiles?.user_code} - ${profiles?.name}`, value: user_id }))}
+                options={chargePersons?.map(({ profiles, user_id }) => ({ label: `GV${user_id} - ${profiles?.name}`, value: user_id }))}
                 onChange={(value) => setNewDepartment(prev => ({ ...prev, charge_person_id: value }))}
                 value={newDepartment.charge_person_id}
             />
@@ -80,12 +80,12 @@ const AddDepartmentModal = ({ refetchData, isOpen }) => {
         if (!error) {
             await refetchData({})
             return openNotification({
-                message: 'Create department successfully'
+                message: 'Tạo mới khoa thành công'
             })
         }
         return openNotification({
             type: 'error',
-            message: 'Create department failed',
+            message: 'Tạo mới khoa thất bại',
         })
     }
 
