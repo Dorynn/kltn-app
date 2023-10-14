@@ -28,7 +28,7 @@ const Department = () => {
             .from('departments')
             .select(`
                 *,
-                profiles(name, user_code)
+                profiles(name, user_code, id)
             `)
     })
     const { data: teachers } = useSupbaseAction({
@@ -50,12 +50,12 @@ const Department = () => {
         if (!error) {
             await refetchData({})
             return openNotification({
-                message: 'Delete department successfully'
+                message: 'Xóa khoa thành công'
             })
         }
         return openNotification({
             type: 'error',
-            message: 'Delete department failed',
+            message: 'Xóa khoa thất bại',
         })
 
     }
@@ -79,11 +79,11 @@ const Department = () => {
             }
         })
         if (!error) {
-            openNotification({ message: 'Imported successfully' })
+            openNotification({ message: 'Import file thành công' })
             await refetchData({});
             return;
         }
-        openNotification({ type: 'error', message: 'Import failed' })
+        openNotification({ type: 'error', message: 'Import file thất bại' })
     }
     const handleOnChangeImportFile = async (info) => {
         setFileList([...info.fileList]);
@@ -114,10 +114,10 @@ const Department = () => {
             stt: index + 1,
             department_code: `DPM${item.id}` || '-',
             department_name: item.department_name || '-',
-            user_code: item.profiles.user_code || '-',
+            user_code: `GV${item.profiles.id}` || '-',
             dean_name: item.profiles.name || '-',
             dean_id: item.dean_id || '-',
-            charge_person_code: chargePerson?.profiles?.user_code || '-',
+            charge_person_code: `GV${chargePerson?.user_id}` || '-',
             charge_person_name: chargePerson?.profiles?.name || '-'
         })
     })
@@ -125,7 +125,7 @@ const Department = () => {
         {
             title: "STT",
             dataIndex: 'stt',
-            width: '5%'
+            width: '5%',
         },
         {
             title: 'Mã khoa',

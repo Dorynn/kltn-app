@@ -1,6 +1,6 @@
 import supabase from '../../supabaseClient';
 
-export default async function uploadFile({ file, folder, user }) {
+export default async function uploadFile({ file = 'assignments', folder, user }) {
     try {
         const { data, error } = await supabase
             .storage
@@ -9,11 +9,8 @@ export default async function uploadFile({ file, folder, user }) {
                 cacheControl: '3600',
                 upsert: false
             })
-        if (error) {
-            return console.log('supabase upload error', error);
-        }
-        console.log("upload file path", data.path);
+        return { data, error };
     } catch (err) {
-        console.log("Eroor: ", err);
+        return err;
     }
 };

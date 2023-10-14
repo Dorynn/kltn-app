@@ -35,19 +35,18 @@ const Student = () => {
     }, []);
 
 
-    const { data: students, requestAction: refetchData, count: totalCountData } = useSupbaseAction({
+    const { data: students, requestAction: refetchData, count: totalCountData, loading: tableLoading } = useSupbaseAction({
         initialData: [],
         firstLoad: true, defaultAction: async ({ page = 1 }) => supabase
             .from('students')
             .select(`
                 *,
                 profiles(name, user_code, phone, address, email, auth_id),
-                majors(major_code, major_name, departments(department_name))
-            `)
+                majors(id, major_code, major_name, departments(department_name))
+            `, { count: 'exact' })
             .range((page - 1) * NUMBER_ITEM_PER_PAGE, NUMBER_ITEM_PER_PAGE * page - 1)
     });
-    console.log('totalCountData', totalCountData);
-
+    console.log('students', students);
     const getColumnConfig = () => {
         if (isAdmin) {
             return columnConfig.concat({
@@ -65,6 +64,12 @@ const Student = () => {
         if (field === 'index') {
             return index + 1;
         }
+        if (field === 'student_code') {
+            return `SV${item.user_id}`;
+        }
+        if (field === 'major_code') {
+            return `MJ${item.major_id}`;
+        }
         if (field === 'action') {
             return (<>
                 <i
@@ -78,7 +83,7 @@ const Student = () => {
                 <i
                     role="button"
                     className="fa-solid fa-trash mx-2"
-                    onClick={() => { console.log('item', item); ConfirmModal(item.id) }}
+                    onClick={() => { ConfirmModal(item.id) }}
                 ></i>
             </>);
         }
@@ -88,6 +93,7 @@ const Student = () => {
     // gọi lại api khi change page
     const onChangePage = useCallback(
         async page => {
+            console.log('page', page);
             setCurrentPage(page)
             await refetchData({
                 params: {
@@ -108,12 +114,12 @@ const Student = () => {
         if (!error) {
             await refetchData({})
             return openNotification({
-                message: 'Delete student successfully'
+                message: 'Xóa sinh viên thành công'
             })
         }
         return openNotification({
             type: 'error',
-            message: 'Delete student failed',
+            message: 'Xóa sinh viên thất bại',
         })
     };
 
@@ -136,11 +142,11 @@ const Student = () => {
             }
         })
         if (!error) {
-            openNotification({ message: 'Imported successfully' })
+            openNotification({ message: 'Import file thành công' })
             await refetchData({});
             return;
         }
-        openNotification({ type: 'error', message: 'Import failed' })
+        openNotification({ type: 'error', message: 'Import file thất bại' })
     };
 
     const handleOnChangeImportFile = async (info) => {
@@ -157,7 +163,6 @@ const Student = () => {
             centered: true,
             confirmLoading: confirmLoading,
             onOk() {
-                console.log('delete id', id)
                 handleDeleteStudent({ id })
             },
             onCancel() { },
@@ -207,12 +212,13 @@ const Student = () => {
             </div>}
             <div className='p-5'>
                 <TableCommon
+                    loading={tableLoading}
                     columns={getColumnConfig()}
                     primaryKey='key'
                     data={students?.map(item => flattenObj({ obj: item }))}
                     parseFunction={parseData}
                     isShowPaging
-                    onChangePage={page => onChangePage(page - 1)}
+                    onChangePage={page => onChangePage(page)}
                     totalCountData={totalCountData}
                     defaultPage={DEFAULT_CURRENT_PAGE}
                     currentPage={currentPage}

@@ -43,12 +43,12 @@ function AddStudentModal(props) {
             await refetchData({})
             setIsOpen(false);
             return openNotification({
-                message: 'Create student successfully'
+                message: 'Tạo mới sinh viên thành công'
             })
         }
         return openNotification({
             type: 'error',
-            message: 'Create student failed',
+            message: 'Tạo mới sinh viên thất bại',
         })
     };
 
@@ -59,7 +59,7 @@ function AddStudentModal(props) {
     // get data cho các select options
     const handleGetOptions = field => {
         if (field === 'major_id') {
-            return prepareOptions({ data: majors, labelField: 'major_name', valueField: 'id' })
+            return prepareOptions({ data: majors, labelField: 'id', valueField: 'id', prefix: 'MJ', subfix: 'major_name' })
         }
         return [];
     };

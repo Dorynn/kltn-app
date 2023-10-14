@@ -2,10 +2,12 @@ import React, { useContext, useState, useEffect, useRef } from 'react';
 import NotificationContext from '../../../../../context/notificationContext';
 import supabase from '../../../../../supabaseClient';
 import useModal from '../../../../../hooks/modal/useModal';
-import { Form, Input, Modal, Select } from "antd";
+import { Form, Input, Modal } from "antd";
 import { fieldSubmit } from './GraduationThesisSubmitconstants';
 import { FileAddOutlined, CloudUploadOutlined, ExclamationCircleFilled } from '@ant-design/icons';
+import uploadFile from '../../../../../helpers/storage/uploadFile'
 import './style.scss';
+import useAuth from '../../../../../hooks/useSupabase/useAuth';
 
 function SubmitModal(props) {
     const {
@@ -13,14 +15,29 @@ function SubmitModal(props) {
         setIsOpen,
         idInput,
         setStatusInput,
+        valueThesisPhase,
+        refetchData,
     } = props;
     const inputRef = useRef();
+    const { user } = useAuth();
     const { confirm } = Modal;
     const { TextArea } = Input;
-    const [fileName, setFileName] = useState('');
     const { openNotification } = useContext(NotificationContext);
+    const [file, setFile] = useState(null);
     const [title, setTitle] = useState('Nộp đề cương');
-    const arrStatus = ['outline', 'reportTeacher', 'reportReviewTeacher', 'finalReport'];
+
+    const fieldSubmit = [
+        {
+            label: 'File tài liệu',
+            field: 'limit_register_number',
+            type: 'FILEUPLOAD',
+        },
+        {
+            label: 'Nhận xét của giáo viên hướng dẫn',
+            field: 'topic_description',
+            type: 'TEXT_AREA',
+        },
+    ];
 
     useEffect(() => {
         if (isOpen) {
@@ -29,33 +46,49 @@ function SubmitModal(props) {
     }, [isOpen])
 
     useEffect(() => {
-        if (idInput === 'outline') {
+        if (idInput === 'phase1') {
             setTitle('Nộp đề cương');
         }
-        if (idInput === 'reportTeacher' || idInput === 'reportReviewTeacher') {
+        if (idInput === 'phase2' || idInput === 'phase3') {
             setTitle('Nộp báo cáo');
         }
-        if (idInput === 'finalReport') {
+        if (idInput === 'phase4') {
             setTitle('Nộp báo cáo cuối');
         }
     }, [idInput])
 
+    useEffect(() => {
+        if (valueThesisPhase && valueThesisPhase.status !== 'normal') {
+            const {data} = supabase
+            .from('thesis_phases')
+            .select(`*, `)
+            .eq('id', valueThesisPhase.id)
+        }
+    }, [valueThesisPhase]);
+
+    const checkFirstSubmit = () => (valueThesisPhase && valueThesisPhase.status === 'normal');
 
     const handleUploadFile = async () => {
-        const { error } = await supabase
-            .from('thesis_topics')
-        // .insert({ ...newTopic })
+        const { data, error } = await uploadFile({ file: file, folder: 'assignments', user: user });
         if (!error) {
-            // await refetchData({})
             setIsOpen(false);
-            setStatusInput(prev => {
-                const indexIdInput = arrStatus.findIndex(i => i === idInput);
-                return ({
-                    ...prev, 
-                    [idInput]: 'success',
-                    [arrStatus[indexIdInput+1]]: 'normal'
-                });
-            });
+            setStatusInput(prev => ({
+                ...prev,
+                [idInput]: 'pending',
+            }));
+            await supabase
+                .from('thesis_phases')
+                .update({
+                    status: 'pending',
+                })
+                .eq('id', valueThesisPhase.id)
+            await supabase
+                .from('submit_assignments')
+                .insert({
+                    submit_url: data.path,
+                    phase_id: valueThesisPhase.id
+                })
+            await refetchData({});
             return openNotification({
                 message: `${title} thành công`
             })
@@ -69,7 +102,7 @@ function SubmitModal(props) {
     const handleUpdateFileUpload = ({ field, value }) => {
     };
     const handleOnUpload = event => {
-        setFileName(event.target.files[0].name);
+        setFile(event.target.files[0]);
     };
     const ConfirmModal = (id) => {
         confirm({
@@ -85,6 +118,9 @@ function SubmitModal(props) {
             onCancel() { },
         });
     };
+    // console.log('valueThesisPhase', valueThesisPhase);
+    const checkDisabled = () => (valueThesisPhase.status === 'approved');
+    console.log(valueThesisPhase.status === 'approved');
 
     // tùy loại input để render
     const renderInput = (item) => {
@@ -93,8 +129,8 @@ function SubmitModal(props) {
                 <>
                     <Input
                         type="button"
-                        value={fileName}
-                        prefix={fileName ? <FileAddOutlined /> : <></>}
+                        value={file?.name}
+                        prefix={file?.name ? <FileAddOutlined /> : <></>}
                         suffix={<div>
                             <CloudUploadOutlined />
                             <input
@@ -108,8 +144,9 @@ function SubmitModal(props) {
                         size='large'
                         className="input-add-file"
                         onClick={() => inputRef.current.click()}
+                        disabled={checkDisabled()}
                     />
-                    {!fileName && (
+                    {!file?.name && (
                         <div className="invalid-feedback d-block">
                             File tải lên không được để trống
                         </div>
@@ -126,6 +163,7 @@ function SubmitModal(props) {
                         value: e.target.value
                     })}
                     rows={5}
+                    disabled={() => checkDisabled()}
                 ></TextArea>
             );
         }
@@ -138,18 +176,25 @@ function SubmitModal(props) {
             wrapperCol={{ span: 24 }}
             layout="horizontal"
         >
-            {fieldSubmit.map(item => (
-                <Form.Item label={item.label} key={item.field}>
-                    {renderInput(item)}
-                </Form.Item>
-            ))}
+            {checkFirstSubmit() ?
+                fieldSubmit
+                    .splice(0, 1)
+                    .map(item => (
+                        <Form.Item label={item.label} key={item.field}>
+                            {renderInput(item)}
+                        </Form.Item>)) :
+                fieldSubmit.map(item => (
+                    <Form.Item label={item.label} key={item.field}>
+                        {renderInput(item)}
+                    </Form.Item>))
+            }
         </Form>
     );
 
     const { modal: createNewTopic, toggleModal } = useModal({
         content: createTopicModalContent,
         title: title,
-        okText: 'Nộp',
+        okText: 'Duyệt',
         handleConfirm: ConfirmModal,
         setIsOpen: setIsOpen
     });

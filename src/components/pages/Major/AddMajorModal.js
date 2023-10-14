@@ -82,7 +82,7 @@ const AddMajorModal = ({ refetchData, isOpen }) => {
                 showSearch
                 optionFilterProp='children'
                 filterOption={(input, option) => (option?.label ?? "").includes(input)}
-                options={profiles.map(({ user_code, name, id }) => ({ label: `${user_code}-${name}`, value: id }))}
+                options={profiles.map(({ user_code, name, id }) => ({ label: `GV${id} - ${name}`, value: id }))}
                 onChange={(value) => setNewMajor(prev => ({ ...prev, major_chair_id: value }))}
                 value={newMajor.major_chair_id}
             />
@@ -100,12 +100,12 @@ const AddMajorModal = ({ refetchData, isOpen }) => {
         if (!error) {
             await refetchData({})
             return openNotification({
-                message: 'Create major successfully'
+                message: 'Tạo mới ngành thành công'
             })
         }
         return openNotification({
             type: 'error',
-            message: 'Create major failed',
+            message: 'Tạo mới ngành thất bại',
         })
     }
 

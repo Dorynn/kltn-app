@@ -34,11 +34,10 @@ function EditStudentModal(props) {
         initialData: [],
         firstLoad: true, defaultAction: async () => supabase
             .from('majors')
-            .select(`major_code, id`)
+            .select(`major_code, id, major_name`)
     })
 
     const handleUpdateStudent = async () => {
-        console.log('updateChargePerson', updateStudent)
         const { error } = await supabase
         await supabase.functions.invoke('users?role=student&isUpdate=true', {
             method: 'POST',
@@ -48,12 +47,12 @@ function EditStudentModal(props) {
             await refetchData({});
             setIsOpen(false);
             return openNotification({
-                message: 'Update teacher successfully'
+                message: 'Cập nhật sinh viên thành công'
             });
         }
         return openNotification({
             type: 'error',
-            message: 'Update teacher failed',
+            message: 'Cập nhật sinh viên thất bại',
         });
     };
 
@@ -64,7 +63,7 @@ function EditStudentModal(props) {
     // get data cho các select options
     const handleGetOptions = field => {
         if (field === 'major_id') {
-            return prepareOptions({ data: majors, labelField: 'major_code', valueField: 'id' })
+            return prepareOptions({ data: majors, labelField: 'id', valueField: 'id', prefix: 'MJ', subfix: 'major_name' })
         }
         return [];
     };
@@ -83,7 +82,6 @@ function EditStudentModal(props) {
             );
         }
         if (item.type === 'SELECT') {
-            console.log(item);
             return (
                 <Select
                     options={handleGetOptions(item.field) || []}

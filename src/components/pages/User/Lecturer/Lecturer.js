@@ -9,7 +9,7 @@ import NotificationContext from '../../../../context/notificationContext';
 import useSupbaseAction from '../../../../hooks/useSupabase/useSupabaseAction';
 import supabase from '../../../../supabaseClient';
 import UploadFile from '../../../UploadFile/UploadFile';
-import { columnConfig, data, expandConfig } from './Lecturerconstants';
+import { columnConfig, expandConfig } from './Lecturerconstants';
 import TableCommon from '../../../common/TableCommon/TableCommon';
 import flattenObj from '../../../../helpers/flattenObj'
 import { NUMBER_ITEM_PER_PAGE, DEFAULT_CURRENT_PAGE } from '../../../../const/table';
@@ -33,7 +33,7 @@ const Lecturer = () => {
     const [currentPage, setCurrentPage] = useState(DEFAULT_CURRENT_PAGE);
 
 
-    const { data: lecturer, requestAction: refetchData, count: totalCountData } = useSupbaseAction({
+    const { data: lecturer, requestAction: refetchData, count: totalCountData, loading: tableLoading } = useSupbaseAction({
         initialData: [],
         firstLoad: true, defaultAction: async ({ page = 1 }) => supabase
             .from('teachers')
@@ -42,11 +42,10 @@ const Lecturer = () => {
                 user_id,
                 major_id,
                 profiles(name, user_code, phone, address, email, auth_id),
-                majors(major_code, major_name, departments(department_name))
-            `)
+                majors(id, major_code, major_name, departments(department_name))
+            `, { count: 'exact' })
             .range((page - 1) * NUMBER_ITEM_PER_PAGE, NUMBER_ITEM_PER_PAGE * page - 1)
     });
-    console.log('lecturer', lecturer);
 
     const getColumnConfig = () => {
         if (isAdmin) {
@@ -65,7 +64,9 @@ const Lecturer = () => {
         if (field === 'index') {
             return index + 1;
         }
-
+        if (field === 'user_id') {
+            return `GV${item[field]}`
+        }
         if (field === 'action') {
             return (<>
                 <i
@@ -109,12 +110,12 @@ const Lecturer = () => {
         if (!error) {
             await refetchData({})
             return openNotification({
-                message: 'Delete lecturer successfully'
+                message: 'Xóa giáo viên thành công'
             })
         }
         return openNotification({
             type: 'error',
-            message: 'Delete lecturer failed',
+            message: 'Xóa giáo viên thất bại',
         })
     };
 
@@ -138,11 +139,11 @@ const Lecturer = () => {
             }
         })
         if (!error) {
-            openNotification({ message: 'Imported successfully' })
+            openNotification({ message: 'Import file thành công' })
             await refetchData({});
             return;
         }
-        openNotification({ type: 'error', message: 'Import failed' })
+        openNotification({ type: 'error', message: 'Import file thất bại' })
     };
 
     const handleOnChangeImportFile = async (info) => {
@@ -180,8 +181,7 @@ const Lecturer = () => {
         </div>
     );
 
-    const expandCondition = (record) => (data.length > 0);
-    
+    const expandCondition = (record) => (true);
 
     return (
         <>
@@ -209,12 +209,13 @@ const Lecturer = () => {
             </div>}
             <div className='p-5'>
                 <TableCommon
+                    loading={tableLoading}
                     columns={getColumnConfig()}
                     data={lecturer?.map(item => flattenObj({ obj: item })) || []}
                     primaryKey='key'
                     parseFunction={parseData}
                     isShowPaging
-                    onChangePage={page => onChangePage(page - 1)}
+                    onChangePage={page => onChangePage(page)}
                     totalCountData={totalCountData}
                     defaultPage={DEFAULT_CURRENT_PAGE}
                     currentPage={currentPage}

@@ -7,8 +7,8 @@ export const columnConfig= [
     },
     {
         title: 'Mã sinh viên',
-        dataIndex: 'topic_code',
-        key: 'topic_code',
+        dataIndex: 'user_code',
+        key: 'user_code',
         align: 'center',
         expand: true,
     },
@@ -41,8 +41,8 @@ export const fieldViewDetail = [
         type: 'FILEUPLOAD',
     },
     {
-        label: 'Nhận xét của giáo viên hướng dẫn',
-        field: 'topic_description',
+        label: 'Nhận xét',
+        field: 'comment',
         type: 'TEXT_AREA',
     },
 ];

@@ -109,12 +109,12 @@ const TopicRegistration = () => {
         if (!error) {
             await refetchData({})
             return openNotification({
-                message: 'Delete topicRegistration successfully'
+                message: 'Xóa đề tài thành công'
             })
         }
         return openNotification({
             type: 'error',
-            message: 'Delete topicRegistration failed',
+            message: 'Xóa đề tài thất bại',
         })
     };
 
@@ -182,7 +182,7 @@ const TopicRegistration = () => {
                     data={topicRegistration?.map(item => flattenObj({ obj: item }))}
                     parseFunction={parseData}
                     isShowPaging
-                    onChangePage={page => onChangePage(page - 1)}
+                    onChangePage={page => onChangePage(page)}
                     totalCountData={totalCountData}
                     defaultPage={DEFAULT_CURRENT_PAGE}
                     currentPage={currentPage}

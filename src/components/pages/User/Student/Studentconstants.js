@@ -45,8 +45,8 @@ export const columnConfig = [
     },
     {
         title: 'Mã sinh viên',
-        dataIndex: 'user_code',
-        key: 'user_code',
+        dataIndex: 'student_code',
+        key: 'student_code',
         align: 'center',
         expand: true,
     },
@@ -73,8 +73,8 @@ export const columnConfig = [
 export const expandConfig = [
     {
         label: 'Mã sinh viên',
-        field: 'user_code',
-        key: 'user_code',
+        field: 'student_code',
+        key: 'student_code',
     },
     {
         label: 'Họ và tên',
