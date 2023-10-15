@@ -1,30 +1,39 @@
 export const configInput = [
     {
-        id: 'outline',
-        value: 'Nộp đề cương',
+        key: 1,
+        id: 'phase1',
+        title: 'Nộp đề cương',
         class: '',
     },
     {
-        id: 'report',
-        value: 'Nộp báo cáo',
+        key: 2,
+        id: 'phase2',
+        title: 'Nộp báo cáo (Cho giáo viên hướng dẫn)',
         class: '',
     },
     {
-        id: 'finalReport',
-        value: 'Nộp báo cáo cuối cùng (Hội đồng xét duyệt)',
+        key: 3,
+        id: 'phase3',
+        title: 'Nộp báo cáo (Cho giáo viên phản biện)',
+        class: '',
+    },
+    {
+        key: 4,
+        id: 'phase4',
+        title: 'Nộp báo cáo cuối cùng (Hội đồng xét duyệt)',
         class: ''
     },
 ];
 
 export const fieldSubmit = [
     {
-        label: '',
+        label: 'File tài liệu',
         field: 'limit_register_number',
         type: 'FILEUPLOAD',
     },
-    // {
-    //     label: 'Nhận xét của giáo viên hướng dẫn',
-    //     field: 'topic_description',
-    //     type: 'TEXT_AREA',
-    // },
+    {
+        label: 'Nhận xét của giáo viên hướng dẫn',
+        field: 'comment',
+        type: 'TEXT_AREA',
+    },
 ];

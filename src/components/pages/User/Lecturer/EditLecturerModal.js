@@ -33,7 +33,7 @@ function EditLecturerModal(props) {
         initialData: [],
         firstLoad: true, defaultAction: async () => supabase
             .from('majors')
-            .select(`major_code, id`)
+            .select(`major_code, id, major_name`)
     })
     useEffect(() => {
         if (isOpen) {
@@ -42,7 +42,6 @@ function EditLecturerModal(props) {
     }, [isOpen])
 
     const handleUpdateLecturer = async () => {
-        console.log('updateChargePerson', updateLecturer)
         const { error } = await supabase
         await supabase.functions.invoke('users?role=teacher&isUpdate=true', {
             method: 'POST',
@@ -68,7 +67,7 @@ function EditLecturerModal(props) {
     // get data cho các select options
     const handleGetOptions = field => {
         if (field === 'major_id') {
-            return prepareOptions({ data: majors, labelField: 'major_code', valueField: 'id' })
+            return prepareOptions({ data: majors, labelField: 'id', valueField: 'id', prefix: 'MJ', subfix: 'major_name' })
         }
         return [];
     };
@@ -87,7 +86,6 @@ function EditLecturerModal(props) {
             );
         }
         if (item.type === 'SELECT') {
-            console.log(item);
             return (
                 <Select
                     options={handleGetOptions(item.field) || []}

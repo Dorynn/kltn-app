@@ -63,7 +63,7 @@ const EditMajorModal = ({ updateMajor, setUpdateMajor, refetchData, isOpen }) =>
                 showSearch
                 optionFilterProp='children'
                 filterOption={(input, option) => (option?.label ?? "").includes(input)}
-                options={profiles.map(({ user_code, name, id }) => ({ label: `${user_code}-${name}`, value: id }))}
+                options={profiles.map(({ user_code, name, id }) => ({ label: `GV${id} - ${name}`, value: id }))}
                 onChange={(value) => setUpdateMajor(prev => ({ ...prev, major_chair_id: value }))}
                 value={updateMajor.major_chair_id}
             />
@@ -79,12 +79,12 @@ const EditMajorModal = ({ updateMajor, setUpdateMajor, refetchData, isOpen }) =>
         if (!error) {
             await refetchData({})
             return openNotification({
-                message: 'Update major successfully'
+                message: 'Cập nhật ngành thành công'
             })
         }
         return openNotification({
             type: 'error',
-            message: 'Update major failed',
+            message: 'Cập nhật ngành thất bại',
         })
     }
 

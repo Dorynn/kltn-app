@@ -28,7 +28,7 @@ const Major = () => {
             .from('majors')
             .select(`
                 *,
-                profiles(name, user_code),
+                profiles(name, user_code, id),
                 departments(department_name, department_code)
             `)
     })
@@ -53,11 +53,11 @@ const Major = () => {
             }
         })
         if (!error) {
-            openNotification({ message: 'Imported successfully' })
+            openNotification({ message: 'Import file thành công' })
             await refetchData({});
             return;
         }
-        openNotification({ type: 'error', message: 'Import failed' })
+        openNotification({ type: 'error', message: 'Import file thất bại' })
     }
     const handleOnChangeImportFile = async (info) => {
         setFileList([...info.fileList]);
@@ -73,12 +73,12 @@ const Major = () => {
         if (!error) {
             await refetchData({})
             return openNotification({
-                message: 'Delete major successfully'
+                message: 'Xóa ngành thành công'
             })
         }
         return openNotification({
             type: 'error',
-            message: 'Delete major failed',
+            message: 'Xóa ngành thất bại',
         })
 
     }
@@ -108,7 +108,7 @@ const Major = () => {
         },
         {
             title: 'Mã ngành',
-            dataIndex: 'ministry_major_code'
+            dataIndex: 'major_code'
         },
         {
             title: 'Tên ngành',
@@ -161,9 +161,9 @@ const Major = () => {
         dataSource.push({
             key: item.id,
             no: index + 1,
-            major_code: item.major_code,
+            major_code: `MJ${item.id}`,
             major_name: item.major_name,
-            major_chair_code: item.profiles.user_code,
+            major_chair_code: `GV${item.profiles.id}`,
             major_chair_name: item.profiles.name,
             department_name: item.departments.department_name,
             department_code: item.departments.department_code,

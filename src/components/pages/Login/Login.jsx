@@ -1,13 +1,30 @@
-import React, { useContext, useState } from 'react'
+import React, { useContext, useState, useEffect } from 'react'
 import AuthContext from '../../../context/authContext';
 import { UserOutlined } from '@ant-design/icons';
-import { Button, Form, Input, Space, Card } from 'antd';
+import { Button, Form, Input, Space, message, Upload } from 'antd';
 import useModal from '../../../hooks/modal/useModal';
 import supabase from '../../../supabaseClient';
 import NotificationContext from '../../../context/notificationContext';
+import { UploadOutlined } from '@ant-design/icons';
+import uploadFileStorage from '../../../helpers/storage/uploadFile.js';
+import downloadFileStorage from '../../../helpers/storage/downloadFile.js'
+
+const props = {
+    name: 'file',
+    onChange(info) {
+        if (info.file.status !== 'uploading') {
+            console.log('uplading', info.file, info.fileList);
+        }
+        if (info.file.status === 'done') {
+            message.success(`${info.file.name} file uploaded successfully`);
+        } else if (info.file.status === 'error') {
+            message.error(`${info.file.name} file upload failed.`);
+        }
+    },
+};
 
 export default function Login() {
-    const { user, login, logout } = useContext(AuthContext);
+    const { user, login, logout, isAdmin } = useContext(AuthContext);
     const { openNotification } = useContext(NotificationContext);
     const [email, setEmail] = useState('');
     const [loading, setLoading] = useState(false);
@@ -17,6 +34,7 @@ export default function Login() {
         university_role: '',
         user_code: ''
     })
+    const [storagePath, setStoragePath] = useState('')
 
     const createUserModalContent = (<Form
         labelCol={{ span: 5 }}
@@ -94,6 +112,39 @@ export default function Login() {
             setLoading(false);
         }
     }
+
+    // const downloadFile = async (pathname) => {
+    //     console.log('pathname', pathname)
+    //     const { data, error } = await supabase
+    //         .storage
+    //         .from('assignments')
+    //         .createSignedUrl(pathname, 600, {
+    //             download: true,
+    //         })
+    //     if (error) {
+    //         console.log('download error', error)
+    //     }
+    //     window.open(data.signedUrl)
+    // }
+
+    // const uploadFile = async file => {
+    //     try {
+    //         const { data, error } = await supabase
+    //             .storage
+    //             .from('assignments')
+    //             .upload(`${user.auth_id}/${file.name}`, file, {
+    //                 cacheControl: '3600',
+    //                 upsert: false
+    //             })
+    //         if (error) {
+    //             return console.log('supabase upload error', error);
+    //         }
+    //         console.log("server res: ", data);
+    //     } catch (err) {
+    //         console.log("Eroor: ", err);
+    //     }
+    // };
+
     return (
         <Space style={{ width: '100%', height: '100vh', justifyContent: 'center', alignItems: 'center' }} direction='vertical'>
             <Form
@@ -121,6 +172,24 @@ export default function Login() {
                         }
                     </Space>
                 </Form.Item>
+                {isAdmin && <><Form.Item>
+                    <Upload {...props} customRequest={async ({ file, onSuccess }) => {
+                        await uploadFileStorage({ file, folder: 'assignments', user })
+                        onSuccess("ok")
+                    }}>
+                        <Button icon={<UploadOutlined />}>Click to Upload</Button>
+                    </Upload>
+                </Form.Item>
+                    <Form.Item>
+                        <Input placeholder='File path' onChange={e => setStoragePath(e.target.value)} />
+                        <Button onClick={() => {
+                            console.log('storagePath', storagePath)
+                            downloadFileStorage({
+                                pathname: storagePath,
+                                folder: 'assignments'
+                            })
+                        }}>Download</Button>
+                    </Form.Item></>}
             </Form>
             {/* {user && <Card title="User info" style={{ width: 400 }}>
                 <p><b>User Code:</b> {user.user_code}</p>

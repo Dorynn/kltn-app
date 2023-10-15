@@ -3,22 +3,22 @@ import NotificationContext from '../../../../../context/notificationContext';
 import supabase from '../../../../../supabaseClient';
 import useModal from '../../../../../hooks/modal/useModal';
 import { Form, Input, Modal, Select } from "antd";
-import { FileAddOutlined, CloudUploadOutlined, ExclamationCircleFilled } from '@ant-design/icons';
+import { FileAddOutlined, CloudDownloadOutlined, ExclamationCircleFilled } from '@ant-design/icons';
 import { fieldViewDetail } from './GraduationThesisManagerconstant';
+import useSupbaseAction from '../../../../../hooks/useSupabase/useSupabaseAction';
+import downloadFile from '../../../../../helpers/storage/downloadFile';
 
 function ModalViewDetail(props) {
     const {
         refetchData,
         isOpen,
         setIsOpen,
-        idInput,
+        phasesId,
     } = props;
-    const inputRef = useRef();
     const { confirm } = Modal;
     const { TextArea } = Input;
-    const [fileName, setFileName] = useState('');
     const { openNotification } = useContext(NotificationContext);
-    const [title, setTitle] = useState('Nộp đề cương');
+    const [teacherComment, setTeacherComment] = useState('');
 
     useEffect(() => {
         if (isOpen) {
@@ -26,36 +26,49 @@ function ModalViewDetail(props) {
         }
     }, [isOpen])
 
+    const { data: dataPhase} = useSupbaseAction({
+        initialData: [],
+        firstLoad: true,
+        defaultAction: async () => supabase
+            .from('submit_assignments')
+            .select(`
+                submit_url, phase_id,
+                thesis_phases(comment, phase_order)
+            `)
+            .eq('phase_id', phasesId)
+    });
+    const urlFile = (dataPhase && dataPhase.length > 0 && dataPhase[0] && dataPhase[0].submit_url) || '';
+    const comment = (dataPhase && dataPhase.length > 0 && dataPhase[0] && dataPhase[0]?.thesis_phases) || {comment: ''};
+    const fileName = urlFile && urlFile.split('/')[1];
     useEffect(() => {
-        if (idInput === 'outline') {
-            setTitle('Nộp đề cương');
+        if (dataPhase) {
+            setTeacherComment(comment && comment.comment);
         }
-        if (idInput === 'report' || idInput === 'finalReport') {
-            setTitle('Nộp báo cáo');
-        }
-    }, [idInput])
-
-
+    }, [dataPhase]);
     const handleApproved = async () => {
         const { error } = await supabase
-            .from('thesis_topics')
-        // .insert({ ...newTopic })
+            .from('thesis_phases')
+            .update({ 
+                comment: teacherComment,
+                status: 'approved',
+            })
+            .eq('id', phasesId)
         if (!error) {
+            await supabase
+                .from('')
             await refetchData({})
             setIsOpen(false);
             return openNotification({
-                message: 'Create student successfully'
+                message: 'Duyệt đề cương thành công'
             })
         }
         return openNotification({
             type: 'error',
-            message: 'Create student failed',
+            message: 'Duyệt đề cương thất bại',
         })
     };
 
-    const handleUpdateComment = () => {};
-
-    const ConfirmModal = (id) => {
+    const ConfirmModal = () => {
         confirm({
             title: 'Bạn có thực sự muốn thay đổi đề tài này?',
             icon: <ExclamationCircleFilled />,
@@ -64,10 +77,16 @@ function ModalViewDetail(props) {
             cancelText: 'Hủy',
             centered: true,
             onOk() {
-                handleApproved({ id })
+                handleApproved()
             },
             onCancel() { },
         });
+    };
+    const handleDownloadFile = async () => {
+        const { data, error } = await downloadFile({pathname: urlFile});
+        if (!error) {
+            window.open(data.signedUrl);
+        }
     };
 
     // tùy loại input để render
@@ -76,9 +95,12 @@ function ModalViewDetail(props) {
             return (
                 <>
                     <Input
+                        type="button"
                         value={fileName}
                         prefix={fileName ? <FileAddOutlined /> : <></>}
+                        suffix={<CloudDownloadOutlined onClick={() => handleDownloadFile()}/>}
                         size='large'
+                        className="input-add-file"
                     />
                 </>
             );
@@ -86,12 +108,10 @@ function ModalViewDetail(props) {
         if (item.type === 'TEXT_AREA') {
             return (
                 <TextArea
-                    // value={newTopic[item.field]}
-                    onChange={e => handleUpdateComment({
-                        field: item.field,
-                        value: e.target.value
-                    })}
+                    value={teacherComment}
+                    onChange={e => setTeacherComment(e.target.value)}
                     rows={5}
+                    disabled={comment[item.field]}
                 ></TextArea>
             );
         }
@@ -114,8 +134,8 @@ function ModalViewDetail(props) {
 
     const { modal: createNewTopic, toggleModal } = useModal({
         content: createTopicModalContent,
-        title: title,
-        okText: 'Nộp',
+        title: 'Chi tiết đề cương',
+        okText: `${comment.comment ? '' : 'Duyệt'}`,
         handleConfirm: ConfirmModal,
         setIsOpen: setIsOpen
     });

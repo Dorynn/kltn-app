@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Input } from "antd";
 import {
     CloudUploadOutlined,
@@ -8,88 +8,103 @@ import {
 } from '@ant-design/icons';
 import { configInput } from "./GraduationThesisSubmitconstants";
 import SubmitModal from "./SubmitModal";
+import './style.scss';
+import useSupbaseAction from "../../../../../hooks/useSupabase/useSupabaseAction";
+import supabase from "../../../../../supabaseClient";
+import AuthContext from "../../../../../context/authContext";
 
 function GraduationThesisSubmit() {
+    const { user } = useContext(AuthContext);
     const [isOpenModal, setIsOpenModal] = useState(false);
-    const [idInput, setIdInput] = useState('');
-    const [statusInputOutline, setStatusInputOutline] = useState('normal');
-    const [statusInputReport, setStatusInputReport] = useState('disable');
-    const [statusInputFinalReport, setStatusInputFinalReport] = useState('disable');
+    const [itemInput, setItemInput] = useState('');
+    const [valueThesisPhase, setValueThesisPhase] = useState({});
+    const [statusInput, setStatusInput] = useState({
+        phase1: 'normal',
+        phase2: 'locked',
+        phase3: 'locked',
+        phase4: 'locked',
+    });
+    const { data: thesisPhasesId } = useSupbaseAction({
+        initialData: {},
+        firstLoad: true,
+        defaultAction: async () => supabase
+            .from('student_theses')
+            .select(`id`)
+            .eq('student_id', user.user_id)
+    });
+    const { data: thesisPhases, requestAction: refetchData } = useSupbaseAction({
+        initialData: [],
+        firstLoad: true,
+        defaultAction: async () => supabase
+            .from('thesis_phases')
+            .select(`
+                *
+            `)
+            .eq('student_thesis_id', 116)
+            .order('phase_order', { ascending: true })
+    });
+
+    console.log('thesisPhases', thesisPhases);
+    useEffect(() => {
+        if (thesisPhases) {
+            thesisPhases.map((value, index) => {
+                if (value.phase_order === index + 1) {
+                    setStatusInput(prev => ({ ...prev, [`phase${index + 1}`]: value.status }));
+                }
+            });
+        }
+    }, [thesisPhases])
 
     const getSuffixInput = (id) => {
-        if (id === 'outline') {
-            if (statusInputOutline === 'normal') {
-                return <CloudUploadOutlined onClick={() => {setIsOpenModal(true); setIdInput(id)}} />
-            }
-            if (statusInputOutline === 'pending') {
-                return <LoadingOutlined />
-            }
-            if (statusInputOutline === 'success') {
-                return <CheckOutlined />
-            }
+        if (statusInput[id] === 'normal') {
+            return <CloudUploadOutlined />
         }
-        if (id === 'report') {
-            if (statusInputReport === 'normal') {
-                return <CloudUploadOutlined onClick={() => {setIsOpenModal(true); setIdInput(id)}} />
-            }
-            if (statusInputReport === 'pending') {
-                return <LoadingOutlined />
-            }
-            if (statusInputReport === 'success') {
-                return <CheckOutlined />
-            }
+        if (statusInput[id] === 'pending') {
+            return <LoadingOutlined />
         }
-        if (id === 'finalReport') {
-            if (statusInputFinalReport === 'normal') {
-                return <CloudUploadOutlined onClick={() => {setIsOpenModal(true); setIdInput(id)}} />
-            }
-            if (statusInputFinalReport === 'pending') {
-                return <LoadingOutlined />
-            }
-            if (statusInputFinalReport === 'success') {
-                return <CheckOutlined />
-            }
+        if (statusInput[id] === 'approved') {
+            return <CheckOutlined />
         }
-        return <LockOutlined/>
+        return <LockOutlined />
     };
     const getDisabledInput = (id) => {
-        if (id === 'outline') {
-            return statusInputOutline === 'success';
-        }
-        if (id === 'report') {
-            return statusInputReport === 'disable' || statusInputReport === 'success';
-        }
-        if (id === 'finalReport') {
-            return statusInputFinalReport === 'disable' || statusInputFinalReport === 'success'
-        }
-        return false;
+        return statusInput[id] === 'locked' || statusInput[id] === 'pending';
     };
+    const handleClickSubmit = item => {
+        setIsOpenModal(true);
+        setItemInput(item.id);
+        console.log('thesisPhases', thesisPhases);
+        const thesisByPhasesOrder = thesisPhases.find(value => value.phase_order === item.key) || {};
+        setValueThesisPhase(thesisByPhasesOrder);
+    }
 
     return (
         <>
             <h4 className='title'>Nộp tài liệu KLTN</h4>
             <div style={{ width: '50%', margin: 'auto' }}>
-            {configInput.map(item => (
-                <div className="mb-5" key={item.id}>
-                    <Input
-                        id={item.id}
-                        value={item.value}
-                        readOnly
-                        suffix={getSuffixInput(item.id)}
-                        size="large"
-                        disabled={getDisabledInput(item.id)}
-                    ></Input>
-                </div>
-            ))}
+                {configInput.map(item => (
+                    <div className="mb-4" key={item.id}>
+                        <Input
+                            type="button"
+                            id={item.id}
+                            value={item.title}
+                            readOnly
+                            suffix={getSuffixInput(item.id)}
+                            size="large"
+                            disabled={getDisabledInput(item.id)}
+                            className="input-add-file"
+                            onClick={() => handleClickSubmit(item)}
+                        ></Input>
+                    </div>
+                ))}
             </div>
             {isOpenModal && <SubmitModal
                 isOpen={isOpenModal}
                 setIsOpen={setIsOpenModal}
-                idInput={idInput}
-                setStatusInputOutline={setStatusInputOutline}
-                setStatusInputReport={setStatusInputReport}
-                setStatusInputFinalReport={setStatusInputFinalReport}
-                // refetchData={refetchData}
+                itemInput={itemInput}
+                setStatusInput={setStatusInput}
+                valueThesisPhase={valueThesisPhase}
+                refetchData={refetchData}
             ></SubmitModal>}
         </>
     );

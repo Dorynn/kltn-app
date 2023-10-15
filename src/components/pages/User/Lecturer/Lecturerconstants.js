@@ -1,10 +1,5 @@
 export const fieldAddLecturer = [
     {
-        label: 'Mã giáo viên',
-        field: 'user_code',
-        type: 'INPUT',
-    },
-    {
         label: 'Họ và tên',
         field: 'name',
         type: 'INPUT',
@@ -24,6 +19,11 @@ export const fieldAddLecturer = [
         field: 'email',
         type: 'INPUT',
     },
+    {
+        label: 'Địa chỉ',
+        field: 'address',
+        type: 'INPUT',
+    },
 ];
 
 export const columnConfig = [
@@ -35,8 +35,8 @@ export const columnConfig = [
     },
     {
         title: 'Mã giáo viên',
-        dataIndex: 'user_code',
-        key: 'user_code',
+        dataIndex: 'user_id',
+        key: 'user_id',
         align: 'center',
         expand: true,
     },
@@ -63,8 +63,8 @@ export const columnConfig = [
 export const expandConfig = [
     {
         label: 'Mã giáo viên',
-        field: 'user_code',
-        key: 'user_code',
+        field: 'user_id',
+        key: 'user_id',
     },
     {
         label: 'Họ và tên',
@@ -91,63 +91,9 @@ export const expandConfig = [
         field: 'phone',
         key: 'phone',
     },
-];
-
-export const data = [
     {
-        "lecturer_code": "2ec3d821-b943",
-        "lecturer_name": "Nguyễn Thị Hồng",
-        "department_code": "KT444",
-        "course": "PI834",
-        "classroom": "Khoa Kinh tế - Quản lý",
-        "phoneNumber": '0234768234',
-        "email": 'true',
-        "address": 'true',
-    },
-    {
-        "lecturer_code": "2ec3d821-b943",
-        "lecturer_name": "Nguyễn Thị Hồng",
-        "department_code": "KT444",
-        "course": "PI834",
-        "classroom": "Khoa Kinh tế - Quản lý",
-        "phoneNumber": '0234768234',
-        "email": 'true',
-        "address": 'true',
-    },
-    {
-        "lecturer_code": "2ec3d821-b943",
-        "lecturer_name": "Nguyễn Thị Hồng",
-        "department_code": "KT444",
-        "course": "PI834",
-        "classroom": "Khoa Kinh tế - Quản lý",
-        "phoneNumber": '0234768234',
-        "email": 'true',
-        "address": 'true',
-    },
-    {
-        "lecturer_code": "2ec3d821-b943",
-        "lecturer_name": "Nguyễn Thị Hồng",
-        "department_code": "KT444",
-        "course": "PI834",
-        "classroom": "Khoa Kinh tế - Quản lý",
-        "phoneNumber": '0234768234',
-        "email": 'true',
-        "address": 'true',
-    },
-];
-
-
-export const options = [
-    {
-        value: 'jack',
-        label: 'Jack',
-    },
-    {
-        value: 'lucy',
-        label: 'Lucy',
-    },
-    {
-        value: 'Yiminghe',
-        label: 'yiminghe',
+        label: 'Địa chỉ',
+        field: 'address',
+        key: 'address',
     },
 ];

@@ -1,11 +1,11 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import useModal from '../../../../../hooks/modal/useModal';
 import { Form, Input, Select } from 'antd';
 import TextArea from 'antd/es/input/TextArea';
 import supabase from '../../../../../supabaseClient';
 import useSupbaseAction from '../../../../../hooks/useSupabase/useSupabaseAction';
 
-const ReviewTopicModal = ({ isOpen, setReviewedTopic, reviewedTopic, setReviewed }) => {
+const ReviewTopicModal = ({ isOpen, setReviewedTopic, reviewedTopic }) => {
     const {data: teachers} = useSupbaseAction({
         initialData: [],
         firstLoad: true, defaultAction: async () => supabase
@@ -48,7 +48,7 @@ const ReviewTopicModal = ({ isOpen, setReviewedTopic, reviewedTopic, setReviewed
     )
 
     const handleConfirmTopic = () => {
-        setReviewedTopic({...reviewedTopic, isReviewed: true})
+        console.log(reviewedTopic);
     }
 
     const { modal: createReviewTopicModal, toggleModal } = useModal({

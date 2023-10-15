@@ -94,7 +94,7 @@ function ReviewReportGraduation() {
                     data={topicList?.map(item => flattenObj({ obj: item }))}
                     parseFunction={parseData}
                     isShowPaging
-                    onChangePage={page => onChangePage(page - 1)}
+                    onChangePage={page => onChangePage(page)}
                     totalCountData={totalCountData}
                     defaultPage={DEFAULT_CURRENT_PAGE}
                     currentPage={currentPage}

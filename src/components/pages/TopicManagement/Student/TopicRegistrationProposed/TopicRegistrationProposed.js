@@ -16,7 +16,7 @@ const TopicRegistrationProposed = () => {
     const { user } = useContext(AuthContext)
 
     const getRegisteredTopic = async () => {
-        const { data, error } = await supabase
+        const { data } = await supabase
             .from('student_theses')
             .select(`topic_id`)
         setRegisteredTopic(data)

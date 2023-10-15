@@ -31,12 +31,11 @@ function AddLecturerModal(props) {
         initialData: [],
         firstLoad: true, defaultAction: async () => supabase
             .from('majors')
-            .select(`major_code, id`)
+            .select(`major_code, id, major_name`)
     })
 
 
     const handleCreateLecturer = async () => {
-        console.log('*** lecturer ***', newLecturer)
         const { error } = await supabase.functions.invoke('users?isCreate=true', {
             method: 'POST',
             body: { user: { ...newLecturer, university_role: 'teacher' } }
@@ -44,12 +43,12 @@ function AddLecturerModal(props) {
         if (!error) {
             await refetchData({})
             return openNotification({
-                message: 'Create lecturer successfully'
+                message: 'Tạo mới giáo viên thành công'
             })
         }
         return openNotification({
             type: 'error',
-            message: 'Create lecturer failed',
+            message: 'Tạo mới giáo viên thất bại',
         })
     };
 
@@ -60,8 +59,9 @@ function AddLecturerModal(props) {
 
     // get data cho các select options
     const handleGetOptions = field => {
+        console.log('majors', majors);
         if (field === 'major_id') {
-            return prepareOptions({ data: majors, labelField: 'major_code', valueField: 'id' })
+            return prepareOptions({ data: majors, labelField: 'id', valueField: 'id', prefix: 'MJ', subfix: 'major_name' })
         }
         return [];
     };

@@ -36,7 +36,7 @@ const EditDepartmentModal = ({ updateDepartment, setUpdateDepartment, refetchDat
                 showSearch
                 optionFilterProp='children'
                 filterOption={(input, option) => (option?.label ?? "").includes(input)}
-                options={profiles.map(({ user_code, name, id }) => ({ label: `${user_code}-${name}`, value: id }))}
+                options={profiles.map(({ user_code, name, id }) => ({ label: `GV${id} - ${name}`, value: id }))}
                 onChange={(value) => setUpdateDepartment(prev => ({ ...prev, dean_id: value }))}
                 value={updateDepartment.dean_id}
             />
@@ -46,7 +46,7 @@ const EditDepartmentModal = ({ updateDepartment, setUpdateDepartment, refetchDat
                 showSearch
                 optionFilterProp='children'
                 filterOption={(input, option) => (option?.label ?? "").includes(input)}
-                options={chargePersons?.map(({ profiles, user_id }) => ({ label: `${profiles?.user_code} - ${profiles?.name}`, value: user_id }))}
+                options={chargePersons?.map(({ profiles, user_id }) => ({ label: `GV${user_id} - ${profiles?.name}`, value: user_id }))}
                 onChange={(value) => setUpdateDepartment(prev => ({ ...prev, charge_person_id: value }))}
                 value={updateDepartment.charge_person_id}
             />
@@ -62,12 +62,12 @@ const EditDepartmentModal = ({ updateDepartment, setUpdateDepartment, refetchDat
         if (!error) {
             await refetchData({})
             return openNotification({
-                message: 'Update department successfully'
+                message: 'Cập nhật khoa thành công'
             })
         }
         return openNotification({
             type: 'error',
-            message: 'Update department failed',
+            message: 'Cập nhật khoa thất bại',
         })
     }
 

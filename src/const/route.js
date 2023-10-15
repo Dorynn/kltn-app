@@ -1,6 +1,7 @@
 import Department from "../components/pages/Department/Department";
 import GraduationThesisInfo from "../components/pages/GraduationThesis/Student/GraduationThesisInfo/GraduationThesisInfo";
 import GraduationThesisSubmit from "../components/pages/GraduationThesis/Student/GraduationThesisSubmit/GraduationThesisSubmit";
+import ViewGrades from "../components/pages/GraduationThesis/Student/ViewGrades/ViewGrades";
 import GraduationThesisManager from "../components/pages/GraduationThesis/Teacher/GraduationThesisManager/GraduationThesisManager";
 import ReviewReportGraduation from "../components/pages/GraduationThesis/Teacher/ReviewReportGraduation/ReviewReportGraduation";
 import Login from "../components/pages/Login/Login";
@@ -47,6 +48,7 @@ import {
     URL_DEFENSE_ESTABLISH,
     URL_REVIEWER_TEACHER_ASSIGNMENT,
     URL_THESIS_GRADE,
+    URL_VIEW_GRADES,
 } from "./configUrl";
 
 export const routes = [
@@ -117,6 +119,11 @@ export const routes = [
     { 
         path: URL_GRADUATION_THESIS_SUBMIT, 
         element: <GraduationThesisSubmit /> 
+    },
+    // Xem điểm
+    { 
+        path: URL_VIEW_GRADES, 
+        element: <ViewGrades /> 
     },
     // quản lý khóa luận
     { 

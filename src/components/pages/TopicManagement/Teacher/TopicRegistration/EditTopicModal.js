@@ -32,12 +32,12 @@ function EditTopicModal(props) {
             await refetchData({});
             setIsOpen(false);
             return openNotification({
-                message: 'Update topic successfully'
+                message: 'Cập nhật đề tài thành công'
             });
         }
         return openNotification({
             type: 'error',
-            message: 'Update topic failed',
+            message: 'Cập nhật đề tài thất bại',
         });
     };
 
@@ -64,7 +64,7 @@ function EditTopicModal(props) {
     // get data cho các select optionLimitStudent
     const handleGetOptions = field => {
         if (field === 'limit_register_number') {
-            return optionLimitStudent;
+            return optionLimitStudent || [];
         }
         return [];
     };
@@ -85,7 +85,7 @@ function EditTopicModal(props) {
         if (item.type === 'SELECT') {
             return (
                 <Select
-                    option={handleGetOptions(item.field) || []}
+                    options={handleGetOptions(item.field)}
                     value={updateTopic[item.field]}
                     onChange={value => handleUpdateDataTopic({
                         field: item.field,
