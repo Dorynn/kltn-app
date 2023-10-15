@@ -14,8 +14,8 @@ export const columnConfig = [
     },
     {
         title: 'Tên đề tài',
-        dataIndex: 'topic_id',
-        key: 'topic_id',
+        dataIndex: 'topic_name',
+        key: 'topic_name',
         align: 'center',
     },
     {

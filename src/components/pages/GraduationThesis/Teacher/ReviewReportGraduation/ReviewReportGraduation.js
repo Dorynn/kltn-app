@@ -15,14 +15,20 @@ function ReviewReportGraduation() {
     const [currentPage, setCurrentPage] = useState(DEFAULT_CURRENT_PAGE);
     const [openModal, setOpenModal] = useState(false);
 
-    const { data: topicList, requestAction: refetchData, loading: tableLoading, count: totalCountData } = useSupbaseAction({
+    const { data: reportList, requestAction: refetchData, loading: tableLoading, count: totalCountData } = useSupbaseAction({
         initialData: [],
         firstLoad: true,
         defaultAction: async ({ page = 1 }) => supabase
-            .from('thesis_topics')
+            .from('thesis_phases')
             .select(`
-                *
+                *,
+                student_theses(
+                    topic_id, status, student_id, reviewer_teacher_id, thesis_grade_id,
+                    thesis_topics(topic_name, topic_description),
+                    students(user_id, profiles(name))
+                )
             `, { count: 'exact' })
+            .in('phase_order', [2, 3, 4])
             .range((page - 1) * NUMBER_ITEM_PER_PAGE, NUMBER_ITEM_PER_PAGE * page - 1)
     });
     const { data: teachers } = useSupbaseAction({
@@ -40,6 +46,9 @@ function ReviewReportGraduation() {
     const parseData = useCallback((item, field, index) => {
         if (field === 'index') {
             return index + 1;
+        }
+        if (field === 'student_id') {
+            return `SV${item[field]} - ${item.name}`
         }
         if (field === 'action') {
             return (
@@ -81,7 +90,7 @@ function ReviewReportGraduation() {
         </div>
     );
 
-    const expandCondition = (record) => (topicList.length > 0);
+    const expandCondition = (record) => (reportList.length > 0);
 
     return (
         <>
@@ -91,7 +100,7 @@ function ReviewReportGraduation() {
                     loading={tableLoading}
                     columns={columnConfig}
                     primaryKey='id'
-                    data={topicList?.map(item => flattenObj({ obj: item }))}
+                    data={reportList?.map(item => flattenObj({ obj: item }))}
                     parseFunction={parseData}
                     isShowPaging
                     onChangePage={page => onChangePage(page)}
@@ -100,7 +109,7 @@ function ReviewReportGraduation() {
                     currentPage={currentPage}
                     totalDisplay={NUMBER_ITEM_PER_PAGE}
                     expandCondition={(record) => expandCondition(record)}
-                    renderExpandContent={topicList?.map(item => flattenObj({ obj: item })).length > 0 ?
+                    renderExpandContent={reportList?.map(item => flattenObj({ obj: item })).length > 0 ?
                         (record) => renderExpandContent(record) : null}
                     bordered
                 />

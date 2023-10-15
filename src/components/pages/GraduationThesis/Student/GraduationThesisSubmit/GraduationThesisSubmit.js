@@ -19,7 +19,7 @@ function GraduationThesisSubmit() {
     const [itemInput, setItemInput] = useState('');
     const [valueThesisPhase, setValueThesisPhase] = useState({});
     const [statusInput, setStatusInput] = useState({
-        phase1: 'normal',
+        phase1: 'pending',
         phase2: 'locked',
         phase3: 'locked',
         phase4: 'locked',
@@ -44,7 +44,6 @@ function GraduationThesisSubmit() {
             .order('phase_order', { ascending: true })
     });
 
-    console.log('thesisPhases', thesisPhases);
     useEffect(() => {
         if (thesisPhases) {
             thesisPhases.map((value, index) => {
@@ -56,10 +55,10 @@ function GraduationThesisSubmit() {
     }, [thesisPhases])
 
     const getSuffixInput = (id) => {
-        if (statusInput[id] === 'normal') {
+        if (statusInput[id] === 'pending') {
             return <CloudUploadOutlined />
         }
-        if (statusInput[id] === 'pending') {
+        if (statusInput[id] === 'normal') {
             return <LoadingOutlined />
         }
         if (statusInput[id] === 'approved') {
@@ -68,7 +67,7 @@ function GraduationThesisSubmit() {
         return <LockOutlined />
     };
     const getDisabledInput = (id) => {
-        return statusInput[id] === 'locked' || statusInput[id] === 'pending';
+        return statusInput[id] === 'locked' || statusInput[id] === 'normal';
     };
     const handleClickSubmit = item => {
         setIsOpenModal(true);

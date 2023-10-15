@@ -25,7 +25,7 @@ function ModalViewDetail(props) {
             toggleModal(true);
         }
     }, [isOpen])
-
+    console.log('phasesId', phasesId);
     const { data: dataPhase} = useSupbaseAction({
         initialData: [],
         firstLoad: true,

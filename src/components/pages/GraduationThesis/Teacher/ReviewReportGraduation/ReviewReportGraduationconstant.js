@@ -7,8 +7,8 @@ export const columnConfig= [
     },
     {
         title: 'Mã sinh viên',
-        dataIndex: 'topic_code',
-        key: 'topic_code',
+        dataIndex: 'student_id',
+        key: 'student_id',
         align: 'center',
         expand: true,
     },
