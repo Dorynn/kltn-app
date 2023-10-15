@@ -9,7 +9,6 @@ import AuthContext from '../../../../context/authContext';
 const TeacherAssignmentModal = ({ isOpen, updateTeacherAssignment, refetchData }) => {
     const [reviewerTeacher, setReviewerTeacher] = useState('')
     const { openNotification } = useContext(NotificationContext)
-    const [currentThesis, setCurrentThesis] = useState()
     const { user } = useContext(AuthContext)
 
     const { data: teachers } = useSupbaseAction({
@@ -35,7 +34,7 @@ const TeacherAssignmentModal = ({ isOpen, updateTeacherAssignment, refetchData }
                     showSearch
                     optionFilterProp='children'
                     filterOption={(input, option) => (option?.label ?? '').includes(input)}
-                    options={teachers.filter(item => item.user_id != updateTeacherAssignment.instructor_id && item.user_id != user.user_id).map(({ profiles, user_id }) => ({ label: `MGV${profiles.id} - ${profiles.name}`, value: user_id }))}
+                    options={teachers.filter(item => item.user_id != updateTeacherAssignment.instructor_id && item.user_id != user?.user_id).map(({ profiles, user_id }) => ({ label: `MGV${profiles.id} - ${profiles.name}`, value: user_id }))}
                     onChange={(value) => setReviewerTeacher(value)}
                     value={reviewerTeacher}
                 />
@@ -52,12 +51,12 @@ const TeacherAssignmentModal = ({ isOpen, updateTeacherAssignment, refetchData }
         if (!error) {
             await refetchData({})
             return openNotification({
-                message: 'Assign reviewer teacher successfully!'
+                message: 'Phân công giáo viên phản biện thành công!'
             })
         }
         return openNotification({
             type: 'error',
-            message: 'Assign reviewer teacher failed!'
+            message: 'Phân công giáo viên phản biện thất bại!'
         })
     }
     const { modal: createTeacherAssignmentModal, toggleModal } = useModal({
@@ -65,22 +64,10 @@ const TeacherAssignmentModal = ({ isOpen, updateTeacherAssignment, refetchData }
         title: 'Phân công giáo viên phản biện',
         handleConfirm: confirmTeacherAssignment
     })
-    const getRegisteredTopic = async () => {
-        const { data, error } = await supabase
-            .from('thesis_phases')
-            .select(`*`)
-            .eq('phase_order', 3)
-            .eq('student_thesis_id', updateTeacherAssignment.student_thesis_id)
-        setCurrentThesis(data)
-    }
-    // console.log(...currentThesis)
-    // useEffect(() => {
-    //     getRegisteredTopic()
-    // }, [])
+
     useEffect(() => {
         if (isOpen !== undefined)
             toggleModal(true);
-        getRegisteredTopic()
     }, [isOpen])
     return (
         <>

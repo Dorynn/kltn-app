@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { Table, Button } from 'antd';
 import TeacherAssignmentModal from './TeacherAssignmentModal';
 import useSupbaseAction from '../../../../hooks/useSupabase/useSupabaseAction';
@@ -14,19 +14,11 @@ const ReviewerTeacherAssignment = () => {
         initialData: [],
         firstLoad: true, defaultAction: async () => await supabase
             .from('thesis_phases')
-            .select(`*, student_theses(*, students(*, profiles(name)), thesis_topics(*, teachers(*, profiles(name))))`)
+            .select(`*, student_theses(*, teachers(profiles(name)), students(*, profiles(name)), thesis_topics(*, teachers(*, profiles(name))))`)
             .eq('phase_order', 2)
             .eq('status', 'approved')
     })
 
-    const { data: assignedList } = useSupbaseAction({
-        initialData: [],
-        firstLoad: true, defaultAction: async () => await supabase
-            .from('student_theses')
-            .select('*')
-            .is('reviewer_teacher_id', null)
-    })
-    console.log(assignedList, assignedList.includes(reviewList))
     const data = []
     const columns = [
         {
@@ -65,25 +57,28 @@ const ReviewerTeacherAssignment = () => {
             width: '10%',
             render: (_, record) => <>
                 {
-                                <Button onClick={
-                                    () => {
-                                        setOpenModal(!isOpenModal)
-                                        setUpdateTeacherAssignment({
-                                            id: record.id,
-                                            student_code: record.student_code,
-                                            student_name: record.student_name,
-                                            topic_name: record.topic_name,
-                                            instructor: record.instructor,
-                                            instructor_id: record.instructor_id,
-                                            student_thesis_id: record.student_thesis_id
-                                        })
-                                    }
-                                }>
-                                    Phân công
-                                </Button>
+
+                    (record.reviewer_teacher_id === null) ?
+                        <Button onClick={
+                            () => {
+                                setOpenModal(!isOpenModal)
+                                setUpdateTeacherAssignment({
+                                    id: record.id,
+                                    student_code: record.student_code,
+                                    student_name: record.student_name,
+                                    topic_name: record.topic_name,
+                                    instructor: record.instructor,
+                                    instructor_id: record.instructor_id,
+                                    student_thesis_id: record.student_thesis_id
+                                })
+                            }
+                        }>
+                            Phân công
+                        </Button>
+                        : <Button>Hoàn Thành</Button>
                 }
 
-            
+
             </>
         }
     ]
@@ -99,8 +94,9 @@ const ReviewerTeacherAssignment = () => {
             topic_name: item.student_theses.thesis_topics.topic_name,
             topic_description: item.student_theses.thesis_topics.topic_description,
             reviewer_id: item.reviewer_id,
-            student_thesis_id: item.student_thesis_id
-
+            student_thesis_id: item.student_thesis_id,
+            reviewer_teacher_id: item.student_theses.reviewer_teacher_id,
+            reviewer_teacher_name: item.student_theses.teachers?.profiles.name
         })
     })
     return (
@@ -111,11 +107,19 @@ const ReviewerTeacherAssignment = () => {
                     columns={columns}
                     expandable={{
                         expandedRowRender: (record) => (
-                            <p style={{
+                            <div style={{
                                 margin: '0 0 0 40px',
                             }}>
-                                {record.topic_description}
-                            </p>
+                                <p>
+                                    {record.topic_description}
+                                </p>
+                                {record.reviewer_teacher_id &&
+                                    <p>
+                                        Giáo viên phản biện:  MGV{record.reviewer_teacher_id} - {record.reviewer_teacher_name}
+                                    </p>
+                                }
+                            </div>
+
                         )
                     }}
                     dataSource={data}

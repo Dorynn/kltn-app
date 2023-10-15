@@ -18,6 +18,7 @@ export default function useModal({ width, content, title = 'Modal', handleConfir
             console.error(err);
         } finally {
             setConfirmLoading(false)
+            handleCancel();
         }
     };
 
