@@ -58,7 +58,7 @@ function SubmitModal(props) {
     }, [idInput])
 
     useEffect(() => {
-        if (valueThesisPhase && valueThesisPhase.status !== 'normal') {
+        if (valueThesisPhase && valueThesisPhase.status !== 'pending') {
             const {data} = supabase
             .from('thesis_phases')
             .select(`*, `)
@@ -66,7 +66,7 @@ function SubmitModal(props) {
         }
     }, [valueThesisPhase]);
 
-    const checkFirstSubmit = () => (valueThesisPhase && valueThesisPhase.status === 'normal');
+    const checkFirstSubmit = () => (valueThesisPhase && valueThesisPhase.status === 'pending');
 
     const handleUploadFile = async () => {
         const { data, error } = await uploadFile({ file: file, folder: 'assignments', user: user });
@@ -74,12 +74,12 @@ function SubmitModal(props) {
             setIsOpen(false);
             setStatusInput(prev => ({
                 ...prev,
-                [idInput]: 'pending',
+                [idInput]: 'normal',
             }));
             await supabase
                 .from('thesis_phases')
                 .update({
-                    status: 'pending',
+                    status: 'normal',
                 })
                 .eq('id', valueThesisPhase.id)
             await supabase
