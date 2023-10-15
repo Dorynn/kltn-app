@@ -40,8 +40,8 @@ function GraduationThesisSubmit() {
             .select(`
                 *
             `)
-            .eq('student_thesis_id', 116)
-            .order('phase_order', { ascending: true })
+            // .eq('student_thesis_id', 138)
+            // .order('phase_order', { ascending: true })
     });
 
     useEffect(() => {
@@ -76,7 +76,7 @@ function GraduationThesisSubmit() {
         const thesisByPhasesOrder = thesisPhases.find(value => value.phase_order === item.key) || {};
         setValueThesisPhase(thesisByPhasesOrder);
     }
-
+    console.log('valueThesisPhase', valueThesisPhase);
     return (
         <>
             <h4 className='title'>Nộp tài liệu KLTN</h4>

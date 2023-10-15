@@ -40,12 +40,12 @@ const TopicRegistrationProposed = () => {
             if (!error) {
             getRegisteredTopic()
             return openNotification({
-                message: 'Register the topic successfully'
+                message: 'Đăng ký đề tài thành công'
             })
         }
         return openNotification({
             type: 'error',
-            message: 'Register the topic failed',
+            message: 'Đăng ký đề tài thất bại',
         })
     }
 
