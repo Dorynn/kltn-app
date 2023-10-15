@@ -30,7 +30,7 @@ function GraduationThesisManager() {
                 )
             `, { count: 'exact' })
             .eq('phase_order', 1)
-            .eq('status', 'pending')
+            .eq('status', 'normal')
             .range((page - 1) * NUMBER_ITEM_PER_PAGE, NUMBER_ITEM_PER_PAGE * page - 1)
     });
 
