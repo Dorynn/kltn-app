@@ -21,7 +21,7 @@ const ProposedTopicList = () => {
         defaultAction: async () => supabase
             .from('suggested_topics')
             .select(`*, students(*, profiles(user_code, name, id))`)
-            .eq('teacher_id', user.user_id)
+            // .eq('teacher_id', user.user_id)
     })
     const checkIsChargePerson = async () => {
         const { data } = await supabase.rpc('is_charge_person');
