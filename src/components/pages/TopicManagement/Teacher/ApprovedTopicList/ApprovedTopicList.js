@@ -10,11 +10,13 @@ import TableCommon from '../../../../common/TableCommon/TableCommon';
 import { getStatus } from '../../../../common/common';
 import Loading from '../../../../common/Loading/Loading';
 import { columnConfig, expandConfig } from './Approvedtopicconstants';
+import AuthContext from '../../../../../context/authContext';
 
 const { confirm } = Modal;
 
 const ApprovedTopicList = () => {
     const { openNotification } = useContext(NotificationContext);
+    const { user } = useContext(AuthContext);
     const [confirmLoading, setConfirmLoading] = useState(false);
     const [currentPage, setCurrentPage] = useState(DEFAULT_CURRENT_PAGE);
 
@@ -25,43 +27,22 @@ const ApprovedTopicList = () => {
         defaultAction: async ({ page = 1 }) => supabase
             .from('student_theses')
             .select(`
-                *
+                *, 
+                students(user_id, profiles(name)),
+                thesis_topics(limit_register_number, register_number, teacher_id, topic_name, topic_description)
             `, { count: 'exact' })
             .range((page - 1) * NUMBER_ITEM_PER_PAGE, NUMBER_ITEM_PER_PAGE * page - 1)
     });
-    const { data: thesisTopics } = useSupbaseAction({
-        initialData: [],
-        firstLoad: true,
-        defaultAction: async () => supabase
-            .from('thesis_topics')
-            .select(`*`)
-    });
-    console.log('thesisTopics', thesisTopics);
-    const { data: students } = useSupbaseAction({
-        initialData: [],
-        firstLoad: true,
-        defaultAction: async () => supabase
-            .from('profiles')
-            .select(`*`)
-            .eq('university_role', 'student')
-    });
-
     // tùy chọn hiển thị data
     const parseData = useCallback((item, field, index) => {
         if (field === 'index') {
             return index + 1;
         }
         if (field === 'register_number') {
-            const thesisTopic = thesisTopics && thesisTopics.find(topic => topic.id === item.topic_id) || {};
-            return `${thesisTopic[field] || 0} / ${thesisTopic.limit_register_number || 0}`;
+            return `${item[field] || 0} / ${item.limit_register_number || 0}`;
         }
         if (field === 'student_id') {
-            const student = students && students.find(value => value.id === item[field]) || {};
-            return `${student?.user_code || ''} - ${student?.name || ''}` || '-';
-        }
-        if (field === 'topic_id') {
-            const thesisTopic = thesisTopics && thesisTopics.find(topic => topic.id === item.topic_id) || {};
-            return thesisTopic.topic_name || '-';
+            return `SV${item[field] || ''} - ${item?.name || ''}` || '-';
         }
         if (field === 'action') {
             return (<>
@@ -83,7 +64,7 @@ const ApprovedTopicList = () => {
             return getStatus(item[field]);
         }
         return item[field];
-    }, [thesisTopics, students]);
+    }, []);
 
     // gọi lại api khi change page
     const onChangePage = useCallback(
@@ -103,18 +84,24 @@ const ApprovedTopicList = () => {
         delete item.key;
         const { error } = await supabase
             .from('student_theses')
-            .update({ ...item, status: 'approved' })
+            .update({
+                status: 'doing',
+            })
             .eq('id', item.id)
         setConfirmLoading(false);
         if (!error) {
+            await supabase
+            .from('thesis_topics')
+            .update({register_number: item.register_number + 1})
+            .eq('id', item.topic_id)
             await refetchData({})
             return openNotification({
-                message: 'Approve registeredTopic successfully'
+                message: 'Duyệt đề tài sinh viên đăng ký thành công'
             })
         }
         return openNotification({
             type: 'error',
-            message: 'Approve suggestedTopic failed',
+            message: 'Duyệt đề tài sinh viên đăng ký thất bại',
         })
     };
 
@@ -135,7 +122,6 @@ const ApprovedTopicList = () => {
     };
 
     const renderExpandContent = (record) => {
-        const topic = thesisTopics?.find(value => value.id === record.topic_id);
         return (
             <div className='row mx-4'>
                 {expandConfig.map(item => (
@@ -144,7 +130,7 @@ const ApprovedTopicList = () => {
                             <label>{item.label} :</label>
                         </div>
                         <div className='col-8'>
-                            <span>{topic[item.field]}</span>
+                            <span>{record[item.field]}</span>
                         </div>
                     </div>
                 ))}

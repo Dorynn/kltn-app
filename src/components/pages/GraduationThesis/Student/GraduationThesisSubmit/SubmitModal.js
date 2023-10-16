@@ -32,6 +32,13 @@ function SubmitModal(props) {
             field: 'limit_register_number',
             type: 'FILEUPLOAD',
         },
+    ];
+    const fieldSubmitAndComment = [
+        {
+            label: 'File tài liệu',
+            field: 'limit_register_number',
+            type: 'FILEUPLOAD',
+        },
         {
             label: 'Nhận xét của giáo viên hướng dẫn',
             field: 'topic_description',
@@ -58,36 +65,38 @@ function SubmitModal(props) {
     }, [idInput])
 
     useEffect(() => {
-        if (valueThesisPhase && valueThesisPhase.status !== 'normal') {
-            const {data} = supabase
-            .from('thesis_phases')
-            .select(`*, `)
-            .eq('id', valueThesisPhase.id)
+        if (valueThesisPhase && valueThesisPhase.status !== 'pending') {
+            const { data } = supabase
+                .from('thesis_phases')
+                .select(`*, `)
+                .eq('id', valueThesisPhase.id)
         }
     }, [valueThesisPhase]);
 
-    const checkFirstSubmit = () => (valueThesisPhase && valueThesisPhase.status === 'normal');
+    const checkFirstSubmit = () => (valueThesisPhase && valueThesisPhase.status === 'pending');
 
     const handleUploadFile = async () => {
         const { data, error } = await uploadFile({ file: file, folder: 'assignments', user: user });
         if (!error) {
-            setIsOpen(false);
             setStatusInput(prev => ({
                 ...prev,
-                [idInput]: 'pending',
+                [idInput]: 'normal',
             }));
             await supabase
                 .from('thesis_phases')
                 .update({
-                    status: 'pending',
+                    status: 'normal',
                 })
                 .eq('id', valueThesisPhase.id)
+                .select()
             await supabase
                 .from('submit_assignments')
                 .insert({
                     submit_url: data.path,
                     phase_id: valueThesisPhase.id
                 })
+                .select()
+            setIsOpen(false);
             await refetchData({});
             return openNotification({
                 message: `${title} thành công`
@@ -120,7 +129,6 @@ function SubmitModal(props) {
     };
     // console.log('valueThesisPhase', valueThesisPhase);
     const checkDisabled = () => (valueThesisPhase.status === 'approved');
-    console.log(valueThesisPhase.status === 'approved');
 
     // tùy loại input để render
     const renderInput = (item) => {
@@ -132,7 +140,7 @@ function SubmitModal(props) {
                         value={file?.name}
                         prefix={file?.name ? <FileAddOutlined /> : <></>}
                         suffix={<div>
-                            <CloudUploadOutlined />
+                            <CloudUploadOutlined onClick={() => inputRef.current.click()} />
                             <input
                                 hidden
                                 ref={inputRef}
@@ -178,12 +186,11 @@ function SubmitModal(props) {
         >
             {checkFirstSubmit() ?
                 fieldSubmit
-                    .splice(0, 1)
                     .map(item => (
                         <Form.Item label={item.label} key={item.field}>
                             {renderInput(item)}
                         </Form.Item>)) :
-                fieldSubmit.map(item => (
+                fieldSubmitAndComment.map(item => (
                     <Form.Item label={item.label} key={item.field}>
                         {renderInput(item)}
                     </Form.Item>))
@@ -194,7 +201,7 @@ function SubmitModal(props) {
     const { modal: createNewTopic, toggleModal } = useModal({
         content: createTopicModalContent,
         title: title,
-        okText: 'Duyệt',
+        okText: 'Nộp',
         handleConfirm: ConfirmModal,
         setIsOpen: setIsOpen
     });
