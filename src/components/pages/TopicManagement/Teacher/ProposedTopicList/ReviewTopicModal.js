@@ -48,6 +48,7 @@ const ReviewTopicModal = ({ isOpen, setReviewedTopic, reviewedTopic }) => {
     )
 
     const handleConfirmTopic = () => {
+        // add vào bảng thesis_topic
         console.log(reviewedTopic);
     }
 

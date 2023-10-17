@@ -88,7 +88,7 @@ function GraduationThesisInfo() {
                 <h4>Bạn chưa có thông tin bảo vệ khóa luận. Vui lòng liên hệ giáo viên hướng dẫn.</h4>
             }
         </>
-    )
+    );
 }
 
 export default GraduationThesisInfo;
