@@ -12,6 +12,7 @@ import ModalViewDetail from './ModalViewDetail';
 
 function ReviewReportGraduation() {
     const { isAdmin, isTeacher } = useContext(AuthContext);
+    const { user } = useContext(AuthContext);
     const [currentPage, setCurrentPage] = useState(DEFAULT_CURRENT_PAGE);
     const [openModal, setOpenModal] = useState(false);
 
@@ -28,7 +29,7 @@ function ReviewReportGraduation() {
                     students(user_id, profiles(name))
                 )
             `, { count: 'exact' })
-            .in('phase_order', [2, 3, 4])
+            .eq('reviewer_id', user.user_id)
             .range((page - 1) * NUMBER_ITEM_PER_PAGE, NUMBER_ITEM_PER_PAGE * page - 1)
     });
     const { data: teachers } = useSupbaseAction({

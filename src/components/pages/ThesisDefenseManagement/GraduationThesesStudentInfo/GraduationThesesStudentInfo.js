@@ -1,11 +1,162 @@
-import React from 'react';
+import React from "react";
+import useSupbaseAction from "../../../../hooks/useSupabase/useSupabaseAction";
+import supabase from "../../../../supabaseClient";
+import flattenObj from "../../../../helpers/flattenObj";
+import { Select } from "antd";
 
-const GraduationThesesStudentInfo = () => {
+function GraduationThesesStudentInfo() {
+    const graduationThesisInfo = [
+        {
+            label: 'Sinh viên',
+            field: 'student',
+            class: 'd-flex mb-2 px-4 pb-3 col-6',
+        },
+        {
+            label: 'Đề tài',
+            field: 'topic_name',
+            class: 'd-flex mb-2 px-4 pb-3 col-6',
+        },
+        {
+            label: 'Mô tả đề tài',
+            field: 'topic_description',
+            class: 'd-flex mb-2 px-4 pb-3 col-12',
+        },
+        {
+            label: 'Giáo viên hướng dẫn',
+            field: 'teacher_id',
+            class: 'd-flex mb-2 px-4 pb-3 col-12',
+        },
+        {
+            label: 'Giáo viên phản biện',
+            field: 'reviewer_teacher_id',
+            class: 'd-flex mb-2 px-4 pb-3 col-12',
+        },
+        {
+            label: 'Chủ tịch hội đồng',
+            field: 'president',
+            class: 'd-flex mb-2 px-4 pb-3 col-12',
+        },
+        {
+            label: 'Ủy viên hội đồng',
+            field: 'commissioner',
+            class: 'd-flex mb-2 px-4 pb-3 col-12',
+        },
+        {
+            label: 'Thư ký hội đồng',
+            field: 'secretary',
+            class: 'd-flex mb-2 px-4 pb-3 col-12',
+        },
+        {
+            label: 'Thời gian',
+            field: 'defense_day',
+            class: 'd-flex mb-2 px-4 pb-3 col-6',
+        },
+        {
+            label: 'Địa điểm',
+            field: 'defense_location',
+            class: 'd-flex mb-2 px-4 pb-3 col-6',
+        },
+    ];
+    const user_id = sessionStorage.getItem('user_login');
+    const baseStudentInfo = {
+        topic_id: 0,
+        status: "",
+        student_id: 0,
+        reviewer_teacher_id: 0,
+        thesis_grade_id: null,
+        school_year: 0,
+        student_class: "",
+        user_id: 0,
+        major_id: 0,
+        name: "",
+        university_role: "",
+        auth_id: "",
+        user_code: "",
+        phone: null,
+        address: null,
+        email: null
+    };
+    const { data: defenseCommittees } = useSupbaseAction({
+        initialData: [],
+        firstLoad: true,
+        defaultAction: async () => supabase
+            .from('defense_committees')
+            .select(`
+                *,
+                student_theses(*, 
+                    students(*, profiles(*)),
+                    thesis_topics(*, teachers(user_id, profiles(*)))
+                ),
+                defense_committee_members(*)
+            `)
+            .eq('student_thesis_id', user_id)
+    });
+    const { data: teacherInfo } = useSupbaseAction({
+        initialData: [],
+        firstLoad: true,
+        defaultAction: async () => supabase
+            .from('teachers')
+            .select(`
+                *,
+                profiles(*)
+            `)
+    });
+    const { data: students } = useSupbaseAction({
+        initialData: [],
+        firstLoad: true,
+        defaultAction: async () => supabase
+            .from('students')
+            .select(`
+                *,
+                profiles(*)
+            `)
+    });
+    const studentInfo = (Array.isArray(defenseCommittees) &&
+        defenseCommittees[0] &&
+        defenseCommittees[0].student_theses &&
+        flattenObj({ obj: defenseCommittees[0].student_theses })) || baseStudentInfo;
+    const getData = (field) => {
+        if (Array.isArray(defenseCommittees) && defenseCommittees[0]) {
+            const fullData = { ...defenseCommittees[0], ...studentInfo };
+            const { defense_committee_members } = defenseCommittees[0];
+            if (field === 'student') {
+                return `${fullData?.user_code} - ${fullData?.name}`;
+            }
+            if (field === 'teacher_id' || field === 'reviewer_teacher_id') {
+                const teacher = teacherInfo.find(i => studentInfo[field] === i.user_id);
+                return teacher ? `${teacher?.profiles?.user_code} - ${teacher?.profiles?.name}` : '-';
+            }
+            if (field === 'president' || field === 'commissioner' || field === 'secretary') {
+                const teacher = teacherInfo.find(i => defense_committee_members.some(v => i.user_id === v.teacher_id && v.commitee_role === field));
+                return teacher ? `${teacher?.profiles?.user_code} - ${teacher?.profiles?.name}` : '-';
+            }
+            return fullData?.[field];
+        }
+    }
     return (
-        <div>
-            Danh sách bảo vệ KLTN
-        </div>
-    );
+        <>
+            <h4 className='title'>Thông tin bảo vệ khóa luận tốt nghiệp</h4>
+            <div>
+                <div>
+                    <label>Chọn sinh viên</label>
+                    <Select></Select>
+                </div>
+                {defenseCommittees.length > 0 ?
+                    <div style={{ width: '80%', margin: 'auto', border: '1px solid #000', height: '100%' }}>
+                        <div className="row mt-3">
+                            {graduationThesisInfo.map(item => (
+                                <div className={item.class} key={item.field}>
+                                    <label className="d-flex col-3">{item.label} :</label>
+                                    <span className='col-9 text-start'>{getData(item.field)}</span>
+                                </div>
+                            ))}
+                        </div>
+                    </div> :
+                    <h4>Vui lòng chọn sinh viên để xem thông tin</h4>
+                }
+            </div>
+        </>
+    )
 };
 
 export default GraduationThesesStudentInfo;
