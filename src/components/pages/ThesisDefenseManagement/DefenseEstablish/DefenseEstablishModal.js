@@ -2,7 +2,6 @@ import React, { useContext, useEffect, useState } from 'react';
 import supabase from '../../../../supabaseClient';
 import NotificationContext from '../../../../context/notificationContext';
 import useModal from '../../../../hooks/modal/useModal';
-import useSupbaseAction from '../../../../hooks/useSupabase/useSupabaseAction';
 import AuthContext from '../../../../context/authContext';
 import { Form, Input, Select } from 'antd'
 
@@ -46,7 +45,7 @@ const DefenseEstablishModal = ({ isOpen, thesisInfo, refetchData }) => {
         const { data, error } = await supabase
             .from('teachers')
             .select('user_id, profiles(id, name)')
-        setTeachers(data?.filter(item => item?.user_id !== user?.user_id &&
+        setTeachers(data?.filter(item => 
             item?.user_id !== thesisInfo.reviewer_teacher_id &&
             item?.user_id !== thesisInfo.instructor_id
         ))
@@ -245,7 +244,7 @@ const DefenseEstablishModal = ({ isOpen, thesisInfo, refetchData }) => {
 
 
     useEffect(() => {
-        if (isOpen != undefined)
+        if (isOpen !== undefined)
             toggleModal(true)
         getTimeList()
 

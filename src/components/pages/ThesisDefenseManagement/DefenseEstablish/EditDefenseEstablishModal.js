@@ -69,7 +69,7 @@ const EditDefenseEstablishModal = ({ isOpen, thesisInfo }) => {
         const { data, error } = await supabase
             .from('teachers')
             .select('user_id, profiles(id, name)')
-        setTeachers(data?.filter(item => item?.user_id !== user?.user_id &&
+        setTeachers(data?.filter(item => 
             item?.user_id !== thesisInfo.reviewer_teacher_id &&
             item?.user_id !== thesisInfo.instructor_id
         ))

@@ -24,7 +24,7 @@ const TeacherAssignmentModal = ({ isOpen, updateTeacherAssignment, refetchData }
                 <Input disabled value={`${updateTeacherAssignment.student_code} - ${updateTeacherAssignment.student_name}`} />
             </Form.Item>
             <Form.Item label="Giáo viên hướng dẫn">
-                <Input disabled value={`MGV${updateTeacherAssignment.instructor_id} - ${updateTeacherAssignment.instructor}`} />
+                <Input disabled value={`GV${updateTeacherAssignment.instructor_id} - ${updateTeacherAssignment.instructor}`} />
             </Form.Item>
             <Form.Item label="Tên đề tài">
                 <Input value={updateTeacherAssignment.topic_name} disabled />
@@ -34,7 +34,7 @@ const TeacherAssignmentModal = ({ isOpen, updateTeacherAssignment, refetchData }
                     showSearch
                     optionFilterProp='children'
                     filterOption={(input, option) => (option?.label ?? '').includes(input)}
-                    options={teachers.filter(item => item.user_id != updateTeacherAssignment.instructor_id && item.user_id != user?.user_id).map(({ profiles, user_id }) => ({ label: `MGV${profiles.id} - ${profiles.name}`, value: user_id }))}
+                    options={teachers.filter(item => item.user_id != updateTeacherAssignment.instructor_id).map(({ profiles, user_id }) => ({ label: `GV${profiles.id} - ${profiles.name}`, value: user_id }))}
                     onChange={(value) => setReviewerTeacher(value)}
                     value={reviewerTeacher}
                 />

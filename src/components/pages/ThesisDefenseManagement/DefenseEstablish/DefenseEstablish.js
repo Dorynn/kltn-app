@@ -97,7 +97,7 @@ const DefenseEstablish = () => {
             no: index + 1,
             key: item.id,
             id: item.id,
-            student_code: `MSV${item.student_theses.student_id}`,
+            student_code: `SV${item.student_theses.student_id}`,
             student_name: item.student_theses.students.profiles.name,
             instructor_id: item.student_theses.thesis_topics.teacher_id,
             instructor_name: item.student_theses.thesis_topics.teachers.profiles.name,
