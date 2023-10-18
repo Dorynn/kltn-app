@@ -22,7 +22,7 @@ import GradeManagement from "../components/pages/ThesisDefenseManagement/GradeMa
 import GraduationThesesStudentInfo from "../components/pages/ThesisDefenseManagement/GraduationThesesStudentInfo/GraduationThesesStudentInfo";
 import ResultUpdate from "../components/pages/ThesisDefenseManagement/ResultUpdate/ResultUpdate";
 import ReviewerTeacherAssignment from "../components/pages/ThesisDefenseManagement/ReviewerTeacherAssignment/ReviewerTeacherAssignment";
-
+import StudentStatistic from "../components/pages/Statistic/StudentStatistic";
 // URL
 import { 
     URL_APPROVED_TOPIC_LIST,
@@ -49,6 +49,7 @@ import {
     URL_REVIEWER_TEACHER_ASSIGNMENT,
     URL_THESIS_GRADE,
     URL_VIEW_GRADES,
+    URL_STATISTIC
 } from "./configUrl";
 
 export const routes = [
@@ -169,5 +170,10 @@ export const routes = [
     {
         path: URL_REVIEWER_TEACHER_ASSIGNMENT,
         element: <ReviewerTeacherAssignment/>
+    },
+    // Báo cáo thống kê
+    {
+        path: URL_STATISTIC,
+        element: <StudentStatistic/>
     }
 ];

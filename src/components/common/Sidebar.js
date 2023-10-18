@@ -26,6 +26,7 @@ import {
     URL_DEFENSE_ESTABLISH,
     URL_REVIEWER_TEACHER_ASSIGNMENT,
     URL_VIEW_GRADES,
+    URL_STATISTIC
 
 } from "../../const/configUrl";
 
@@ -156,7 +157,6 @@ const Sidebar = () => {
                                 (isTeacher || isAdmin) &&
                                 <Menu.Item key="14">
                                     <Link to={URL_GRADUATION_THESIS_MANAGER}>
-                                        {/* <span>Quản lý khóa luận tốt nghiệp</span> */}
                                         <span>Duyệt đề cương</span>
                                     </Link>
                                 </Menu.Item>
@@ -210,6 +210,11 @@ const Sidebar = () => {
 
                         </SubMenu>
                     }
+                        <Menu.Item key="23">
+                        <Link to={URL_STATISTIC}>
+                            <span>Báo cáo thống kê</span>
+                        </Link>
+                        </Menu.Item>
                 </Menu>
 
             </Sider>

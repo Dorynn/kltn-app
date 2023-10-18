@@ -46,3 +46,5 @@ export const URL_RESULT_UPDATE = '/result-update'
 export const URL_GRADE_MANAGEMENT = '/grade-management'
 // Lưu trữ hồ sơ
 export const URL_ACHIEVED_RECORD = '/achieved-record';
+// Báo cáo thống kê
+export const URL_STATISTIC = '/statistic'
