@@ -37,8 +37,9 @@ function GraduationThesisInfo() {
                 ),
                 defense_committee_members(*)
             `)
-            .eq('student_thesis_id', user_id)
+            .eq('student_theses.student_id', user_id)
     });
+    
     const { data: teacherInfo } = useSupbaseAction({
         initialData: [],
         firstLoad: true,
@@ -58,19 +59,24 @@ function GraduationThesisInfo() {
             const fullData = { ...defenseCommittees[0], ...studentInfo };
             const { defense_committee_members } = defenseCommittees[0];
             if (field === 'student') {
-                return `${fullData?.user_code} - ${fullData?.name}`;
+                return `SV${fullData?.student_id} - ${fullData?.student_theses?.students?.profiles?.name}`;
             }
             if (field === 'teacher_id' || field === 'reviewer_teacher_id') {
                 const teacher = teacherInfo.find(i => studentInfo[field] === i.user_id);
-                return teacher ? `${teacher?.profiles?.user_code} - ${teacher?.profiles?.name}` : '-';
+                return teacher ? `GV${teacher?.profiles?.id} - ${teacher?.profiles?.name}` : '-';
             }
             if (field === 'president' || field === 'commissioner' || field === 'secretary') {
                 const teacher = teacherInfo.find(i => defense_committee_members.some(v => i.user_id === v.teacher_id && v.commitee_role === field));
-                return teacher ? `${teacher?.profiles?.user_code} - ${teacher?.profiles?.name}` : '-';
+                return teacher ? `GV${teacher?.profiles?.id} - ${teacher?.profiles?.name}` : '-';
             }
+            if (field === 'defense_location')
+                return `Phòng ${fullData?.defense_location}`
+            if (field === 'defense_day')
+                return `${fullData?.defense_day} / Ca ${fullData?.defense_shift}`
             return fullData?.[field];
         }
     }
+    console.log(defenseCommittees)
     return (
         <>
             <h4 className='title'>Thông tin bảo vệ khóa luận tốt nghiệp</h4>

@@ -88,10 +88,10 @@ const GradeManagement = () => {
             topic_name: item.student_theses.thesis_topics.topic_name,
             thesis_id: item.student_theses.id,
             grade_id: item.student_theses.thesis_grade_id,
-            president_grade: item.student_theses.thesis_grades.president_grade,
-            secretary_grade: item.student_theses.thesis_grades.secretary_grade,
-            member_grade: item.student_theses.thesis_grades.member_grade,
-            review_teacher_grade: item.student_theses.thesis_grades.member_grade
+            president_grade: item.student_theses.thesis_grades?.president_grade,
+            secretary_grade: item.student_theses.thesis_grades?.secretary_grade,
+            member_grade: item.student_theses.thesis_grades?.member_grade,
+            review_teacher_grade: item.student_theses.thesis_grades?.review_teacher_grade
 
         })
     })

@@ -31,10 +31,10 @@ const GradeManagementModal = ({ isOpen, thesisInfo, refetchData }) => {
                 <Input value={gradeGroup.president_grade} onChange={(e) => setGradeGroup(prev => ({ ...prev, president_grade: e.target.value }))} />
             </Form.Item>
             <Form.Item label="Điểm của UVHĐ">
-                <Input value={gradeGroup.secretary_grade} onChange={(e) => setGradeGroup(prev => ({ ...prev, member_grade: e.target.value }))} />
+                <Input value={gradeGroup.member_grade} onChange={(e) => setGradeGroup(prev => ({ ...prev, member_grade: e.target.value }))} />
             </Form.Item>
             <Form.Item label="Điểm của TKHĐ">
-                <Input value={gradeGroup.member_grade} onChange={(e) => setGradeGroup(prev => ({ ...prev, secretary_grade: e.target.value }))} />
+                <Input value={gradeGroup.secretary_grade} onChange={(e) => setGradeGroup(prev => ({ ...prev, secretary_grade: e.target.value }))} />
             </Form.Item>
             <Form.Item label="Điểm của GVPB">
                 <Input value={gradeGroup.review_teacher_grade} onChange={(e) => setGradeGroup(prev => ({ ...prev, review_teacher_grade: e.target.value }))} />
@@ -46,7 +46,7 @@ const GradeManagementModal = ({ isOpen, thesisInfo, refetchData }) => {
         const { data, error} = await supabase
         .from('thesis_grades')
         .insert([gradeGroup])
-        .select('id')
+        .select()
 
         console.log(data)
 

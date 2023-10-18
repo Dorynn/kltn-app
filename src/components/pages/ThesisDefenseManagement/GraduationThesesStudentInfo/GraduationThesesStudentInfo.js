@@ -89,8 +89,9 @@ function GraduationThesesStudentInfo() {
                 ),
                 defense_committee_members(*)
             `)
-            .eq('student_thesis_id', user_id)
+            // .eq('student_theses.student_id', user_id)
     });
+    console.log(defenseCommittees)
     const { data: teacherInfo } = useSupbaseAction({
         initialData: [],
         firstLoad: true,
@@ -112,24 +113,31 @@ function GraduationThesesStudentInfo() {
             `)
     });
     const studentInfo = (Array.isArray(defenseCommittees) &&
-        defenseCommittees[0] &&
-        defenseCommittees[0].student_theses &&
-        flattenObj({ obj: defenseCommittees[0].student_theses })) || baseStudentInfo;
+        defenseCommittees[1] &&
+        defenseCommittees[1].student_theses &&
+        flattenObj({ obj: defenseCommittees[1].student_theses })) || baseStudentInfo;
     const getData = (field) => {
-        if (Array.isArray(defenseCommittees) && defenseCommittees[0]) {
-            const fullData = { ...defenseCommittees[0], ...studentInfo };
-            const { defense_committee_members } = defenseCommittees[0];
+        if (Array.isArray(defenseCommittees) && defenseCommittees[1]) {
+            const fullData = { ...defenseCommittees[1], ...studentInfo };
+            const { defense_committee_members } = defenseCommittees[1];
             if (field === 'student') {
-                return `${fullData?.user_code} - ${fullData?.name}`;
+                return `SV${fullData?.student_theses.student_id} - ${fullData?.student_theses.students.profiles.name}`;
             }
             if (field === 'teacher_id' || field === 'reviewer_teacher_id') {
                 const teacher = teacherInfo.find(i => studentInfo[field] === i.user_id);
-                return teacher ? `${teacher?.profiles?.user_code} - ${teacher?.profiles?.name}` : '-';
+                return teacher ? `GV${teacher?.profiles?.id} - ${teacher?.profiles?.name}` : '-';
             }
             if (field === 'president' || field === 'commissioner' || field === 'secretary') {
                 const teacher = teacherInfo.find(i => defense_committee_members.some(v => i.user_id === v.teacher_id && v.commitee_role === field));
-                return teacher ? `${teacher?.profiles?.user_code} - ${teacher?.profiles?.name}` : '-';
+                return teacher ? `GV${teacher?.profiles?.id} - ${teacher?.profiles?.name}` : '-';
             }
+            if (field === 'defense_location'){
+                return `Phòng ${fullData?.defense_location}`
+            }
+            if (field === 'defense_day'){
+                return `${fullData?.defense_day} / Ca ${fullData?.defense_shift}`
+            }
+
             return fullData?.[field];
         }
     }
