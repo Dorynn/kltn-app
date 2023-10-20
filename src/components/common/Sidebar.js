@@ -210,11 +210,14 @@ const Sidebar = () => {
 
                         </SubMenu>
                     }
+                    {
+                        (isAdmin || isTeacher)&&
                         <Menu.Item key="23">
                         <Link to={URL_STATISTIC}>
                             <span>Báo cáo thống kê</span>
                         </Link>
                         </Menu.Item>
+                    }
                 </Menu>
 
             </Sider>
