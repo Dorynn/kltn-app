@@ -61,6 +61,7 @@ const Lecturer = () => {
 
     // tùy chọn hiển thị data
     const parseData = useCallback((item, field, index) => {
+        console.log(item)
         if (field === 'index') {
             return index + 1;
         }
