@@ -21,7 +21,7 @@ import GradeManagement from "../components/pages/ThesisDefenseManagement/GradeMa
 import GraduationThesesStudentInfo from "../components/pages/ThesisDefenseManagement/GraduationThesesStudentInfo/GraduationThesesStudentInfo";
 import ResultUpdate from "../components/pages/ThesisDefenseManagement/ResultUpdate/ResultUpdate";
 import ReviewerTeacherAssignment from "../components/pages/ThesisDefenseManagement/ReviewerTeacherAssignment/ReviewerTeacherAssignment";
-import StudentStatistic from "../components/pages/Statistic/StudentStatistic";
+import MainStatistic from "../components/pages/Statistic/MainStatistic";
 // URL
 import { 
     URL_APPROVED_TOPIC_LIST,
@@ -167,6 +167,6 @@ export const routes = [
     // Báo cáo thống kê
     {
         path: URL_STATISTIC,
-        element: <StudentStatistic/>
+        element: <MainStatistic/>
     }
 ];
