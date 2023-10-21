@@ -126,7 +126,11 @@ const ReviewerTeacherAssignment = () => {
                     bordered
                 />
             </div>
-            <TeacherAssignmentModal isOpen={isOpenModal} updateTeacherAssignment={updateTeacherAssignment} refetchData={refetchData} />
+            <TeacherAssignmentModal
+                isOpen={isOpenModal}
+                updateTeacherAssignment={updateTeacherAssignment}
+                refetchData={refetchData}
+            />
         </>
     );
 };

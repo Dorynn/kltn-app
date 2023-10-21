@@ -76,11 +76,10 @@ function GraduationThesisInfo() {
             return fullData?.[field];
         }
     }
-    console.log(defenseCommittees)
     return (
         <>
             <h4 className='title'>Thông tin bảo vệ khóa luận tốt nghiệp</h4>
-            {defenseCommittees.length > 0 ?
+            {!defenseCommittees.length > 0 ?
                 <div style={{ width: '80%', margin: 'auto', border: '1px solid #000', height: '100%' }}>
                     <div className="row mt-3">
                         {graduationThesisInfo.map(item => (

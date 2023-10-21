@@ -17,7 +17,6 @@ const TeacherAssignmentModal = ({ isOpen, updateTeacherAssignment, refetchData }
             .from('teachers')
             .select(`*, profiles(id, name)`)
     })
-
     const teacherAssignmentModalContent = (
         <Form labelCol={{ span: 8 }} wrapperCol={{ span: 16 }}>
             <Form.Item label="Sinh viên">
@@ -49,6 +48,10 @@ const TeacherAssignmentModal = ({ isOpen, updateTeacherAssignment, refetchData }
             .eq('id', updateTeacherAssignment.student_thesis_id)
 
         if (!error) {
+            await supabase
+                .from('thesis_phases')
+                .update({ status: 'normal' })
+                .eq('id', updateTeacherAssignment.id)
             await refetchData({})
             return openNotification({
                 message: 'Phân công giáo viên phản biện thành công!'

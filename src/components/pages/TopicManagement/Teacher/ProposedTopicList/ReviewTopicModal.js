@@ -6,11 +6,11 @@ import supabase from '../../../../../supabaseClient';
 import useSupbaseAction from '../../../../../hooks/useSupabase/useSupabaseAction';
 
 const ReviewTopicModal = ({ isOpen, setReviewedTopic, reviewedTopic }) => {
-    const {data: teachers} = useSupbaseAction({
+    const { data: teachers } = useSupbaseAction({
         initialData: [],
         firstLoad: true, defaultAction: async () => supabase
-        .from('teachers')
-        .select(`*, profiles(user_code, name)`)
+            .from('teachers')
+            .select(`*, profiles(user_code, name)`)
     })
     const createReviewTopicModalContent = (
         <Form
@@ -28,9 +28,9 @@ const ReviewTopicModal = ({ isOpen, setReviewedTopic, reviewedTopic }) => {
                 <Select
                     showSearch
                     optionFilterProp='children'
-                    filterOption={(input, option) => (option?.label??"").includes(input)}
-                    options={teachers.map(({profiles, id}) => ({label: `${profiles.user_code} - ${profiles.name}`, value: id}))}
-                    onChange={(value) => setReviewedTopic(prev => ({...prev, teacher_id: value}))}
+                    filterOption={(input, option) => (option?.label ?? "").includes(input)}
+                    options={teachers.map(({ profiles, id }) => ({ label: `${profiles.user_code} - ${profiles.name}`, value: id }))}
+                    onChange={(value) => setReviewedTopic(prev => ({ ...prev, teacher_id: value }))}
                     value={reviewedTopic.teacher_id}
                 />
             </Form.Item>
@@ -42,14 +42,24 @@ const ReviewTopicModal = ({ isOpen, setReviewedTopic, reviewedTopic }) => {
             <Form.Item
                 label="Mô tả"
             >
-                <TextArea rows = {8} value={reviewedTopic.topic_description} disabled />
+                <TextArea rows={8} value={reviewedTopic.topic_description} disabled />
             </Form.Item>
         </Form>
     )
 
-    const handleConfirmTopic = () => {
+    const handleConfirmTopic = async () => {
         // add vào bảng thesis_topic
         console.log(reviewedTopic);
+        await supabase
+        .from('thesis_topics')
+        .insert({
+            topic_name: reviewedTopic.topic_name,
+            topic_description: reviewedTopic.topic_description,
+            limit_register_number: 1,
+            register_number: 1,
+            teacher_id: reviewedTopic.teacher_id
+        })
+        .select()
     }
 
     const { modal: createReviewTopicModal, toggleModal } = useModal({
