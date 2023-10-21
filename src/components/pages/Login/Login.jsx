@@ -8,6 +8,7 @@ import NotificationContext from '../../../context/notificationContext';
 import { UploadOutlined } from '@ant-design/icons';
 import uploadFileStorage from '../../../helpers/storage/uploadFile.js';
 import downloadFileStorage from '../../../helpers/storage/downloadFile.js'
+import SampleImportUsers from '../../../components/SampleImportUsers/SampleImportUsers.js'
 
 const props = {
     name: 'file',
@@ -189,7 +190,11 @@ export default function Login() {
                                 folder: 'assignments'
                             })
                         }}>Download</Button>
-                    </Form.Item></>}
+                    </Form.Item>
+                    <Form.Item>
+                        <SampleImportUsers />
+                    </Form.Item>
+                </>}
             </Form>
             {/* {user && <Card title="User info" style={{ width: 400 }}>
                 <p><b>User Code:</b> {user.user_code}</p>
