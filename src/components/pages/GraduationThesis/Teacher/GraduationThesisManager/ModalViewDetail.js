@@ -40,6 +40,7 @@ function ModalViewDetail(props) {
     const urlFile = (dataPhase && dataPhase.length > 0 && dataPhase[0] && dataPhase[0].submit_url) || '';
     const comment = (dataPhase && dataPhase.length > 0 && dataPhase[0] && dataPhase[0]?.thesis_phases) || {comment: ''};
     const fileName = urlFile && urlFile.split('/')[1];
+    
     useEffect(() => {
         if (dataPhase) {
             setTeacherComment(comment && comment.comment);
@@ -55,7 +56,11 @@ function ModalViewDetail(props) {
             .eq('id', phasesId)
         if (!error) {
             await supabase
-                .from('')
+                .from('thesis_phases')
+                .update({
+                    status: 'normal',
+                })
+                .eq('id', phasesId + 1)
             await refetchData({})
             setIsOpen(false);
             return openNotification({
@@ -67,17 +72,51 @@ function ModalViewDetail(props) {
             message: 'Duyệt đề cương thất bại',
         })
     };
+    const handleReject = async () => {
+        const { error } = await supabase
+            .from('thesis_phases')
+            .update({ 
+                comment: teacherComment,
+                status: 'reject',
+            })
+            .eq('id', phasesId)
+        if (!error) {
+            await refetchData({})
+            setIsOpen(false);
+            return openNotification({
+                message: 'Từ chối đề cương thành công'
+            })
+        }
+        return openNotification({
+            type: 'error',
+            message: 'Từ chối đề cương thất bại',
+        })
+    };
 
     const ConfirmModal = () => {
         confirm({
-            title: 'Bạn có thực sự muốn thay đổi đề tài này?',
+            title: 'Bạn có thực sự muốn phê duyệt đề cương này?',
             icon: <ExclamationCircleFilled />,
-            content: 'Đề tài sẽ không được khôi phục sau khi bạn nhấn đồng ý!',
+            content: 'Yêu cầu sẽ không được khôi phục sau khi bạn nhấn đồng ý!',
             okText: 'Đồng ý',
             cancelText: 'Hủy',
             centered: true,
             onOk() {
                 handleApproved()
+            },
+            onCancel() { },
+        });
+    };
+    const RejectModal = () => {
+        confirm({
+            title: 'Bạn không muốn phê duyệt đề cương này?',
+            icon: <ExclamationCircleFilled />,
+            content: 'Yêu cầu sẽ không được khôi phục sau khi bạn nhấn đồng ý!',
+            okText: 'Đồng ý',
+            cancelText: 'Hủy',
+            centered: true,
+            onOk() {
+                handleReject()
             },
             onCancel() { },
         });
@@ -135,7 +174,9 @@ function ModalViewDetail(props) {
     const { modal: createNewTopic, toggleModal } = useModal({
         content: createTopicModalContent,
         title: 'Chi tiết đề cương',
-        okText: `${comment.comment ? '' : 'Duyệt'}`,
+        okText: 'Duyệt',
+        rejectText: 'Không duyệt',
+        handleReject: RejectModal,
         handleConfirm: ConfirmModal,
         setIsOpen: setIsOpen
     });

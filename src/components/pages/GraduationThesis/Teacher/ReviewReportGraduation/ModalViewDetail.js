@@ -25,8 +25,8 @@ function ModalViewDetail(props) {
             toggleModal(true);
         }
     }, [isOpen])
-    console.log('phasesId', phasesId);
-    const { data: dataPhase} = useSupbaseAction({
+
+    const { data: dataPhase } = useSupbaseAction({
         initialData: [],
         firstLoad: true,
         defaultAction: async () => supabase
@@ -38,8 +38,10 @@ function ModalViewDetail(props) {
             .eq('phase_id', phasesId)
     });
     const urlFile = (dataPhase && dataPhase.length > 0 && dataPhase[0] && dataPhase[0].submit_url) || '';
-    const comment = (dataPhase && dataPhase.length > 0 && dataPhase[0] && dataPhase[0]?.thesis_phases) || {comment: ''};
+    const comment = (dataPhase && dataPhase.length > 0 && dataPhase[0] && dataPhase[0]?.thesis_phases) || { comment: '' };
     const fileName = urlFile && urlFile.split('/')[1];
+    const phaseOrder = (dataPhase && dataPhase.length > 0 && dataPhase[0] && dataPhase[0]?.thesis_phases?.phase_order) || '';
+
     useEffect(() => {
         if (dataPhase) {
             setTeacherComment(comment && comment.comment);
@@ -48,14 +50,20 @@ function ModalViewDetail(props) {
     const handleApproved = async () => {
         const { error } = await supabase
             .from('thesis_phases')
-            .update({ 
+            .update({
                 comment: teacherComment,
                 status: 'approved',
             })
             .eq('id', phasesId)
         if (!error) {
-            await supabase
-                .from('')
+            if (phaseOrder !== 2) {
+                await supabase
+                    .from('thesis_phases')
+                    .update({
+                        status: 'normal',
+                    })
+                    .eq('id', phasesId + 1)
+            }
             await refetchData({})
             setIsOpen(false);
             return openNotification({
@@ -65,6 +73,26 @@ function ModalViewDetail(props) {
         return openNotification({
             type: 'error',
             message: 'Duyệt báo cáo thất bại',
+        })
+    };
+    const handleReject = async () => {
+        const { error } = await supabase
+            .from('thesis_phases')
+            .update({
+                comment: teacherComment,
+                status: 'reject',
+            })
+            .eq('id', phasesId)
+        if (!error) {
+            await refetchData({})
+            setIsOpen(false);
+            return openNotification({
+                message: 'Từ chối báo cáo thành công'
+            })
+        }
+        return openNotification({
+            type: 'error',
+            message: 'Từ chối báo cáo thất bại',
         })
     };
 
@@ -82,8 +110,22 @@ function ModalViewDetail(props) {
             onCancel() { },
         });
     };
+    const RejectModal = () => {
+        confirm({
+            title: 'Bạn không muốn phê duyệt báo cáo này?',
+            icon: <ExclamationCircleFilled />,
+            content: 'Yêu cầu sẽ không được khôi phục sau khi bạn nhấn đồng ý!',
+            okText: 'Đồng ý',
+            cancelText: 'Hủy',
+            centered: true,
+            onOk() {
+                handleReject()
+            },
+            onCancel() { },
+        });
+    };
     const handleDownloadFile = async () => {
-        const { data, error } = await downloadFile({pathname: urlFile});
+        const { data, error } = await downloadFile({ pathname: urlFile });
         if (!error) {
             window.open(data.signedUrl);
         }
@@ -98,7 +140,7 @@ function ModalViewDetail(props) {
                         type="button"
                         value={fileName}
                         prefix={fileName ? <FileAddOutlined /> : <></>}
-                        suffix={<CloudDownloadOutlined onClick={() => handleDownloadFile()}/>}
+                        suffix={<CloudDownloadOutlined onClick={() => handleDownloadFile()} />}
                         size='large'
                         className="input-add-file"
                     />
@@ -135,7 +177,9 @@ function ModalViewDetail(props) {
     const { modal: createNewTopic, toggleModal } = useModal({
         content: createTopicModalContent,
         title: 'Chi tiết báo cáo',
-        okText: `${comment.comment ? '' : 'Duyệt'}`,
+        okText: 'Duyệt',
+        rejectText: 'Không duyệt',
+        handleReject: RejectModal,
         handleConfirm: ConfirmModal,
         setIsOpen: setIsOpen
     });

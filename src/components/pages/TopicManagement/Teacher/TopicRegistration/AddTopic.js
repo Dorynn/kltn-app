@@ -8,7 +8,7 @@ import AuthContext from '../../../../../context/authContext';
 import useSupbaseAction from '../../../../../hooks/useSupabase/useSupabaseAction';
 
 function AddTopicModal(props) {
-    const {user} = useContext(AuthContext);
+    const {user, isAdmin} = useContext(AuthContext);
     const { TextArea } = Input;
     const baseData = {
         topic_code: '',
@@ -38,12 +38,14 @@ function AddTopicModal(props) {
             `)
             .eq('user_id', user.user_id)
     });
-    console.log('teachers', teachers);
 
     const handleCreateTopic = async () => {
         const { error } = await supabase
             .from('thesis_topics')
-            .insert({...newTopic})
+            .insert({
+                ...newTopic,
+                teacher_id: isAdmin ? null : newTopic.teacher_id,
+            })
         if (!error) {
             await refetchData({})
             setIsOpen(false);

@@ -15,6 +15,7 @@ function ReviewReportGraduation() {
     const { user } = useContext(AuthContext);
     const [currentPage, setCurrentPage] = useState(DEFAULT_CURRENT_PAGE);
     const [openModal, setOpenModal] = useState(false);
+    const [phasesId, setPhasesId] = useState('');
 
     const { data: reportList, requestAction: refetchData, loading: tableLoading, count: totalCountData } = useSupbaseAction({
         initialData: [],
@@ -29,18 +30,9 @@ function ReviewReportGraduation() {
                     students(user_id, profiles(name))
                 )
             `, { count: 'exact' })
+            .eq('status', 'pending')
             .eq('reviewer_id', user.user_id)
             .range((page - 1) * NUMBER_ITEM_PER_PAGE, NUMBER_ITEM_PER_PAGE * page - 1)
-    });
-    const { data: teachers } = useSupbaseAction({
-        initialData: [],
-        firstLoad: true,
-        defaultAction: async () => supabase
-            .from('profiles')
-            .select(`
-                *
-            `)
-            .eq('university_role', 'teacher')
     });
 
     // tùy chọn hiển thị data
@@ -56,12 +48,12 @@ function ReviewReportGraduation() {
                 <button
                     type='button'
                     className='btn btn-outline-secondary'
-                    onClick={() => setOpenModal(true)}
+                    onClick={() => {setOpenModal(true); setPhasesId(item.id)}}
                 >Xem</button>
             );
         }
         return item[field];
-    }, [teachers]);
+    }, []);
 
     // gọi lại api khi change page
     const onChangePage = useCallback(
@@ -95,7 +87,7 @@ function ReviewReportGraduation() {
 
     return (
         <>
-            <h4 className='title'>Danh sách sinh viên làm khóa luận tốt nghiệp</h4>
+            <h4 className='title'>Danh sách sinh viên nộp báo cáo khóa luận tốt nghiệp</h4>
             <div className='p-5'>
                 <TableCommon
                     loading={tableLoading}
@@ -120,6 +112,8 @@ function ReviewReportGraduation() {
                 <ModalViewDetail
                     isOpen={openModal}
                     setIsOpen={setOpenModal}
+                    phasesId={phasesId}
+                    refetchData={refetchData}
                 />}
         </>
     );

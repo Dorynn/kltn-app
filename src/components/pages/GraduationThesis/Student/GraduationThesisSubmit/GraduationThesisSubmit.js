@@ -1,10 +1,11 @@
 import React, { useContext, useEffect, useState } from "react";
-import { Input } from "antd";
+import { Input, Tooltip } from "antd";
 import {
     CloudUploadOutlined,
     LoadingOutlined,
     CheckOutlined,
-    LockOutlined
+    LockOutlined,
+    CloseOutlined
 } from '@ant-design/icons';
 import { configInput } from "./GraduationThesisSubmitconstants";
 import SubmitModal from "./SubmitModal";
@@ -19,19 +20,12 @@ function GraduationThesisSubmit() {
     const [itemInput, setItemInput] = useState('');
     const [valueThesisPhase, setValueThesisPhase] = useState({});
     const [statusInput, setStatusInput] = useState({
-        phase1: 'pending',
+        phase1: 'normal',
         phase2: 'locked',
         phase3: 'locked',
         phase4: 'locked',
     });
-    const { data: thesisPhasesId } = useSupbaseAction({
-        initialData: {},
-        firstLoad: true,
-        defaultAction: async () => supabase
-            .from('student_theses')
-            .select(`id`)
-            .eq('student_id', user.user_id)
-    });
+
     const { data: thesisPhases, requestAction: refetchData } = useSupbaseAction({
         initialData: [],
         firstLoad: true,
@@ -40,8 +34,7 @@ function GraduationThesisSubmit() {
             .select(`
                 *
             `)
-            // .eq('student_thesis_id', 138)
-            // .order('phase_order', { ascending: true })
+            .order('phase_order', { ascending: true })
     });
 
     useEffect(() => {
@@ -55,28 +48,40 @@ function GraduationThesisSubmit() {
     }, [thesisPhases])
 
     const getSuffixInput = (id) => {
-        if (statusInput[id] === 'pending') {
-            return <CloudUploadOutlined />
-        }
         if (statusInput[id] === 'normal') {
-            return <LoadingOutlined />
+            return <Tooltip title='Nộp tài liệu'>
+                <CloudUploadOutlined />
+            </Tooltip>
+        }
+        if (statusInput[id] === 'pending') {
+            return <Tooltip title='Chờ duyệt'>
+                <LoadingOutlined />
+            </Tooltip>
         }
         if (statusInput[id] === 'approved') {
-            return <CheckOutlined />
+            return <Tooltip title='Đã được duyệt'>
+                <CheckOutlined />
+            </Tooltip>
         }
-        return <LockOutlined />
+        if (statusInput[id] === 'reject') {
+            return <Tooltip title='Bị từ chối'>
+                <CloseOutlined />
+            </Tooltip>
+        }
+        return <Tooltip title='Khóa'>
+            <LockOutlined />
+        </Tooltip>
     };
     const getDisabledInput = (id) => {
-        return statusInput[id] === 'locked' || statusInput[id] === 'normal';
+        return statusInput[id] === 'locked' || statusInput[id] === 'pending';
     };
     const handleClickSubmit = item => {
         setIsOpenModal(true);
         setItemInput(item.id);
-        console.log('thesisPhases', thesisPhases);
         const thesisByPhasesOrder = thesisPhases.find(value => value.phase_order === item.key) || {};
         setValueThesisPhase(thesisByPhasesOrder);
     }
-    console.log('valueThesisPhase', valueThesisPhase);
+
     return (
         <>
             <h4 className='title'>Nộp tài liệu KLTN</h4>

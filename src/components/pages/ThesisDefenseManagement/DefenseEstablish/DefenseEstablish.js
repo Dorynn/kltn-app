@@ -13,7 +13,18 @@ const DefenseEstablish = () => {
         initialData: [],
         firstLoad: true, defaultAction: async () => await supabase
             .from('thesis_phases')
-            .select(`*, student_theses(*, defense_committees(*),  teachers(*, profiles(name)), students(*, profiles(name)), thesis_topics(*, teachers(*, profiles(name))))`)
+            .select(`
+                *, 
+                student_theses(
+                    *, 
+                    defense_committees(*),  
+                    teachers(*, profiles(name)), 
+                    students(*, profiles(name)), 
+                    thesis_topics(
+                        *, 
+                        teachers(*, profiles(name)))
+                    )
+            `)
             .eq('phase_order', 3)
             .eq('status', 'approved')
     })

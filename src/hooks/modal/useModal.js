@@ -1,7 +1,18 @@
 import React, { useState } from 'react';
-import { ConfigProvider, Modal } from 'antd';
+import { Button, ConfigProvider, Modal } from 'antd';
 
-export default function useModal({ width, content, title = 'Modal', handleConfirm = () => { }, setIsOpen = () => { }, okText = 'Đồng ý' }) {
+export default function useModal(
+    {
+        width,
+        content,
+        title = 'Modal',
+        handleConfirm = () => { },
+        handleReject = () => { },
+        setIsOpen = () => { },
+        okText = 'Đồng ý',
+        rejectText = '',
+        viewButton = true
+    }) {
     const [open, setOpen] = useState(false);
     const [confirmLoading, setConfirmLoading] = useState(false);
 
@@ -16,7 +27,17 @@ export default function useModal({ width, content, title = 'Modal', handleConfir
             handleCancel();
         } catch (err) {
             console.error(err);
-        } finally {
+            setConfirmLoading(false)
+            handleCancel();
+        }
+    };
+    const handleConfirmReject = async () => {
+        try {
+            setConfirmLoading(true);
+            await handleReject().then()
+            handleCancel();
+        } catch (err) {
+            console.error(err);
             setConfirmLoading(false)
             handleCancel();
         }
@@ -25,6 +46,48 @@ export default function useModal({ width, content, title = 'Modal', handleConfir
     const handleCancel = () => {
         setIsOpen(false);
         setOpen(false);
+    };
+
+    const getFooter = () => {
+        if (!viewButton) {
+            return null;
+        }
+        if (rejectText) {
+            return [
+                <Button key="back" onClick={handleCancel}>
+                    Hủy
+                </Button>,
+                <Button
+                    key="submit"
+                    type="primary"
+                    onClick={handleConfirmReject}
+                >
+                    {rejectText}
+                </Button>,
+                <Button
+                    key="submit"
+                    type="primary"
+                    onClick={handleOk}
+                >
+                    {okText}
+                </Button>,
+            ];
+        }
+        return [
+            <Button 
+                key="back" 
+                onClick={handleCancel}
+            >
+                Hủy
+            </Button>,
+            <Button
+                key="submit"
+                type="primary"
+                onClick={handleOk}
+            >
+                {okText}
+            </Button>
+        ];
     };
 
     const modal = (
@@ -52,6 +115,7 @@ export default function useModal({ width, content, title = 'Modal', handleConfir
                 okText={okText}
                 cancelText='Hủy'
                 width={width}
+                footer={getFooter()}
             >
                 {content}
             </Modal>

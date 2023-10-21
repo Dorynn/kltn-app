@@ -24,7 +24,6 @@ const TopicRegistrationProposed = () => {
     useEffect(() => {
         getRegisteredTopic()
     }, [])
-
     const { data: topics, requestAction: refetchData } = useSupbaseAction({
         initialData: [],
         firstLoad: true, defaultAction: async () => await supabase
@@ -32,13 +31,16 @@ const TopicRegistrationProposed = () => {
             .select(`*, teachers(*, profiles(name, user_code)))`)
     })
 
+    console.log('registeredTopic', registeredTopic);
+    console.log('topics', topics);
     const handleRegister = async ({ topic_id }) => {
         const { error } = await supabase
             .from('student_theses')
             .insert([{ topic_id: topic_id, student_id: user.user_id, status: 'pending' }])
-            
-            if (!error) {
+
+        if (!error) {
             getRegisteredTopic()
+            refetchData()
             return openNotification({
                 message: 'Đăng ký đề tài thành công'
             })
@@ -104,16 +106,16 @@ const TopicRegistrationProposed = () => {
             render: (_, record) => <>
                 {
 
-                    registeredTopic.length > 0 ? ((record.id === registeredTopic[0].topic_id) ? <Button>Đã đăng ký</Button> :
-                        <Button onClick={() => {
-                            ConfirmRegisterModal({ topic_id: record.id });
-
-                        }
-                        }> Đăng ký</Button>) : <Button onClick={() => {
-                            ConfirmRegisterModal({ topic_id: record.id });
-
-                        }
-                        }> Đăng ký</Button>
+                    registeredTopic.length > 0 ? ((record.id === registeredTopic[0].topic_id) ? <Button type="text">Đã đăng ký</Button> :
+                        <Button
+                            onClick={() => { ConfirmRegisterModal({ topic_id: record.id }) }}
+                            disabled={registeredTopic.length > 0}
+                        >
+                            Đăng ký
+                        </Button>) :
+                        <Button onClick={() => { ConfirmRegisterModal({ topic_id: record.id }) }}>
+                            Đăng ký
+                        </Button>
                 }
             </>,
         },
@@ -139,7 +141,11 @@ const TopicRegistrationProposed = () => {
         <>
             <h4 className='title'>Đăng ký và Đề xuất đề tài</h4>
             <div className='d-flex justify-content-end me-4'>
-                <Button className='mb-4' icon={<PlusCircleOutlined />} onClick={() => setOpenProposedModal(!isOpenProposedModal)} >Đề xuất đề tài</Button>
+                {registeredTopic.length < 0 && <Button
+                    className='mb-4'
+                    icon={<PlusCircleOutlined />}
+                    onClick={() => setOpenProposedModal(!isOpenProposedModal)}
+                >Đề xuất đề tài</Button>}
             </div>
             <div className='p-5'>
                 <Table

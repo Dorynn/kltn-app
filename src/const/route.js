@@ -15,7 +15,6 @@ import TopicRegistration from "../components/pages/TopicManagement/Teacher/Topic
 import ChargePerson from "../components/pages/User/ChargePerson/ChargePerson";
 import Lecturer from "../components/pages/User/Lecturer/Lecturer";
 import Student from "../components/pages/User/Student/Student";
-import ThesisGrade from "../components/pages/GraduationThesis/Student/ThesisGrade/ThesisGrade";
 import AchievedRecord from "../components/pages/ThesisDefenseManagement/AchievedRecord/AchievedRecord";
 import DefenseEstablish from "../components/pages/ThesisDefenseManagement/DefenseEstablish/DefenseEstablish";
 import GradeManagement from "../components/pages/ThesisDefenseManagement/GradeManagement/GradeManagement";
@@ -47,7 +46,6 @@ import {
     URL_GRADUATION_THESES_STUDENT_INFO,
     URL_DEFENSE_ESTABLISH,
     URL_REVIEWER_TEACHER_ASSIGNMENT,
-    URL_THESIS_GRADE,
     URL_VIEW_GRADES,
     URL_STATISTIC
 } from "./configUrl";
@@ -135,11 +133,6 @@ export const routes = [
     { 
         path: URL_REVIEW_REPORT_GRADUATION, 
         element: <ReviewReportGraduation /> 
-    },
-    // Xem điểm
-    {
-        path: URL_THESIS_GRADE,
-        element: <ThesisGrade/>
     },
     // Lưu trữ hồ sơ
     {

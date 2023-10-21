@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import useSupbaseAction from "../../../../hooks/useSupabase/useSupabaseAction";
 import supabase from "../../../../supabaseClient";
 import flattenObj from "../../../../helpers/flattenObj";
@@ -57,7 +57,6 @@ function GraduationThesesStudentInfo() {
             class: 'd-flex mb-2 px-4 pb-3 col-6',
         },
     ];
-    const user_id = sessionStorage.getItem('user_login');
     const baseStudentInfo = {
         topic_id: 0,
         status: "",
@@ -76,22 +75,19 @@ function GraduationThesesStudentInfo() {
         address: null,
         email: null
     };
-    const { data: defenseCommittees } = useSupbaseAction({
+    const [studentId, setStudentId] = useState(null);
+    const [defenseCommitte, setDefenseCommitte] = useState([]);
+
+    const { data: students } = useSupbaseAction({
         initialData: [],
         firstLoad: true,
         defaultAction: async () => supabase
-            .from('defense_committees')
+            .from('students')
             .select(`
                 *,
-                student_theses(*, 
-                    students(*, profiles(*)),
-                    thesis_topics(*, teachers(user_id, profiles(*)))
-                ),
-                defense_committee_members(*)
+                profiles(name, id)
             `)
-            // .eq('student_theses.student_id', user_id)
     });
-    console.log(defenseCommittees)
     const { data: teacherInfo } = useSupbaseAction({
         initialData: [],
         firstLoad: true,
@@ -102,24 +98,36 @@ function GraduationThesesStudentInfo() {
                 profiles(*)
             `)
     });
-    const { data: students } = useSupbaseAction({
-        initialData: [],
-        firstLoad: true,
-        defaultAction: async () => supabase
-            .from('students')
+    const getDefenseCommitteesByStudent = async (id) => {
+        const { data, error } = await supabase
+            .from('defense_committees')
             .select(`
                 *,
-                profiles(*)
+                student_theses(*, 
+                    students(*, profiles(*)),
+                    thesis_topics(*, teachers(user_id, profiles(*)))
+                ),
+                defense_committee_members(*)
             `)
-    });
-    const studentInfo = (Array.isArray(defenseCommittees) &&
-        defenseCommittees[1] &&
-        defenseCommittees[1].student_theses &&
-        flattenObj({ obj: defenseCommittees[1].student_theses })) || baseStudentInfo;
+            .eq('student_theses.student_id', id)
+        if (!error) {
+            setDefenseCommitte(data)
+        }
+    }
+    useEffect(() => {
+        if (studentId) {
+            getDefenseCommitteesByStudent(studentId);
+        }
+    }, [studentId])
+
+    const studentInfo = (Array.isArray(defenseCommitte) &&
+        defenseCommitte[1] &&
+        defenseCommitte[1].student_theses &&
+        flattenObj({ obj: defenseCommitte[1].student_theses })) || baseStudentInfo;
     const getData = (field) => {
-        if (Array.isArray(defenseCommittees) && defenseCommittees[1]) {
-            const fullData = { ...defenseCommittees[1], ...studentInfo };
-            const { defense_committee_members } = defenseCommittees[1];
+        if (Array.isArray(defenseCommitte) && defenseCommitte[1]) {
+            const fullData = { ...defenseCommitte[1], ...studentInfo };
+            const { defense_committee_members } = defenseCommitte[1];
             if (field === 'student') {
                 return `SV${fullData?.student_theses.student_id} - ${fullData?.student_theses.students.profiles.name}`;
             }
@@ -131,25 +139,32 @@ function GraduationThesesStudentInfo() {
                 const teacher = teacherInfo.find(i => defense_committee_members.some(v => i.user_id === v.teacher_id && v.commitee_role === field));
                 return teacher ? `GV${teacher?.profiles?.id} - ${teacher?.profiles?.name}` : '-';
             }
-            if (field === 'defense_location'){
+            if (field === 'defense_location') {
                 return `Phòng ${fullData?.defense_location}`
             }
-            if (field === 'defense_day'){
+            if (field === 'defense_day') {
                 return `${fullData?.defense_day} / Ca ${fullData?.defense_shift}`
             }
 
             return fullData?.[field];
         }
     }
+    const handleSelectStudent = e => {
+        return setStudentId(e);
+    }
     return (
         <>
             <h4 className='title'>Thông tin bảo vệ khóa luận tốt nghiệp</h4>
             <div>
-                <div>
-                    <label>Chọn sinh viên</label>
-                    <Select></Select>
+                <div className="d-flex justify-content-center align-items-center w-25 m-auto mb-4">
+                    <Select
+                        className="w-100"
+                        placeholder="Chọn sinh viên"
+                        options={students.map(({ user_id, profiles }) => ({ label: `SV${profiles.id} - ${profiles.name}`, value: user_id }))}
+                        onChange={(e) => handleSelectStudent(e)}
+                    ></Select>
                 </div>
-                {defenseCommittees.length > 0 ?
+                {defenseCommitte.length > 0 ?
                     <div style={{ width: '80%', margin: 'auto', border: '1px solid #000', height: '100%' }}>
                         <div className="row mt-3">
                             {graduationThesisInfo.map(item => (
@@ -160,7 +175,9 @@ function GraduationThesesStudentInfo() {
                             ))}
                         </div>
                     </div> :
-                    <h4>Vui lòng chọn sinh viên để xem thông tin</h4>
+                    studentId ?
+                        <h4>Sinh viên bạn chọn chưa có thông tin</h4> :
+                        <h4>Vui lòng chọn sinh viên để xem thông tin</h4>
                 }
             </div>
         </>

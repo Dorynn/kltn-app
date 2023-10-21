@@ -18,13 +18,13 @@ export const graduationThesisGrades = [
         class: 'd-flex mb-2 px-4 pb-3 col-12',
     },
     {
-        label: '',
-        field: 'grades',
-        type: 'TABLE',
+        label: 'Điểm trung bình',
+        field: 'medium_grades',
+        type: 'TEXT',
         class: 'd-flex mb-2 px-4 pb-3 col-12',
     },
     {
-        label: 'Kết quả đánh giá',
+        label: 'Đánh giá xếp loại',
         field: 'result_evaluation',
         type: 'TEXT',
         class: 'd-flex mb-2 px-4 pb-3 col-12',
