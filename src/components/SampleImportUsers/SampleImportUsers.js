@@ -13,9 +13,9 @@ export default function SampleImportUsers() {
         try {
             const { error } = await supabase.functions.invoke('import-bulk-users', {
                 method: 'POST',
-                headers: { "content-type": "multipart/form-data" },
                 body: fmData
             })
+
             if (error) {
                 return console.log('*** upload error ***', error);
             }
