@@ -72,13 +72,11 @@ const ResultUpdate = () => {
                     defense_committees(*)
                 )
             `, { count: 'exact' })
-            .eq('phase_order', 5)
-            // .eq('status', 'pending')
+            .in('phase_order', [3, 4])
+            .eq('status', 'approved')
             .range((page - 1) * NUMBER_ITEM_PER_PAGE, NUMBER_ITEM_PER_PAGE * page - 1)
     })
-    console.log(reviewList)
     const handleUpdateResult = (item) => {
-        console.log(item);
         setOpenModal(true)
         setResultUpdate({
             ...item
@@ -92,11 +90,17 @@ const ResultUpdate = () => {
             return `SV${item[field]}`;
         }
         if (field === 'action') {
-            return (item?.status === 'normal' ?
-                <Button onClick={() => handleUpdateResult(item)}>
+            if (item?.report_url === null) {
+                return (<Button onClick={() => handleUpdateResult(item)}>
                     Cập nhật
-                </Button>
-                : <Button>Hoàn Thành</Button>);
+                </Button>);
+            }
+            if (item?.report_url && item?.phase_order === 4) {
+                return (<Button onClick={() => handleUpdateResult(item)}>
+                    Sửa
+                </Button>);
+            }
+            return (<Button>Hoàn Thành</Button>);
         }
         return item[field];
     }, []);

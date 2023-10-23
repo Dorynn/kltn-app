@@ -61,6 +61,7 @@ function SubmitModal(props) {
     const comment = (dataPhase && dataPhase.length > 0 && dataPhase[0] && dataPhase[0]?.thesis_phases?.comment) || { comment: '' };
     const urlFile = (dataPhase && dataPhase.length > 0 && dataPhase[0] && dataPhase[0].submit_url) || '';
     const fileName = urlFile && urlFile.split('/')[1];
+    const phaseOrder = (dataPhase && dataPhase.length > 0 && dataPhase[0] && dataPhase[0]?.thesis_phases?.phase_order) || '';
 
     useEffect(() => {
         if (dataPhase) {
@@ -254,14 +255,13 @@ function SubmitModal(props) {
             }
         </Form>
     );
-
     const { modal: createNewTopic, toggleModal } = useModal({
         content: createTopicModalContent,
         title: title,
         okText: valueThesisPhase?.status === 'reject' ? 'Hoàn tác' : 'Nộp',
         handleConfirm: valueThesisPhase?.status === 'reject' ? handleUndo : ConfirmModal,
         setIsOpen: setIsOpen,
-        viewButton: valueThesisPhase?.status !== 'approved',
+        viewButton: valueThesisPhase?.status === 'normal' || (valueThesisPhase?.status === 'reject' && phaseOrder !== 3),
     });
 
     return (
