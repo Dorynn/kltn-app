@@ -31,8 +31,6 @@ const TopicRegistrationProposed = () => {
             .select(`*, teachers(*, profiles(name, user_code)))`)
     })
 
-    console.log('registeredTopic', registeredTopic);
-    console.log('topics', topics);
     const handleRegister = async ({ topic_id }) => {
         const { error } = await supabase
             .from('student_theses')
@@ -141,7 +139,7 @@ const TopicRegistrationProposed = () => {
         <>
             <h4 className='title'>Đăng ký và Đề xuất đề tài</h4>
             <div className='d-flex justify-content-end me-4'>
-                {registeredTopic.length < 0 && <Button
+                {registeredTopic.length === 0 && <Button
                     className='mb-4'
                     icon={<PlusCircleOutlined />}
                     onClick={() => setOpenProposedModal(!isOpenProposedModal)}

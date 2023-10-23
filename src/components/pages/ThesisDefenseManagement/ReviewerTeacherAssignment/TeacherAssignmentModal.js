@@ -40,7 +40,7 @@ const TeacherAssignmentModal = ({ isOpen, updateTeacherAssignment, refetchData }
             </Form.Item>
         </Form>
     )
-
+    console.log('updateTeacherAssignment', updateTeacherAssignment);
     const confirmTeacherAssignment = async () => {
         const { error} = await supabase
             .from('student_theses')
@@ -51,7 +51,7 @@ const TeacherAssignmentModal = ({ isOpen, updateTeacherAssignment, refetchData }
             await supabase
                 .from('thesis_phases')
                 .update({ status: 'normal' })
-                .eq('id', updateTeacherAssignment.id)
+                .eq('id', updateTeacherAssignment.id + 1)
             await refetchData({})
             return openNotification({
                 message: 'Phân công giáo viên phản biện thành công!'

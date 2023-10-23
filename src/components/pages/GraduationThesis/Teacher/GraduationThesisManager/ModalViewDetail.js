@@ -150,7 +150,7 @@ function ModalViewDetail(props) {
                     value={teacherComment}
                     onChange={e => setTeacherComment(e.target.value)}
                     rows={5}
-                    disabled={comment[item.field]}
+                    // disabled={comment[item.field]}
                 ></TextArea>
             );
         }

@@ -116,6 +116,7 @@ function SubmitModal(props) {
                         submit_url: data.path,
                         phase_id: valueThesisPhase.id
                     })
+                    .eq('id', valueThesisPhase.id)
                     .select()
             } else {
                 await supabase
@@ -210,8 +211,9 @@ function SubmitModal(props) {
                         (valueThesisPhase?.status === 'normal' || valueThesisPhase?.comment)
                     ) && (
                             <div className="invalid-feedback d-block">
-                                File tải lên không được để trống
-                                Tên file không được chứa tiếng Việt có dấu và ký tự đặc biệt
+                                <span>File tải lên không được để trống</span>
+                                <br></br>
+                                <span>Tên file không được chứa tiếng Việt có dấu và ký tự đặc biệt</span>
                             </div>
                         )}
                 </>
