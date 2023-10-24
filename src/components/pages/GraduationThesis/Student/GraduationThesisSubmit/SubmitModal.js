@@ -61,6 +61,7 @@ function SubmitModal(props) {
     const comment = (dataPhase && dataPhase.length > 0 && dataPhase[0] && dataPhase[0]?.thesis_phases?.comment) || { comment: '' };
     const urlFile = (dataPhase && dataPhase.length > 0 && dataPhase[0] && dataPhase[0].submit_url) || '';
     const fileName = urlFile && urlFile.split('/')[1];
+    const phaseOrder = (dataPhase && dataPhase.length > 0 && dataPhase[0] && dataPhase[0]?.thesis_phases?.phase_order) || '';
 
     useEffect(() => {
         if (dataPhase) {
@@ -116,6 +117,7 @@ function SubmitModal(props) {
                         submit_url: data.path,
                         phase_id: valueThesisPhase.id
                     })
+                    .eq('id', valueThesisPhase.id)
                     .select()
             } else {
                 await supabase
@@ -210,8 +212,9 @@ function SubmitModal(props) {
                         (valueThesisPhase?.status === 'normal' || valueThesisPhase?.comment)
                     ) && (
                             <div className="invalid-feedback d-block">
-                                File tải lên không được để trống
-                                Tên file không được chứa tiếng Việt có dấu và ký tự đặc biệt
+                                <span>File tải lên không được để trống</span>
+                                <br></br>
+                                <span>Tên file không được chứa tiếng Việt có dấu và ký tự đặc biệt</span>
                             </div>
                         )}
                 </>
@@ -252,14 +255,13 @@ function SubmitModal(props) {
             }
         </Form>
     );
-
     const { modal: createNewTopic, toggleModal } = useModal({
         content: createTopicModalContent,
         title: title,
         okText: valueThesisPhase?.status === 'reject' ? 'Hoàn tác' : 'Nộp',
         handleConfirm: valueThesisPhase?.status === 'reject' ? handleUndo : ConfirmModal,
         setIsOpen: setIsOpen,
-        viewButton: valueThesisPhase?.status !== 'approved',
+        viewButton: valueThesisPhase?.status === 'normal' || (valueThesisPhase?.status === 'reject' && phaseOrder !== 3),
     });
 
     return (

@@ -53,10 +53,10 @@ const ApprovedTopicList = () => {
                         onClick={() => { ConfirmModal(item) }}
                     ><i className='fas fa-check'></i></button>
                     <button
-                    type="button"
-                    className="btn btn-none"
-                    onClick={() => { ConfirmModal(item) }}
-                ><i className='fas fa-times'></i></button>
+                        type="button"
+                        className="btn btn-none"
+                        onClick={() => { RejectModal(item) }}
+                    ><i className='fas fa-times'></i></button>
                 </> : <></>}
             </>);
         }
@@ -91,9 +91,9 @@ const ApprovedTopicList = () => {
         setConfirmLoading(false);
         if (!error) {
             await supabase
-            .from('thesis_topics')
-            .update({register_number: item.register_number + 1})
-            .eq('id', item.topic_id)
+                .from('thesis_topics')
+                .update({ register_number: item.register_number + 1 })
+                .eq('id', item.topic_id)
             await refetchData({})
             return openNotification({
                 message: 'Duyệt đề tài sinh viên đăng ký thành công'
@@ -102,6 +102,24 @@ const ApprovedTopicList = () => {
         return openNotification({
             type: 'error',
             message: 'Duyệt đề tài sinh viên đăng ký thất bại',
+        })
+    };
+    const handleRejectTopic = async (item) => {
+        setConfirmLoading(true);
+        setConfirmLoading(false);
+        const { error } = await supabase
+            .from('student_theses')
+            .delete()
+            .eq('id', item.id)
+        if (!error) {
+            await refetchData({})
+            return openNotification({
+                message: 'Từ chối đề tài sinh viên đăng ký thành công'
+            })
+        }
+        return openNotification({
+            type: 'error',
+            message: 'Từ chối đề tài sinh viên đăng ký thất bại',
         })
     };
 
@@ -116,6 +134,21 @@ const ApprovedTopicList = () => {
             confirmLoading: confirmLoading,
             onOk() {
                 handleApproveTopic(item)
+            },
+            onCancel() { },
+        });
+    };
+    const RejectModal = (item) => {
+        confirm({
+            title: 'Bạn có thực sự muốn từ chối đề tài này?',
+            icon: <ExclamationCircleFilled />,
+            content: 'Đề tài sẽ bị xóa sau khi bạn nhấn đồng ý!',
+            okText: 'Đồng ý',
+            cancelText: 'Hủy',
+            centered: true,
+            confirmLoading: confirmLoading,
+            onOk() {
+                handleRejectTopic(item)
             },
             onCancel() { },
         });

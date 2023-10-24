@@ -39,7 +39,7 @@ function GraduationThesisInfo() {
             `)
             .eq('student_theses.student_id', user_id)
     });
-    
+    console.log('defenseCommittees', defenseCommittees);
     const { data: teacherInfo } = useSupbaseAction({
         initialData: [],
         firstLoad: true,
@@ -79,7 +79,7 @@ function GraduationThesisInfo() {
     return (
         <>
             <h4 className='title'>Thông tin bảo vệ khóa luận tốt nghiệp</h4>
-            {!defenseCommittees.length > 0 ?
+            {(defenseCommittees.length > 0 && defenseCommittees[0].student_theses !== null) ?
                 <div style={{ width: '80%', margin: 'auto', border: '1px solid #000', height: '100%' }}>
                     <div className="row mt-3">
                         {graduationThesisInfo.map(item => (

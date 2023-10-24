@@ -33,15 +33,17 @@ function ModalViewDetail(props) {
             .from('submit_assignments')
             .select(`
                 submit_url, phase_id,
-                thesis_phases(comment, phase_order)
+                thesis_phases(comment, phase_order, student_thesis_id)
             `)
             .eq('phase_id', phasesId)
     });
+
     const urlFile = (dataPhase && dataPhase.length > 0 && dataPhase[0] && dataPhase[0].submit_url) || '';
     const comment = (dataPhase && dataPhase.length > 0 && dataPhase[0] && dataPhase[0]?.thesis_phases) || { comment: '' };
     const fileName = urlFile && urlFile.split('/')[1];
     const phaseOrder = (dataPhase && dataPhase.length > 0 && dataPhase[0] && dataPhase[0]?.thesis_phases?.phase_order) || '';
-
+    const studentThesisId = (dataPhase && dataPhase.length > 0 && dataPhase[0] && dataPhase[0]?.thesis_phases?.student_thesis_id) || '';
+    const isReviewTeacher = phaseOrder && phaseOrder === 3;
     useEffect(() => {
         if (dataPhase) {
             setTeacherComment(comment && comment.comment);
@@ -84,6 +86,14 @@ function ModalViewDetail(props) {
             })
             .eq('id', phasesId)
         if (!error) {
+            if (isReviewTeacher) {
+                await supabase
+                    .from('student_theses')
+                    .update({
+                        status: 'cancel'
+                    })
+                    .eq('id', studentThesisId)
+            }
             await refetchData({})
             setIsOpen(false);
             return openNotification({
@@ -153,7 +163,7 @@ function ModalViewDetail(props) {
                     value={teacherComment}
                     onChange={e => setTeacherComment(e.target.value)}
                     rows={5}
-                    disabled={comment[item.field]}
+                    // disabled={comment[item.field]}
                 ></TextArea>
             );
         }

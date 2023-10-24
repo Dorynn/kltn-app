@@ -13,5 +13,8 @@ export const getStatus = (status) => {
     if (status === 'reject') {
         return <div className="status status-reject">Từ chối duyệt</div>;
     }
+    if (status === 'approved') {
+        return <div className="status status-approved">Hoàn thành</div>;
+    }
     return '';
 }

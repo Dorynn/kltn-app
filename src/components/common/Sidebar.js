@@ -29,10 +29,12 @@ import {
     URL_STATISTIC
 
 } from "../../const/configUrl";
+import supabase from '../../supabaseClient';
 
 
 const { Sider } = Layout;
 const { SubMenu } = Menu;
+const { data } = await supabase.rpc('is_charge_person');
 
 const Sidebar = () => {
     const { isAdmin, isTeacher, isStudent } = useContext(AuthContext);
@@ -172,7 +174,7 @@ const Sidebar = () => {
                         </SubMenu>
                     }
                     {
-                        (isAdmin || isTeacher) &&
+                        (isAdmin || (isTeacher && data)) &&
                         <SubMenu
                             key="sub4"
                             title={<span>Quản lý bảo vệ KLTN</span>}
@@ -207,15 +209,14 @@ const Sidebar = () => {
                                     <span>Hồ sơ lưu trữ</span>
                                 </Link>
                             </Menu.Item>
-
                         </SubMenu>
                     }
                     {
-                        (isAdmin || isTeacher)&&
+                        (isAdmin || (isTeacher && data)) &&
                         <Menu.Item key="23">
-                        <Link to={URL_STATISTIC}>
-                            <span>Báo cáo thống kê</span>
-                        </Link>
+                            <Link to={URL_STATISTIC}>
+                                <span>Báo cáo thống kê</span>
+                            </Link>
                         </Menu.Item>
                     }
                 </Menu>

@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import useSupbaseAction from '../../../../hooks/useSupabase/useSupabaseAction';
 import supabase from '../../../../supabaseClient';
 import { DEFAULT_CURRENT_PAGE, NUMBER_ITEM_PER_PAGE } from '../../../../const/table';
@@ -25,8 +25,8 @@ const ResultUpdate = () => {
         },
         {
             title: 'Tên sinh viên',
-            dataIndex: 'name',
-            key: 'name',
+            dataIndex: 'student_name',
+            key: 'student_name',
             align: 'center',
         },
         {
@@ -61,42 +61,80 @@ const ResultUpdate = () => {
     const [resultUpdate, setResultUpdate] = useState(baseData);
     const { data: reviewList, requestAction: refetchData, loading: tableLoading, count: totalCountData } = useSupbaseAction({
         initialData: [],
-        firstLoad: true, defaultAction: async ({ page = 1 }) => await supabase
+        firstLoad: true,
+        defaultAction: async ({ page = 1 }) => await supabase
             .from('thesis_phases')
             .select(`
-                *, 
+                id, phase_order, reviewer_id, status, student_thesis_id,
                 student_theses(
                     student_id, 
                     students(profiles(name)), 
                     thesis_topics(topic_name),
-                    defense_committees(*)
+                    defense_committees(
+                        id,
+                        student_thesis_id,
+                        defense_day,
+                        defense_location,
+                        defense_shift,
+                        report_url
+                    )
                 )
             `, { count: 'exact' })
-            .eq('phase_order', 5)
-            // .eq('status', 'pending')
+            .in('phase_order', [3, 4])
+            .eq('status', 'approved')
             .range((page - 1) * NUMBER_ITEM_PER_PAGE, NUMBER_ITEM_PER_PAGE * page - 1)
     })
-    console.log(reviewList)
+    const data = [];
+
+    reviewList.map((item, index) => {
+        const defenseCommittees = item && item.student_theses && item.student_theses.defense_committees &&
+            item.student_theses.defense_committees.length > 0 && item.student_theses.defense_committees[0]
+        data.push({
+            no: index + 1,
+            key: item.id,
+            id: item.id,
+            student_thesis_id: item.student_thesis_id,
+            phase_order: item.phase_order,
+            status: item.status,
+            reviewer_id: item.reviewer_id,
+            student_id: item?.student_theses?.student_id,
+            student_name: item?.student_theses?.students?.profiles?.name,
+            topic_name: item?.student_theses?.thesis_topics?.topic_name,
+            defense_committees_id: defenseCommittees?.id,
+            defense_day: defenseCommittees?.defense_day,
+            defense_location: defenseCommittees?.defense_location,
+            defense_shift: defenseCommittees?.defense_shift,
+            report_url: defenseCommittees?.report_url,
+        })
+    })
+
     const handleUpdateResult = (item) => {
-        console.log(item);
         setOpenModal(true)
         setResultUpdate({
             ...item
-        })
+        });
     };
     const parseData = useCallback((item, field, index) => {
         if (field === 'index') {
+            console.log('item', item);
             return index + 1;
         }
         if (field === 'student_id') {
             return `SV${item[field]}`;
         }
         if (field === 'action') {
-            return (item?.status === 'normal' ?
-                <Button onClick={() => handleUpdateResult(item)}>
+            console.log('item', item);
+            if (item?.report_url === null) {
+                return (<Button onClick={() => handleUpdateResult(item)}>
                     Cập nhật
-                </Button>
-                : <Button>Hoàn Thành</Button>);
+                </Button>);
+            }
+            if (item?.report_url && item?.phase_order === 4) {
+                return (<Button onClick={() => handleUpdateResult(item)}>
+                    Sửa
+                </Button>);
+            }
+            return (<Button>Hoàn Thành</Button>);
         }
         return item[field];
     }, []);
@@ -112,7 +150,6 @@ const ResultUpdate = () => {
         },
         [refetchData],
     );
-
     return (
         <div>
             <h4 className='title'>Danh sách sinh viên hoàn thành bảo vệ khóa luận tốt nghiệp</h4>
@@ -121,7 +158,7 @@ const ResultUpdate = () => {
                     columns={columnConfig}
                     loading={tableLoading}
                     primaryKey='id'
-                    data={reviewList?.map(item => flattenObj({ obj: item }))}
+                    data={data || []}
                     parseFunction={parseData}
                     isShowPaging
                     onChangePage={page => onChangePage(page)}
