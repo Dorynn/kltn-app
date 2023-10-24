@@ -137,7 +137,8 @@ const ProposedTopicList = () => {
             topic_description: item.topic_description,
             suggested_student_id: item.suggested_student_id,
             status: item.status,
-            student_code: `SV${item?.students?.user_id || ''} - ${item?.students?.profiles?.name || ''}`
+            student_code: `SV${item?.students?.user_id || ''} - ${item?.students?.profiles?.name || ''}`,
+            teacher_id: item?.teacher_id
         })
     })
     const ConfirmModalReject = (record) => {
@@ -191,7 +192,7 @@ const ProposedTopicList = () => {
                     bordered
                 />
             </div>
-            {isOpenReviewModal && <ReviewTopicModal isOpen={isOpenReviewModal} setReviewedTopic={setReviewedTopic} reviewedTopic={reviewedTopic} />}
+            {isOpenReviewModal && <ReviewTopicModal isOpen={isOpenReviewModal}  reviewedTopic={reviewedTopic} refetchData={refetchData} />}
         </>
     );
 };

@@ -5,13 +5,15 @@ import TextArea from 'antd/es/input/TextArea';
 import supabase from '../../../../../supabaseClient';
 import useSupbaseAction from '../../../../../hooks/useSupabase/useSupabaseAction';
 
-const ReviewTopicModal = ({ isOpen, setReviewedTopic, reviewedTopic }) => {
+const ReviewTopicModal = ({ isOpen, reviewedTopic, refetchData }) => {
     const { data: teachers } = useSupbaseAction({
         initialData: [],
         firstLoad: true, defaultAction: async () => supabase
             .from('teachers')
-            .select(`*, profiles(user_code, name)`)
+            .select(`*, profiles( name)`)
     })
+    const [reviewClone, setReviewClone] = useState(reviewedTopic)
+    console.log(reviewClone)
     const createReviewTopicModalContent = (
         <Form
             labelCol={{ span: 6 }}
@@ -29,9 +31,9 @@ const ReviewTopicModal = ({ isOpen, setReviewedTopic, reviewedTopic }) => {
                     showSearch
                     optionFilterProp='children'
                     filterOption={(input, option) => (option?.label ?? "").includes(input)}
-                    options={teachers.map(({ profiles, id }) => ({ label: `${profiles.user_code} - ${profiles.name}`, value: id }))}
-                    onChange={(value) => setReviewedTopic(prev => ({ ...prev, teacher_id: value }))}
-                    value={reviewedTopic.teacher_id}
+                    options={teachers.map(({ profiles, user_id }) => ({ label: `GV${user_id} - ${profiles.name}`, value: user_id }))}
+                    onChange={(value) => setReviewClone(prev => ({ ...prev, teacher_id: value }))}
+                    value={reviewClone.teacher_id}
                 />
             </Form.Item>
             <Form.Item
@@ -48,18 +50,30 @@ const ReviewTopicModal = ({ isOpen, setReviewedTopic, reviewedTopic }) => {
     )
 
     const handleConfirmTopic = async () => {
-        // add vào bảng thesis_topic
         console.log(reviewedTopic);
-        await supabase
-        .from('thesis_topics')
-        .insert({
-            topic_name: reviewedTopic.topic_name,
-            topic_description: reviewedTopic.topic_description,
-            limit_register_number: 1,
-            register_number: 1,
-            teacher_id: reviewedTopic.teacher_id
-        })
-        .select()
+        // add vào bảng thesis_topic
+        if(reviewedTopic.teacher_id === null) 
+            await supabase
+            .from('suggested_topics')
+            .update({
+                teacher_id: reviewClone.teacher_id,
+                status: 'pending'
+            })
+            .eq('id', reviewedTopic.id)
+        else
+            await supabase
+            .from('thesis_topics')
+            .insert({
+                topic_name: reviewedTopic.topic_name,
+                topic_description: reviewedTopic.topic_description,
+                limit_register_number: 1,
+                register_number: 1,
+                teacher_id: reviewClone.teacher_id
+            })
+            .select()
+
+        await refetchData({})
+        
     }
 
     const { modal: createReviewTopicModal, toggleModal } = useModal({
