@@ -4,6 +4,8 @@ import useSupbaseAction from '../../../../hooks/useSupabase/useSupabaseAction';
 import TableCommon from '../../../common/TableCommon/TableCommon';
 import { DEFAULT_CURRENT_PAGE, NUMBER_ITEM_PER_PAGE } from '../../../../const/table';
 import flattenObj from '../../../../helpers/flattenObj';
+import { FileAddOutlined } from '@ant-design/icons';
+import downloadFile from '../../../../helpers/storage/downloadFile';
 
 const AchievedRecord = () => {
     const columnConfig = [
@@ -34,8 +36,8 @@ const AchievedRecord = () => {
         },
         {
             title: 'Tài liệu',
-            dataIndex: 'documentFile',
-            key: 'documentFile',
+            dataIndex: 'report_url',
+            key: 'report_url',
             align: 'center',
         },
     ];
@@ -53,7 +55,12 @@ const AchievedRecord = () => {
             .eq('status', 'approved')
             .range((page - 1) * NUMBER_ITEM_PER_PAGE, NUMBER_ITEM_PER_PAGE * page - 1)
     })
-    console.log(recordList)
+    const handleDownloadFile = async (urlFile) => {
+        const { data, error } = await downloadFile({ pathname: urlFile, folder: 'defense_report' });
+        if (!error) {
+            window.open(data.signedUrl);
+        }
+    };
     const parseData = useCallback((item, field, index) => {
         if (field === 'index') {
             return index + 1;
@@ -61,8 +68,14 @@ const AchievedRecord = () => {
         if (field === 'student_id') {
             return `SV${item[field]}`;
         }
-        if (field === 'documentFile') {
-            return ``;
+        if (field === 'report_url') {
+            const parts = item[field] && item[field].split('/');
+            const result = parts?.length === 2 && parts[1];
+            return (result ?
+                <button className='btn-none' onClick={() => handleDownloadFile(item[field])}>
+                    <FileAddOutlined />
+                    <span style={{marginLeft: '12px'}}>{result}</span>
+                </button> : <></>);
         }
         return item[field];
     }, []);

@@ -109,7 +109,7 @@ function GraduationThesesStudentInfo() {
                 ),
                 defense_committee_members(*)
             `)
-            .eq('student_theses.student_id', id)
+            .eq('student_theses.student_id', studentId)
         if (!error) {
             setDefenseCommitte(data)
         }
@@ -121,15 +121,15 @@ function GraduationThesesStudentInfo() {
     }, [studentId])
 
     const studentInfo = (Array.isArray(defenseCommitte) &&
-        defenseCommitte[1] &&
-        defenseCommitte[1].student_theses &&
-        flattenObj({ obj: defenseCommitte[1].student_theses })) || baseStudentInfo;
+        defenseCommitte[0] &&
+        defenseCommitte[0].student_theses &&
+        flattenObj({ obj: defenseCommitte[0].student_theses })) || baseStudentInfo;
     const getData = (field) => {
-        if (Array.isArray(defenseCommitte) && defenseCommitte[1]) {
-            const fullData = { ...defenseCommitte[1], ...studentInfo };
-            const { defense_committee_members } = defenseCommitte[1];
+        if (Array.isArray(defenseCommitte) && defenseCommitte[0]) {
+            const fullData = { ...defenseCommitte[0], ...studentInfo };
+            const { defense_committee_members } = defenseCommitte[0];
             if (field === 'student') {
-                return `SV${fullData?.student_theses.student_id} - ${fullData?.student_theses.students.profiles.name}`;
+                return `SV${fullData?.student_theses?.student_id} - ${fullData?.student_theses?.students?.profiles?.name}`;
             }
             if (field === 'teacher_id' || field === 'reviewer_teacher_id') {
                 const teacher = teacherInfo.find(i => studentInfo[field] === i.user_id);
@@ -164,7 +164,7 @@ function GraduationThesesStudentInfo() {
                         onChange={(e) => handleSelectStudent(e)}
                     ></Select>
                 </div>
-                {defenseCommitte.length > 0 ?
+                {(defenseCommitte.length > 0 && defenseCommitte[0].student_theses !== null) ?
                     <div style={{ width: '80%', margin: 'auto', border: '1px solid #000', height: '100%' }}>
                         <div className="row mt-3">
                             {graduationThesisInfo.map(item => (

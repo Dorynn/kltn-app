@@ -1,13 +1,21 @@
-import React, { useContext, useEffect } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import useModal from '../../../../hooks/modal/useModal';
 import { Form, Input, Modal, Radio } from 'antd';
 import NotificationContext from '../../../../context/notificationContext';
-import { ExclamationCircleFilled } from '@ant-design/icons';
+import { ExclamationCircleFilled, CloudUploadOutlined, FileAddOutlined } from '@ant-design/icons';
+import uploadFile from '../../../../helpers/storage/uploadFile';
+import useAuth from '../../../../hooks/useSupabase/useAuth';
+import supabase from '../../../../supabaseClient';
 
 function DocumentUpdateModal(props) {
     const { refetchData, isOpen, setIsOpen, resultUpdate } = props;
     const { confirm } = Modal;
+    const { user } = useAuth();
+    const inputRef = useRef();
     const { openNotification } = useContext(NotificationContext);
+    const [file, setFile] = useState(null);
+    const [radioValue, setRadioValue] = useState('success');
+    const [errorStatus, setErrorStatus] = useState(['File tải lên không được để trống', 'Tên file không được chứa tiếng Việt có dấu và ký tự đặc biệt']);
 
     const fieldUpdateTopic = [
         {
@@ -17,7 +25,7 @@ function DocumentUpdateModal(props) {
         },
         {
             label: 'Tên sinh viên',
-            field: 'name',
+            field: 'student_name',
             type: 'INPUT',
         },
         {
@@ -27,8 +35,8 @@ function DocumentUpdateModal(props) {
         },
         {
             label: 'Biên bản bảo vệ',
-            field: 'topic_description',
-            type: 'INPUT',
+            field: 'report_url',
+            type: 'FILEUPLOAD',
         },
         {
             label: '',
@@ -37,26 +45,79 @@ function DocumentUpdateModal(props) {
         },
 
     ];
-
     useEffect(() => {
         if (isOpen) {
             toggleModal(isOpen);
         }
     }, [isOpen])
-
-    const ConfirmModal = (id) => {
+    const ConfirmModal = (e) => {
+        if (errorStatus) {
+            return e.preventDefault();
+        }
         confirm({
-            title: 'Bạn có thực sự muốn thay đổi đề tài này?',
+            title: 'Bạn có thực sự muốn cập nhật thông tin này?',
             icon: <ExclamationCircleFilled />,
             content: 'Đề tài sẽ không được khôi phục sau khi bạn nhấn đồng ý!',
             okText: 'Đồng ý',
             cancelText: 'Hủy',
             centered: true,
             onOk() {
-                // handleUpdateTopic({ id })
+                handleUpdateResult()
             },
             onCancel() { },
         });
+    };
+
+    const handleOnUpload = event => {
+        setFile(event.target.files[0]);
+        setErrorStatus(null);
+    };
+    const handleUpdateResult = async () => {
+        const { data, error } = await uploadFile({ file: file, folder: 'defense_report', user: user });
+        if (!error) {
+            // lưu url vào defense_commmit
+            await supabase
+                .from('defense_committees')
+                .update({
+                    report_url: data.path
+                })
+                .eq('id', resultUpdate.defense_committees_id)
+            // nếu hoàn thành -> student_theses = approve
+            if (radioValue === 'success') {
+                await supabase
+                    .from('student_theses')
+                    .update({
+                        status: 'approved'
+                    })
+                    .eq('id', resultUpdate.student_thesis_id)
+                setIsOpen(false);
+                await refetchData({});
+                return openNotification({
+                    message: `Cập nhật kết quả thành công`
+                })
+            }
+            // nếu yêu cầu chỉnh sủa -> status phase 4 = normal
+            if (radioValue === 'ediRequest') {
+                await supabase
+                    .from('thesis_phases')
+                    .update({
+                        status: 'normal'
+                    })
+                    .eq('id', resultUpdate.id + 1)
+                setIsOpen(false);
+                await refetchData({});
+                return openNotification({
+                    message: `Cập nhật kết quả thành công`
+                })
+            }
+        }
+        setIsOpen(false);
+        return openNotification({
+            message: `Cập nhật kết quả thất bại`
+        })
+    };
+    const handleChangeRadio = (e) => {
+        setRadioValue(e.target.value);
     };
 
     const renderInput = (item) => {
@@ -68,15 +129,45 @@ function DocumentUpdateModal(props) {
                 />
             );
         }
+        if (item.type === 'FILEUPLOAD') {
+            return (
+                <>
+                    <Input
+                        type="button"
+                        value={file?.name}
+                        prefix={file?.name ? <FileAddOutlined /> : <></>}
+                        suffix={<div>
+                            <CloudUploadOutlined onClick={() => inputRef.current.click()} />
+                            <input
+                                hidden
+                                ref={inputRef}
+                                type="file"
+                                id="inputFile"
+                                onChange={(event) => handleOnUpload(event)}
+                            ></input>
+                        </div>}
+                        size='large'
+                        className="input-add-file"
+                        onClick={() => inputRef.current.click()}
+                    />
+                    {!file?.name && (
+                        <div className="invalid-feedback d-block">
+                            <span>{errorStatus[0]}</span>
+                            <br></br>
+                            <span>{errorStatus[1]}</span>
+                        </div>
+                    )}
+                </>
+            );
+        }
         if (item.type === 'RADIO_BOX') {
             return (<div className='d-flex justify-content-between'>
                 <Radio.Group
-                    // onChange={onChange} 
-                    // value={value}
-                    defaultValue={2}
+                    onChange={handleChangeRadio}
+                    defaultValue={radioValue}
                 >
-                    <Radio value={1}>Yêu cầu chỉnh sửa</Radio>
-                    <Radio value={2} defaultChecked >Hoàn thành</Radio>
+                    <Radio value={'editRequest'}>Yêu cầu chỉnh sửa</Radio>
+                    <Radio value={'success'}>Hoàn thành</Radio>
                 </Radio.Group>
             </div>)
         }
