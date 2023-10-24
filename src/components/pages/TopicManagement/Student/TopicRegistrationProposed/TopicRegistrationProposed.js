@@ -38,7 +38,7 @@ const TopicRegistrationProposed = () => {
 
         if (!error) {
             getRegisteredTopic()
-            refetchData()
+            refetchData({})
             return openNotification({
                 message: 'Đăng ký đề tài thành công'
             })

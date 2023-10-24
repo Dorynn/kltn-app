@@ -20,7 +20,7 @@ function GraduationThesisSubmit() {
     const [itemInput, setItemInput] = useState('');
     const [valueThesisPhase, setValueThesisPhase] = useState({});
     const [statusInput, setStatusInput] = useState({
-        phase1: 'normal',
+        phase1: 'locked',
         phase2: 'locked',
         phase3: 'locked',
         phase4: 'locked',

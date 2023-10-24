@@ -171,6 +171,15 @@ const Sidebar = () => {
                                     </Link>
                                 </Menu.Item>
                             }
+                            {
+                                (isTeacher || isAdmin) &&
+                                <Menu.Item key="18">
+                                    <Link to={URL_GRADUATION_THESES_STUDENT_INFO}>
+                                        <span>Danh sách bảo vệ KLTN</span>
+                                    </Link>
+                                </Menu.Item>
+
+                            }
                         </SubMenu>
                     }
                     {
@@ -187,11 +196,6 @@ const Sidebar = () => {
                             <Menu.Item key="17">
                                 <Link to={URL_DEFENSE_ESTABLISH}>
                                     <span>Thành lập Hội đồng</span>
-                                </Link>
-                            </Menu.Item>
-                            <Menu.Item key="18">
-                                <Link to={URL_GRADUATION_THESES_STUDENT_INFO}>
-                                    <span>Danh sách bảo vệ KLTN</span>
                                 </Link>
                             </Menu.Item>
                             <Menu.Item key="19">

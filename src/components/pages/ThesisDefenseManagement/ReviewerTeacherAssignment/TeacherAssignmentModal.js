@@ -47,16 +47,16 @@ const TeacherAssignmentModal = ({ isOpen, updateTeacherAssignment, refetchData }
             .update({ reviewer_teacher_id: reviewerTeacher })
             .eq('id', updateTeacherAssignment.student_thesis_id)
 
-        if (!error) {
-            await supabase
-                .from('thesis_phases')
-                .update({ status: 'normal' })
-                .eq('id', updateTeacherAssignment.id + 1)
-            await refetchData({})
-            return openNotification({
-                message: 'Phân công giáo viên phản biện thành công!'
-            })
-        }
+        // if (!error) {
+        //     await supabase
+        //         .from('thesis_phases')
+        //         .update({ status: 'normal' })
+        //         .eq('id', updateTeacherAssignment.id + 1)
+        //     await refetchData({})
+        //     return openNotification({
+        //         message: 'Phân công giáo viên phản biện thành công!'
+        //     })
+        // }
         return openNotification({
             type: 'error',
             message: 'Phân công giáo viên phản biện thất bại!'
