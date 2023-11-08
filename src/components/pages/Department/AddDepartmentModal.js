@@ -70,7 +70,6 @@ const AddDepartmentModal = ({ refetchData, isOpen }) => {
         </Form.Item>
     </Form>)
     const handleCreateDepartment = async () => {
-        console.log('newDepartment', newDepartment);
         const { error } = await supabase
             .from('departments')
             .insert([

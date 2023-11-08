@@ -90,7 +90,6 @@ const AddMajorModal = ({ refetchData, isOpen }) => {
     </Form>)
 
     const handleCreateMajor = async () => {
-        console.log('newMajor', newMajor);
         const { error } = await supabase
             .from('majors')
             .insert([

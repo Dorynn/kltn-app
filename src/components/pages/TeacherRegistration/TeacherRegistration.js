@@ -67,7 +67,6 @@ const TeacherRegistration = () => {
             topic_description: 'Mô tả đề tài 3',
         }
     ];
-    console.log('')
     return (
         <div>
             <h4 className='title'>Đăng ký đề tài</h4>

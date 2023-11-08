@@ -39,7 +39,6 @@ const TeacherStatistic = () => {
         yearList.add(item?.created_at?.slice(0, 4))
     })
     const filterTeacherStatistic = () => {
-        console.log(selectedDepartment, year)
         getTeacherStatistic().then(data => {
             setTeacherStatistic(data?.filter(item =>
                 item.majors.department_id === selectedDepartment

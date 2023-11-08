@@ -97,7 +97,7 @@ function DocumentUpdateModal(props) {
                 })
             }
             // nếu yêu cầu chỉnh sủa -> status phase 4 = normal
-            if (radioValue === 'ediRequest') {
+            if (radioValue === 'editRequest') {
                 await supabase
                     .from('thesis_phases')
                     .update({

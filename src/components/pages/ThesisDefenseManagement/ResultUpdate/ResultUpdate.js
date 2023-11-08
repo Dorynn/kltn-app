@@ -85,28 +85,38 @@ const ResultUpdate = () => {
             .range((page - 1) * NUMBER_ITEM_PER_PAGE, NUMBER_ITEM_PER_PAGE * page - 1)
     })
     const data = [];
-
-    reviewList.map((item, index) => {
-        const defenseCommittees = item && item.student_theses && item.student_theses.defense_committees &&
-            item.student_theses.defense_committees.length > 0 && item.student_theses.defense_committees[0]
-        data.push({
-            no: index + 1,
-            key: item.id,
-            id: item.id,
-            student_thesis_id: item.student_thesis_id,
-            phase_order: item.phase_order,
-            status: item.status,
-            reviewer_id: item.reviewer_id,
-            student_id: item?.student_theses?.student_id,
-            student_name: item?.student_theses?.students?.profiles?.name,
-            topic_name: item?.student_theses?.thesis_topics?.topic_name,
-            defense_committees_id: defenseCommittees?.id,
-            defense_day: defenseCommittees?.defense_day,
-            defense_location: defenseCommittees?.defense_location,
-            defense_shift: defenseCommittees?.defense_shift,
-            report_url: defenseCommittees?.report_url,
+    const result = [];
+    reviewList.forEach(item => {
+        const existing = result.find(i => i.productName === item.productName);
+        if (!existing) {
+            result.push(item);
+        } else {
+            if (existing.id < item.id) {
+                result[result.indexOf(existing)] = item;
+            }
+        }
+    });
+    result && result.map((item, index) => {
+            const defenseCommittees = item && item.student_theses && item.student_theses.defense_committees &&
+                item.student_theses.defense_committees.length > 0 && item.student_theses.defense_committees[0]
+            data.push({
+                no: index + 1,
+                key: item.id,
+                id: item.id,
+                student_thesis_id: item.student_thesis_id,
+                phase_order: item.phase_order,
+                status: item.status,
+                reviewer_id: item.reviewer_id,
+                student_id: item?.student_theses?.student_id,
+                student_name: item?.student_theses?.students?.profiles?.name,
+                topic_name: item?.student_theses?.thesis_topics?.topic_name,
+                defense_committees_id: defenseCommittees?.id,
+                defense_day: defenseCommittees?.defense_day,
+                defense_location: defenseCommittees?.defense_location,
+                defense_shift: defenseCommittees?.defense_shift,
+                report_url: defenseCommittees?.report_url,
+            })
         })
-    })
 
     const handleUpdateResult = (item) => {
         setOpenModal(true)
@@ -116,14 +126,12 @@ const ResultUpdate = () => {
     };
     const parseData = useCallback((item, field, index) => {
         if (field === 'index') {
-            console.log('item', item);
             return index + 1;
         }
         if (field === 'student_id') {
             return `SV${item[field]}`;
         }
         if (field === 'action') {
-            console.log('item', item);
             if (item?.report_url === null) {
                 return (<Button onClick={() => handleUpdateResult(item)}>
                     Cập nhật

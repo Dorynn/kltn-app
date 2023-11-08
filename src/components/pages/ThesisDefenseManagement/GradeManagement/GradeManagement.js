@@ -17,18 +17,6 @@ const GradeManagement = () => {
             .eq('status', 'approved')
     })
 
-    const checkChargePerson = async () => {
-        let { data, error } = await supabase
-            .rpc('is_charge_person')
-
-        if (error) console.error(error)
-        else console.log(data)
-    }
-
-    useEffect(()=>{
-        checkChargePerson()
-    },[])
-    console.log(reviewList)
     const data = []
     const column = [
         {
@@ -63,7 +51,6 @@ const GradeManagement = () => {
             render: (_, record) => <>
                 {
                     (record.grade_id === null) ? <Button onClick={() => {
-                        console.log(record.grade_id)
                         setOpenModal(!isOpenModal)
                         setThesisInfo({
                             student_code: record.student_code,

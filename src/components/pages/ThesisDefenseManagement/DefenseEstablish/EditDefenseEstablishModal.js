@@ -94,8 +94,7 @@ const EditDefenseEstablishModal = ({ isOpen, thesisInfo }) => {
         const { data, error } = await supabase
             .rpc('get_available_defense_schedules', { thesis_id })
         if (error) {
-            console.error(error)
-            return;
+            return error;
         }
 
         const dataSource = data?.filter(item => item.is_available)

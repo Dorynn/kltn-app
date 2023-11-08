@@ -73,8 +73,8 @@ export const columnConfig = [
 export const expandConfig = [
     {
         label: 'Mã sinh viên',
-        field: 'student_code',
-        key: 'student_code',
+        field: 'user_id',
+        key: 'user_id',
     },
     {
         label: 'Họ và tên',

@@ -39,7 +39,6 @@ function GraduationThesisInfo() {
             `)
             .eq('student_theses.student_id', user_id)
     });
-    console.log('defenseCommittees', defenseCommittees);
     const { data: teacherInfo } = useSupbaseAction({
         initialData: [],
         firstLoad: true,

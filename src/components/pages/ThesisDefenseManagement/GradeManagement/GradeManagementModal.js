@@ -42,13 +42,10 @@ const GradeManagementModal = ({ isOpen, thesisInfo, refetchData }) => {
         </Form>
     )
     const handleInputScore = async () => {
-        console.log(gradeGroup)
         const { data, error} = await supabase
         .from('thesis_grades')
         .insert([gradeGroup])
         .select()
-
-        console.log(data)
 
         const grade_id = data?.[0]?.id;
         if(!grade_id){
