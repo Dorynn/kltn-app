@@ -11,7 +11,6 @@ import prepareOptions from '../../../../helpers/prepareOptions';
 function EditChargePersonModal(props) {
     const { updateChargePerson, setUpdateChargePerson, refetchData, isOpen, setIsOpen } = props;
     const { openNotification } = useContext(NotificationContext);
-    console.log('updateChargePerson', updateChargePerson)
     const getUserEmail = async function () {
         let { data: email, error } = await supabase
             .rpc('get_email', {
@@ -37,7 +36,6 @@ function EditChargePersonModal(props) {
     }, [isOpen])
 
     const handleUpdateChargePerson = async () => {
-        console.log('updateChargePerson', updateChargePerson)
         const { error } = await supabase
         await supabase.functions.invoke('users?role=charge_person&isUpdate=true', {
             method: 'POST',

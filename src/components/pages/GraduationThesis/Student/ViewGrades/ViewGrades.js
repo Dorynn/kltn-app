@@ -55,7 +55,6 @@ function ViewGrades() {
             return mediumGrades ? mediumGrades : 'Bạn chưa có điểm'
         }
         if (field === 'result_evaluation') {
-            console.log('mediumGrades', mediumGrades);
             if (0 < mediumGrades && mediumGrades <= 4) {
                 return 'Yếu'
             }

@@ -46,7 +46,6 @@ const Student = () => {
             `, { count: 'exact' })
             .range((page - 1) * NUMBER_ITEM_PER_PAGE, NUMBER_ITEM_PER_PAGE * page - 1)
     });
-    console.log('students', students);
     const getColumnConfig = () => {
         if (isAdmin) {
             return columnConfig.concat({
@@ -93,7 +92,6 @@ const Student = () => {
     // gọi lại api khi change page
     const onChangePage = useCallback(
         async page => {
-            console.log('page', page);
             setCurrentPage(page)
             await refetchData({
                 params: {
@@ -177,7 +175,7 @@ const Student = () => {
                         <label>{item.label} :</label>
                     </div>
                     <div className='col-8'>
-                        <span>{record[item.field]}</span>
+                        <span>{item.field === 'user_id' ? `SV${record[item.field]}` : record[item.field]}</span>
                     </div>
                 </div>
             ))}

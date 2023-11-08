@@ -61,7 +61,6 @@ const Lecturer = () => {
 
     // tùy chọn hiển thị data
     const parseData = useCallback((item, field, index) => {
-        console.log(item)
         if (field === 'index') {
             return index + 1;
         }
@@ -175,7 +174,7 @@ const Lecturer = () => {
                         <label>{item.label} :</label>
                     </div>
                     <div className='col-8'>
-                        <span>{record[item.field]}</span>
+                        <span>{item.field === 'user_id' ? `GV${record[item.field]}` : record[item.field]}</span>
                     </div>
                 </div>
             ))}

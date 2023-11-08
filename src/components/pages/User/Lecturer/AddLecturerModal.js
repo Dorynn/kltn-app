@@ -59,7 +59,6 @@ function AddLecturerModal(props) {
 
     // get data cho các select options
     const handleGetOptions = field => {
-        console.log('majors', majors);
         if (field === 'major_id') {
             return prepareOptions({ data: majors, labelField: 'id', valueField: 'id', prefix: 'MJ', subfix: 'major_name' })
         }

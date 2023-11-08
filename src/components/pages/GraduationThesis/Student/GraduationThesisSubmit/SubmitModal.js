@@ -46,7 +46,6 @@ function SubmitModal(props) {
             type: 'TEXT_AREA',
         },
     ];
-
     const { data: dataPhase } = useSupbaseAction({
         initialData: [],
         firstLoad: true,
@@ -114,8 +113,7 @@ function SubmitModal(props) {
                 await supabase
                     .from('submit_assignments')
                     .update({
-                        submit_url: data.path,
-                        phase_id: valueThesisPhase.id
+                        submit_url: data.path
                     })
                     .eq('id', valueThesisPhase.id)
                     .select()

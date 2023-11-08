@@ -32,6 +32,7 @@ function ReviewReportGraduation() {
             `, { count: 'exact' })
             .eq('status', 'pending')
             .eq('reviewer_id', user.user_id)
+            .neq('phase_order', 1)
             .range((page - 1) * NUMBER_ITEM_PER_PAGE, NUMBER_ITEM_PER_PAGE * page - 1)
     });
 

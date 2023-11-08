@@ -59,7 +59,7 @@ const ChargePerson = () => {
                 <i
                     role="button"
                     className="fa-solid fa-trash mx-2"
-                    onClick={() => { ConfirmModal(item.id); console.log('delete', item) }}
+                    onClick={() => { ConfirmModal(item.id)}}
                 ></i>
             </>);
         }
@@ -138,13 +138,11 @@ const ChargePerson = () => {
             centered: true,
             confirmLoading: confirmLoading,
             onOk() {
-                console.log('confirm id', id);
                 handleDeleteChargePerson({ id })
             },
             onCancel() { },
         });
     };
-    console.log('chargeperson', chargePerson)
     return (
         <>
             <h4 className='title'>Quản lý người phụ trách khóa luận tốt nghiệp</h4>
