@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import supabase from '../../../supabaseClient';
 import useSupbaseAction from '../../../hooks/useSupabase/useSupabaseAction';
 import { Select, Button, Table } from 'antd';
+import ApexChart from '../../ApexChart';
 
 const StudentStatistic = () => {
     const [selectedDepartment, setSelectedDepartment] = useState([])
@@ -100,19 +101,146 @@ const StudentStatistic = () => {
             dataIndex: 'completed_percent'
         }
     ]
-    
+
     const data = [];
+    const categories = [];
+    const register_quantity = [];
+    const completed_quantity = [];
+    const completed_percent = [];
     major?.map((item, index) => {
         data.push({
             no: index + 1,
             major_id: `MJ${item?.id}`,
             major_name: item.major_name,
             register_quantity: filtered?.[index]?.length,
-            completed_quantity: filtered?.[index]?.filter(item => item?.student_theses?.[0]?.status=='approved').length,
-            completed_percent: `${filtered?.[index]?.length === 0 ? 0: filtered?.[index]?.filter(item => item?.student_theses?.[0]?.status=='approved').length*100/filtered?.[index]?.length}%`
+            completed_quantity: filtered?.[index]?.filter(item => item?.student_theses?.[0]?.status === 'approved').length,
+            completed_percent: `${filtered?.[index]?.length === 0 ? 0 : filtered?.[index]?.filter(item => item?.student_theses?.[0]?.status === 'approved').length * 100 / filtered?.[index]?.length}%`
 
         })
+        categories.push(`MJ${item?.id}`)
+        register_quantity.push(filtered?.[index]?.length)
+        completed_quantity.push(filtered?.[index]?.filter(item => item?.student_theses?.[0]?.status === 'approved').length)
+        completed_percent.push(`${filtered?.[index]?.length === 0 ? 0 : filtered?.[index]?.filter(item => item?.student_theses?.[0]?.status === 'approved').length * 100 / filtered?.[index]?.length}%`)
     })
+
+    const dataBar = {
+        series: [{
+            name: 'Số lượng đăng ký',
+            type: 'column',
+            data: register_quantity
+        }, {
+            name: 'Số lượng hoàn thành',
+            type: 'column',
+            data: completed_quantity
+        }, {
+            name: 'Tỷ lệ hoàn thành',
+            type: 'line',
+            data: completed_percent
+        }],
+        options: {
+            chart: {
+                height: 350,
+                type: 'line',
+                stacked: false
+            },
+            dataLabels: {
+                enabled: false
+            },
+            stroke: {
+                width: [1, 1, 4]
+            },
+            title: {
+                text: 'Thống kê',
+                align: 'left',
+                offsetX: 110
+            },
+            xaxis: {
+                categories: categories,
+            },
+            yaxis: [
+                {
+                    seriesName: 'Số lượng đăng ký',
+                    axisTicks: {
+                        show: true,
+                    },
+                    axisBorder: {
+                        show: true,
+                        color: '#008FFB'
+                    },
+                    labels: {
+                        style: {
+                            colors: '#008FFB',
+                        }
+                    },
+                    title: {
+                        text: "Số lượng đăng ký",
+                        style: {
+                            color: '#008FFB',
+                        }
+                    },
+                    tooltip: {
+                        enabled: true
+                    }
+                },
+                {
+                    seriesName: 'Số lượng hoàn thành',
+                    opposite: true,
+                    axisTicks: {
+                        show: true,
+                    },
+                    axisBorder: {
+                        show: true,
+                        color: '#00E396'
+                    },
+                    labels: {
+                        style: {
+                            colors: '#00E396',
+                        }
+                    },
+                    title: {
+                        text: "Số lượng hoàn thành",
+                        style: {
+                            color: '#00E396',
+                        }
+                    },
+                },
+                {
+                    seriesName: 'Tỷ lệ hoàn thành',
+                    opposite: true,
+                    axisTicks: {
+                        show: true,
+                    },
+                    axisBorder: {
+                        show: true,
+                        color: '#FEB019'
+                    },
+                    labels: {
+                        style: {
+                            colors: '#FEB019',
+                        },
+                    },
+                    title: {
+                        text: "Tỷ lệ hoàn thành",
+                        style: {
+                            color: '#FEB019',
+                        }
+                    }
+                },
+            ],
+            tooltip: {
+                fixed: {
+                    enabled: true,
+                    position: 'topLeft', // topRight, topLeft, bottomRight, bottomLeft
+                    offsetY: 30,
+                    offsetX: 60
+                },
+            },
+            legend: {
+                horizontalAlign: 'left',
+                offsetX: 40
+            }
+        },
+    };
 
     return (
         <div>
@@ -120,11 +248,11 @@ const StudentStatistic = () => {
             <Select
                 placeholder="Chọn Khoa"
                 showSearch
-                style={{width: 300}}
+                style={{ width: 300 }}
                 optionFilterProp="children"
                 filterOption={(input, option) => (option?.label ?? '').includes(input)}
-                options={departmentList?.map(({id, department_name}) => ({label: `${department_name}`, value: id }))}
-                onChange={(value)=> {
+                options={departmentList?.map(({ id, department_name }) => ({ label: `${department_name}`, value: id }))}
+                onChange={(value) => {
                     setSelectedDepartment(value)
                 }}
                 value={selectedDepartment}
@@ -132,18 +260,18 @@ const StudentStatistic = () => {
             <Select
                 placeholder="Chọn kỳ"
                 showSearch
-                style={{width: 200, margin: '0 20px'}}
+                style={{ width: 200, margin: '0 20px' }}
                 optionFilterProp="children"
                 filterOption={(input, option) => (option?.label ?? '').includes(input)}
-                options={semesterList2?.map(({label}) => ({label: label, value: label }))}
-                onChange={(value)=> {
+                options={semesterList2?.map(({ label }) => ({ label: label, value: label }))}
+                onChange={(value) => {
                     setSemester(value)
                 }}
                 value={semester}
             />
 
             <Button onClick={filterMajorList}>Lọc</Button>
-            
+
             <div className='p-5'>
                 <Table
                     columns={columns}
@@ -151,8 +279,10 @@ const StudentStatistic = () => {
                     bordered
                 />
             </div>
-
-
+            {data.length > 0 && <ApexChart
+                options={dataBar.options}
+                series={dataBar.series}
+            ></ApexChart>}
         </div>
     );
 };
