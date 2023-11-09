@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import supabase from '../../../supabaseClient';
 import useSupbaseAction from '../../../hooks/useSupabase/useSupabaseAction';
 import { Select, Button, Table } from 'antd';
+import ApexChart from '../../ApexChart';
 
 
 const TeacherStatistic = () => {
@@ -95,6 +96,10 @@ const TeacherStatistic = () => {
     ]
 
     const data = [];
+    const categories = [];
+    const semester1 = [];
+    const semester2 = [];
+    const semester3 = [];
     teacherStatistic?.map((item, index) => {
         data.push({
             no: index + 1,
@@ -105,7 +110,130 @@ const TeacherStatistic = () => {
             semester3: studentQuantity.semester3[index],
             total: studentQuantity.semester1[index] + studentQuantity.semester2[index] + studentQuantity.semester3[index]
         })
+        categories.push(`GV${item.user_id}`)
+        semester1.push(studentQuantity.semester1[index])
+        semester2.push(studentQuantity.semester2[index])
+        semester3.push(studentQuantity.semester3[index])
     })
+
+    const dataBar = {
+        series: [{
+            name: 'Kỳ 1',
+            type: 'column',
+            data: semester1
+        }, {
+            name: 'Kỳ 2',
+            type: 'column',
+            data: semester2
+        }, {
+            name: 'Kỳ 3',
+            type: 'column',
+            data: semester3
+        }],
+        options: {
+            chart: {
+                height: 350,
+                type: 'line',
+                stacked: false
+            },
+            dataLabels: {
+                enabled: false
+            },
+            stroke: {
+                width: [1, 1, 4]
+            },
+            title: {
+                text: 'Thống kê',
+                align: 'left',
+                offsetX: 110
+            },
+            xaxis: {
+                categories: categories,
+            },
+            yaxis: [
+                {
+                    seriesName: 'Kỳ 1',
+                    axisTicks: {
+                        show: true,
+                    },
+                    axisBorder: {
+                        show: true,
+                        color: '#008FFB'
+                    },
+                    labels: {
+                        style: {
+                            colors: '#008FFB',
+                        }
+                    },
+                    title: {
+                        text: "Kỳ 1",
+                        style: {
+                            color: '#008FFB',
+                        }
+                    },
+                    tooltip: {
+                        enabled: true
+                    }
+                },
+                {
+                    seriesName: 'Kỳ 2',
+                    opposite: true,
+                    axisTicks: {
+                        show: true,
+                    },
+                    axisBorder: {
+                        show: true,
+                        color: '#00E396'
+                    },
+                    labels: {
+                        style: {
+                            colors: '#00E396',
+                        }
+                    },
+                    title: {
+                        text: "Kỳ 2",
+                        style: {
+                            color: '#00E396',
+                        }
+                    },
+                },
+                {
+                    seriesName: 'Kỳ 3',
+                    opposite: true,
+                    axisTicks: {
+                        show: true,
+                    },
+                    axisBorder: {
+                        show: true,
+                        color: '#FEB019'
+                    },
+                    labels: {
+                        style: {
+                            colors: '#FEB019',
+                        },
+                    },
+                    title: {
+                        text: "Kỳ 3",
+                        style: {
+                            color: '#FEB019',
+                        }
+                    }
+                },
+            ],
+            tooltip: {
+                fixed: {
+                    enabled: true,
+                    position: 'topLeft', // topRight, topLeft, bottomRight, bottomLeft
+                    offsetY: 30,
+                    offsetX: 60
+                },
+            },
+            legend: {
+                horizontalAlign: 'left',
+                offsetX: 40
+            }
+        },
+    };
 
     return (
         <div>
@@ -135,7 +263,7 @@ const TeacherStatistic = () => {
                 value={year}
             />
             <Button onClick={filterTeacherStatistic}>Lọc</Button>
-           
+
             <div className='p-5'>
                 <Table
                     columns={columns}
@@ -143,6 +271,10 @@ const TeacherStatistic = () => {
                     bordered
                 />
             </div>
+            {data.length > 0 && <ApexChart
+                options={dataBar.options}
+                series={dataBar.series}
+            ></ApexChart>}
         </div>
     );
 };

@@ -19,6 +19,7 @@ function GraduationThesisSubmit() {
     const [isOpenModal, setIsOpenModal] = useState(false);
     const [itemInput, setItemInput] = useState('');
     const [valueThesisPhase, setValueThesisPhase] = useState({});
+    const [dataThesisPhase, setDataThesisPhase] = useState([]);
     const [statusInput, setStatusInput] = useState({
         phase1: 'locked',
         phase2: 'locked',
@@ -32,14 +33,16 @@ function GraduationThesisSubmit() {
         defaultAction: async () => supabase
             .from('thesis_phases')
             .select(`
-                *
+                *, student_theses(student_id)
             `)
+            .eq('student_theses.student_id', user.user_id)
             .order('phase_order', { ascending: true })
     });
-
     useEffect(() => {
         if (thesisPhases) {
-            thesisPhases.map((value, index) => {
+            const newThesisPhases = thesisPhases.filter(item => item?.student_theses?.student_id === user?.user_id);
+            setDataThesisPhase(newThesisPhases);
+            newThesisPhases.map((value, index) => {
                 if (value.phase_order === index + 1) {
                     setStatusInput(prev => ({ ...prev, [`phase${index + 1}`]: value.status }));
                 }
@@ -78,7 +81,7 @@ function GraduationThesisSubmit() {
     const handleClickSubmit = item => {
         setIsOpenModal(true);
         setItemInput(item.id);
-        const thesisByPhasesOrder = thesisPhases.find(value => value.phase_order === item.key) || {};
+        const thesisByPhasesOrder = dataThesisPhase.find(value => value.phase_order === item.key) || {};
         setValueThesisPhase(thesisByPhasesOrder);
     }
 
