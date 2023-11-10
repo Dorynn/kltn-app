@@ -87,7 +87,7 @@ const ResultUpdate = () => {
     const data = [];
     const result = [];
     reviewList.forEach(item => {
-        const existing = result.find(i => i.productName === item.productName);
+        const existing = result.find(i => i.id === item.id);
         if (!existing) {
             result.push(item);
         } else {
